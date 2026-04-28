@@ -91,11 +91,11 @@
       spawnChance: 0.30,
       lifetimeMs: 90 * 1000,
       pool: [
-        { id:"coin_drop", art:"assets/svg/event-coin.svg",      weight:55, label:"撿到飼料幣", apply:"coin_drop" },
-        { id:"herb",      art:"assets/svg/event-herb.svg",      weight:18, label:"神祕草藥",   apply:"herb"      },
-        { id:"butterfly", art:"assets/svg/event-butterfly.svg", weight:14, label:"蝴蝶飛過",   apply:"butterfly" },
-        { id:"fly",       art:"assets/svg/event-fly.svg",       weight:10, label:"趕走果蠅",   apply:"fly"       },
-        { id:"star",      art:"assets/svg/event-star.svg",      weight:3,  label:"神秘流星",   apply:"star"      },
+        { id:"coin_drop", art:"assets/images/event-coin.png",      weight:55, label:"撿到飼料幣", apply:"coin_drop" },
+        { id:"herb",      art:"assets/images/event-herb.png",      weight:18, label:"神祕草藥",   apply:"herb"      },
+        { id:"butterfly", art:"assets/images/event-butterfly.png", weight:14, label:"蝴蝶飛過",   apply:"butterfly" },
+        { id:"fly",       art:"assets/images/event-fly.png",       weight:10, label:"趕走果蠅",   apply:"fly"       },
+        { id:"star",      art:"assets/images/event-star.png",      weight:3,  label:"神秘流星",   apply:"star"      },
       ],
     },
     economy: { dailyLogin: 30, evolveReward: 100, streak7: 50, streak30: 200 },
@@ -154,6 +154,15 @@
       action_pet_head:    ["嘿嘿~", "好喜歡這樣", "(瞇眼)"],
       action_pet_belly:   ["咯咯咯", "(笑出聲)", "癢癢的~"],
       action_talk:        ["嗯嗯！", "對啊對啊", "你說呢主人？"],
+    },
+    accessories: {
+      // v0.3 裝扮系統。slot 多種：hat（頭頂）/ neck（脖子）/ wing（之後加）。
+      // 玩家用飼料幣解鎖；解鎖後永久擁有，可隨時切換。
+      headband: { slot:"hat",  art:"assets/images/acc-headband.png", label:"蝴蝶髮帶",   icon:"🩷", price:80  },
+      bow:      { slot:"hat",  art:"assets/images/acc-bow.png",      label:"粉紅蝴蝶結", icon:"🎀", price:120 },
+      flower:   { slot:"hat",  art:"assets/images/acc-flower.png",   label:"粉色花環",   icon:"🌸", price:200 },
+      crown:    { slot:"hat",  art:"assets/images/acc-crown.png",    label:"閃耀皇冠",   icon:"👑", price:500 },
+      necklace: { slot:"neck", art:"assets/images/acc-necklace.png", label:"珍珠項鍊",   icon:"📿", price:180 },
     },
     petArt: {
       egg:    "assets/images/egg.png",

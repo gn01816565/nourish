@@ -46,6 +46,8 @@
         want: null,                  // active want (see CFG.wants); null when none
         wantCooldownUntil: 0,        // ms timestamp; suppress new spawns before this
         isSleeping: false,
+        appearance: { hat: null, neck: null }, // currently-equipped accessory id per slot
+        ownedAccessories: {},                  // id → unlockedAt; persisted across pets
       },
       economy: { feedCoin: 50, totalEarned: 50, totalSpent: 0 },
       cooldowns: {},
@@ -147,12 +149,14 @@
   }
   function startNewEgg() {
     archiveCurrentPet();
+    const ownedAcc = state.pet.ownedAccessories || {};
     const fresh = defaultState();
-    // keep cross-life progression: economy, daily streak, history sessions
+    // keep cross-life progression: economy, daily streak, history, owned cosmetics
     fresh.economy = state.economy;
     fresh.daily   = state.daily;
     fresh.history = state.history;
     fresh.createdAt = state.createdAt;
+    fresh.pet.ownedAccessories = ownedAcc;
     state = fresh;
     state.lastTickAt = Date.now();
     lastPetSrc = lastMoodSrc = lastBgKey = null;
@@ -616,6 +620,23 @@
     petImg.classList.toggle("dim",
       s.mood < CFG.thresholds.low || s.hunger < CFG.thresholds.low);
 
+    // accessory overlays (all slots, iterate)
+    const ACC_SLOTS = ["hat", "neck"];
+    const eqByPet = state.pet.appearance || {};
+    ACC_SLOTS.forEach(slot => {
+      const equipId = eqByPet[slot];
+      const el = $("acc-" + slot);
+      if (!el) return;
+      if (equipId && CFG.accessories[equipId]) {
+        const src = CFG.accessories[equipId].art;
+        if (el.dataset.id !== equipId) { el.src = src; el.dataset.id = equipId; }
+        el.hidden = false;
+      } else {
+        el.hidden = true;
+        el.removeAttribute("data-id");
+      }
+    });
+
     // mood overlay
     const moodIcon = $("mood-icon");
     let moodKey = null;
@@ -833,6 +854,61 @@
     } catch (_) { return false; }
   }
 
+  // ============ Accessory shop (v0.3 起步) ============
+  function isAccessoryOwned(id) {
+    return !!(state.pet.ownedAccessories && state.pet.ownedAccessories[id]);
+  }
+  function buyAccessory(id) {
+    const cfg = CFG.accessories[id];
+    if (!cfg) return;
+    if (isAccessoryOwned(id)) return;
+    if (state.economy.feedCoin < cfg.price) { toast("飼料幣不夠", "bad"); SFX.fail(); return; }
+    spendCoin(cfg.price);
+    if (!state.pet.ownedAccessories) state.pet.ownedAccessories = {};
+    state.pet.ownedAccessories[id] = Date.now();
+    SFX.coin();
+    toast(`🎀 解鎖 ${cfg.label}！`, "gold");
+    save();
+    openShopMenu();
+  }
+  function equipAccessory(id) {
+    const cfg = CFG.accessories[id];
+    if (!cfg) return;
+    if (!isAccessoryOwned(id)) return;
+    if (!state.pet.appearance) state.pet.appearance = { hat: null };
+    state.pet.appearance[cfg.slot] = state.pet.appearance[cfg.slot] === id ? null : id;
+    SFX.click();
+    save(); render(); openShopMenu();
+  }
+
+  function openShopMenu() {
+    const items = Object.keys(CFG.accessories);
+    const equipped = state.pet.appearance || {};
+    const rows = items.map(id => {
+      const cfg = CFG.accessories[id];
+      const owned = isAccessoryOwned(id);
+      const isOn = equipped[cfg.slot] === id;
+      const action = !owned
+        ? `<button class="menu-item" data-buy="${id}" ${state.economy.feedCoin < cfg.price ? "disabled" : ""}
+             style="padding:4px 10px;color:var(--c-red);">${cfg.price} FC</button>`
+        : `<button class="menu-item" data-equip="${id}" style="padding:4px 10px;${isOn?"background:var(--c-pink);":""}">${isOn ? "✅ 配戴中" : "戴上"}</button>`;
+      return `<div class="settings-row">
+        <span><img src="${cfg.art}" width="32" height="32" style="vertical-align:middle;margin-right:6px;">${cfg.icon} ${cfg.label}</span>
+        ${action}
+      </div>`;
+    }).join("");
+    showModal({
+      title: "🎀 裝扮商店",
+      body: `<div class="modal-list">${rows}</div>
+        <p class="muted center" style="margin-top:8px;">💰 ${state.economy.feedCoin} FC · 戴上後會出現在啾啾頭上</p>`,
+      buttons: [{ label: "關閉", close: true }],
+      onMount: card => {
+        card.querySelectorAll("[data-buy]").forEach(b => b.onclick = () => buyAccessory(b.dataset.buy));
+        card.querySelectorAll("[data-equip]").forEach(b => b.onclick = () => equipAccessory(b.dataset.equip));
+      },
+    });
+  }
+
   function openSettingsMenu() {
     const t = state.pet.traits;
     const html = `
@@ -987,17 +1063,38 @@
     ctx.fillStyle = "#8B5A2B";
     ctx.fillText("ChickaDay · v0.1", W / 2, 195);
 
-    // Pet portrait (current displayed art)
+    // Pet portrait (current displayed art) + equipped accessories on top
     const petSrc = lastPetSrc || CFG.petArt.egg;
+    const portraitSize = 360;
+    const portraitX = (W - portraitSize) / 2;
+    const portraitY = 240;
     try {
       const img = await loadImage(petSrc);
-      const size = 360;
-      ctx.drawImage(img, (W - size) / 2, 240, size, size);
+      ctx.drawImage(img, portraitX, portraitY, portraitSize, portraitSize);
     } catch (e) {
       ctx.fillStyle = "#FFD86B";
       ctx.beginPath();
       ctx.arc(W / 2, 420, 150, 0, Math.PI * 2);
       ctx.fill();
+    }
+    // Render equipped accessories at their pet-relative positions, scaled to
+    // the share-card portrait size so they line up with the pet illustration.
+    const ACC_DRAW = {
+      hat:  { x: 0.5, y: 0.18, size: 0.42, anchor: "center" }, // top of head
+      neck: { x: 0.5, y: 0.55, size: 0.55, anchor: "center" }, // chest
+    };
+    const equipped = state.pet.appearance || {};
+    for (const slot of Object.keys(ACC_DRAW)) {
+      const id = equipped[slot];
+      if (!id || !CFG.accessories[id]) continue;
+      try {
+        const aImg = await loadImage(CFG.accessories[id].art);
+        const place = ACC_DRAW[slot];
+        const aw = portraitSize * place.size;
+        const ax = portraitX + portraitSize * place.x - aw / 2;
+        const ay = portraitY + portraitSize * place.y - aw / 2;
+        ctx.drawImage(aImg, ax, ay, aw, aw);
+      } catch (_) { /* skip on load failure */ }
     }
 
     // Name + stage line
@@ -1554,6 +1651,7 @@
     $("btn-settings").onclick = openSettingsMenu;
     $("btn-dex").onclick     = openDexMenu;
     $("btn-ach").onclick     = openAchievementsMenu;
+    $("btn-shop").onclick    = openShopMenu;
     $("pet-wrapper").onclick = () => performInteraction("pet_head");
     $("stage-name").onclick  = openNameDialog;
     $("stage-name").style.cursor = "pointer";

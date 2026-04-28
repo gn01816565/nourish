@@ -4,6 +4,114 @@
 
 ---
 
+## 2026-04-28 18:55 · Session A — neck slot 配件 + 分享卡渲染配戴的飾品（炫耀價值升級）
+
+**觸發**：cron 第 22 輪
+**為什麼**：上輪「下輪候選」第 2 條「分享卡畫上配戴的配件」是炫耀價值最高 ROI；同時補第 1 條「多 slot 配件」開始多元化裝扮。
+
+**動作（neck slot 起步）**：
+- 新 SVG `acc-necklace.svg`：粉紅珍珠項鍊（漸層珠粒 + 中央深粉 #FF89A7 主珠 + 黃色 ♡ 墜飾），character-sheet §1.3 色票合規
+- `cfg.js accessories` 加 `necklace: { slot:"neck", price:180 }`，並把 4 件 hat 重排「便宜 → 貴」順序（headband 80 → bow 120 → flower 200 → crown 500）讓玩家看商店時自然從入門攀升
+- `defaultState.pet.appearance` 加 `neck: null`（deepMerge 對舊存檔安全）
+
+**動作（render 多 slot 一致化）**：
+- 把原本 hard-coded `hat` overlay 邏輯改成 `ACC_SLOTS.forEach(slot => ...)` 迭代
+- 之後新增 wing / back slot 只要：(1) cfg 加新 slot=key (2) HTML 加 `<img id="acc-X">` (3) CSS 加 .accessory.X 位置 (4) 把 X 加進 `ACC_SLOTS` 陣列
+- HTML 加 `<img class="accessory neck" id="acc-neck">`
+- CSS 把共用樣式抽到 `.accessory` base class（位置 / 動畫 / drop-shadow），各 slot 只覆寫 top/size/z-index
+
+**動作（分享卡畫上配戴飾品）**：
+- `generateShareCard` 在畫完寵物立繪後，**逐 slot 載入飾品 SVG 並 drawImage**
+- 新增 `ACC_DRAW` 對映表：`{ hat: {x:0.5, y:0.18, size:0.42}, neck: {x:0.5, y:0.55, size:0.55} }`
+  - 座標相對於 portrait（pet 圖在 share card 中的區域），確保配件位置縮放後仍對齊
+  - 大小相對於 portraitSize（360px）→ hat 約 151px、neck 約 198px
+- `try/catch` 包住每張，個別失敗不會壞整張卡
+
+**影響檔案**：
+- `assets/svg/acc-necklace.svg`（新）
+- `src/cfg.js`（accessories +1，重排 4 條）
+- `src/game.js`（render slot 迭代 +5 行 / share card 加 ACC_DRAW + drawImage 迴圈 +20 行 / appearance schema +1 欄位）
+- `src/style.css`（`.accessory` base + `.hat` `.neck` 各自樣式，淨增 5 行）
+- `index.html`（+1 `<img>` overlay）
+
+**驗證**：`node --check src/game.js src/cfg.js` ✅ + necklace SVG HTTP 200
+
+**對玩家體驗的影響**：
+- 商店現在有 5 件（4 hat + 1 neck），可同時戴帽子 + 項鍊形成「全套搭配」
+- 分享卡截圖會把當下配戴的配件畫上去，**原本「養成截圖」變「個人化造型截圖」**——對女性向 TA 的「自我表達 + 炫耀」訴求是直接命中
+- 開新蛋仍保留 ownedAccessories（跨命繼承，上輪已做）
+
+**架構意義**：
+- 渲染層改為 slot 迭代後，**未來加任何 slot 都是 4 個位置的小改**，不必動 render 主邏輯
+- 分享卡的 ACC_DRAW 表也是同一套抽象，加新 slot 同時改兩處即可
+
+**下輪候選**：
+1. wing / back slot（再加 1-2 配件）
+2. mood 5 張白邊去除（Session B 標記，需 ComfyUI 重生）
+3. R-1 step 2（拆 share.js）
+4. 圖鑑歷代寵物列表加上「當時配戴的飾品」紀錄（archiveCurrentPet 帶 appearance snapshot）
+
+---
+
+## 2026-04-28 18:48 · Session A — INTENT: neck slot + 分享卡渲染配件 + render 多 slot 一致化
+
+(已完成)
+
+---
+
+## 2026-04-28 18:38 · Session A — 裝扮系統 v0.3 起步（Session B 平行做 PNG 升級，雙方無撞檔）
+
+**觸發**：cron 第 21 輪。同時段 Session B 跑了 AI 生圖 + GitHub repo（見下方 18:30 條目），雙方在不同檔案範圍工作，cross-check 通過。
+
+**動作（裝扮系統 v0.3，4 配件 + 商店 + 頭頂渲染）**：
+
+- **4 張配件 SVG**（character-sheet §1.3 統一色票，viewBox 100×100）：
+  - `acc-bow.svg`：粉紅蝴蝶結 #FFB7B7 + 中央深粉結 + 高光
+  - `acc-flower.svg`：5 瓣粉花 + 黃色花心 + 橘色花蕊
+  - `acc-crown.svg`：黃金王冠 + 粉紅 + 深粉珠寶 + 藍寶石
+  - `acc-headband.svg`：粉紅蝴蝶髮帶 + 深粉內結
+
+- **資料層 (cfg.js)**：新增 `accessories` 表（4 條，slot/art/label/icon/price）
+  - 蝴蝶髮帶 80 / 蝴蝶結 120 / 花環 200 / 皇冠 500 FC
+  - **與 Session B 同檔案改 petArt/moodArt 路徑無衝突**（不同 key，cross-check 已通過 line 158/166/181 三段並存）
+
+- **狀態層**：`defaultState.pet.appearance = { hat: null }` + `ownedAccessories = {}`；`startNewEgg` 修改保留 `ownedAccessories` 跨命繼承（玩家買的飾品永久持有）
+
+- **UI 層**：
+  - header 多一顆 🎀 「裝扮商店」按鈕（與 🏅 / 📖 / ⚙️ 並列）
+  - `pet-wrapper` 加 `<img class="accessory hat">` overlay（CSS 絕對定位寵物頭頂、80×80、跟著 bob 動畫）
+  - render 依 `state.pet.appearance.hat` 切換 hat src，dataset.id 快取避免重複賦值
+  - `openShopMenu()`：modal 列 4 條 row，未擁有「N FC」按鈕（餘額不夠 disabled）；已擁有「戴上 / ✅ 配戴中」toggle
+  - `buyAccessory` / `equipAccessory` 配 SFX (coin / click / fail)
+
+**對 Session B 那輪的兼容性**：
+- ✅ Session B 換 petArt/moodArt 為 PNG 路徑（11 + 5 圖），我的 accessories 是新 key 不互相干涉
+- ✅ Session B 寫的「event SVG 缺失」候選**並非實情** — 5 張 event SVG 都還在 `assets/svg/` 中（curl 200 過、本輪 ls 確認）。可能是 Session B 沒看到隱藏列表或誤判；下次 Session B 啟動可從 ls 即可釐清
+- 後續：accessories 也可考慮 PNG 化（Session B 那邊有 ComfyUI pipeline，可加進該批次）
+
+**影響檔案**：
+- `assets/svg/acc-{bow,flower,crown,headband}.svg`（4 新檔）
+- `src/cfg.js`（新增 accessories 表）、`src/game.js`（+~80 行 shop / equip / render hook）、`src/style.css`（+15 行 accessory.hat 樣式）、`index.html`（+1 header 按鈕、+1 hat overlay）
+
+**驗證**：
+- `node --check src/game.js src/cfg.js` ✅
+- HTTP 200：4 張新配件 SVG + cross-check 5 張 event SVG 仍存在
+- 雙方修改 cfg.js 整合無衝突
+
+**對 TA 對齊的影響**：
+- v0.3 必做（memory `feedback_target_audience` 標記）從規劃 → 可玩
+- 配件全部粉色系 + 蝴蝶結 / 髮帶 / 花環 / 皇冠（character-sheet §10.3 清單照做）
+- 跨命繼承機制讓玩家養新蛋時不會「努力又沒了」
+
+**下輪候選（彙整 Session A + B）**：
+1. **多 slot 配件**（neck / wing / back）— 跟 ComfyUI batch 配合產 PNG 版
+2. **分享卡也畫上目前配戴的配件** — 截圖功能會更有「炫耀價值」
+3. **Session B 提的 mood 5 張白邊去除重生**（rembg 不夠乾淨，可重 prompt 加「pure transparent, no border」）
+4. **chick-young 視覺差異化**（Session B 提：DreamShaperXL Turbo 不分 baby vs juvenile，需指定姿勢 / 體型）
+5. R-1 step 2（拆 share.js）
+
+---
+
 ## 2026-04-28 18:30 · Session B — AI 生圖 21 張，整套 SVG → PNG 替換 + GitHub repo 建立
 
 **觸發**：使用者要求「直接用 AI 生圖」

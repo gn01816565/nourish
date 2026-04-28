@@ -287,6 +287,31 @@ body.reduce-motion .toast { animation: toast-in 0.001s ease-out, toast-out 0.001
   animation: pop 0.3s ease-out;
 }
 
+/* Accessory overlays (equipped from shop). Each slot positioned over its body
+   region; all share the bob animation so they stay glued to the pet. */
+.accessory {
+  position: absolute;
+  pointer-events: none;
+  filter: drop-shadow(0 1px 3px rgba(0,0,0,0.18));
+  animation: bob 2.5s ease-in-out infinite;
+}
+.accessory.hat {
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 80px;
+  z-index: 3;
+}
+.accessory.neck {
+  top: 76px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 100px;
+  z-index: 2;
+}
+
 .speech-bubble {
   position: absolute;
   top: -20px;
