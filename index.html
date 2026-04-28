@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#FFD86B">
+  <title>啾啾日常 ChickaDay</title>
+  <link rel="icon" type="image/svg+xml" href="assets/svg/chick-baby.svg">
+  <link rel="stylesheet" href="src/style.css">
+</head>
+<body>
+  <div id="app">
+    <header class="header">
+      <div class="logo">
+        <img src="assets/svg/chick-baby.svg" alt="" width="28" height="28">
+        <span class="title">啾啾日常</span>
+        <span class="version">v0.1</span>
+      </div>
+      <div class="header-actions">
+        <button id="btn-dex" class="icon-btn" title="圖鑑">📖</button>
+        <button id="btn-settings" class="icon-btn" title="設定">⚙️</button>
+      </div>
+    </header>
+
+    <section class="stats-bar">
+      <div class="stat" data-stat="hunger">
+        <span class="stat-icon">🍗</span>
+        <span class="stat-label">飢餓</span>
+        <div class="bar"><div class="bar-fill" id="bar-hunger"></div></div>
+        <span class="stat-value" id="val-hunger">--</span>
+      </div>
+      <div class="stat" data-stat="mood">
+        <span class="stat-icon">💖</span>
+        <span class="stat-label">心情</span>
+        <div class="bar"><div class="bar-fill" id="bar-mood"></div></div>
+        <span class="stat-value" id="val-mood">--</span>
+      </div>
+      <div class="stat" data-stat="clean">
+        <span class="stat-icon">🛁</span>
+        <span class="stat-label">清潔</span>
+        <div class="bar"><div class="bar-fill" id="bar-clean"></div></div>
+        <span class="stat-value" id="val-clean">--</span>
+      </div>
+      <div class="stat" data-stat="energy">
+        <span class="stat-icon">⚡</span>
+        <span class="stat-label">體力</span>
+        <div class="bar"><div class="bar-fill" id="bar-energy"></div></div>
+        <span class="stat-value" id="val-energy">--</span>
+      </div>
+      <div class="coin">
+        💰 <span id="val-coin">0</span> FC
+      </div>
+    </section>
+
+    <section class="stage" id="stage">
+      <div class="stage-bg" id="stage-bg"></div>
+      <div class="pet-shadow"></div>
+      <div class="pet-wrapper" id="pet-wrapper">
+        <img class="pet" id="pet-img" src="assets/svg/egg.svg" alt="寵物">
+        <img class="mood-icon" id="mood-icon" src="" alt="" hidden>
+        <div class="speech-bubble" id="speech-bubble" hidden></div>
+      </div>
+      <div class="stage-info">
+        <span id="stage-name">蛋</span>
+        <span class="stage-sep">·</span>
+        <span id="stage-countdown">--</span>
+      </div>
+    </section>
+
+    <nav class="action-bar">
+      <button class="action-btn" id="btn-feed">
+        <span class="action-icon">🍗</span>
+        <span class="action-label">餵食</span>
+      </button>
+      <button class="action-btn" id="btn-play">
+        <span class="action-icon">🎮</span>
+        <span class="action-label">玩耍</span>
+      </button>
+      <button class="action-btn" id="btn-bath">
+        <span class="action-icon">🛁</span>
+        <span class="action-label">洗澡</span>
+        <span class="cd" id="cd-bath" hidden></span>
+      </button>
+      <button class="action-btn" id="btn-sleep">
+        <span class="action-icon">😴</span>
+        <span class="action-label" id="sleep-label">睡眠</span>
+      </button>
+      <button class="action-btn" id="btn-pet">
+        <span class="action-icon">💝</span>
+        <span class="action-label">愛撫</span>
+      </button>
+    </nav>
+
+    <footer class="footer">
+      <span id="task-text">每日任務：載入中…</span>
+      <span id="streak">🔥 連續登入 0 天</span>
+    </footer>
+  </div>
+
+  <div class="modal" id="modal" hidden>
+    <div class="modal-bg" data-close></div>
+    <div class="modal-card" id="modal-card"></div>
+  </div>
+
+  <div class="toast-container" id="toast-container" aria-live="polite"></div>
+
+  <script src="src/game.js"></script>
+</body>
+</html>

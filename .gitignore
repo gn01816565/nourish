@@ -1,0 +1,16 @@
+# macOS
+.DS_Store
+
+# Editor
+*.swp
+*.swo
+
+# Claude Code local state
+.claude/settings.local.json
+.claude/scheduled_tasks.lock
+
+# Logs
+*.log
+
+# Override global ~/.gitignore_global (which excludes index.html from old PHP projects)
+!index.html
