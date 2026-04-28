@@ -221,6 +221,57 @@ body.reduce-motion .toast { animation: toast-in 0.001s ease-out, toast-out 0.001
 .pet.dim { filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15)) saturate(0.5) brightness(0.85); }
 .pet.evolving { animation: evolve-flash 0.6s ease-in-out 5; }
 .pet.pre-evolve { animation: bob 2.5s ease-in-out infinite, pre-evolve-glow 2.6s ease-in-out infinite; }
+/* Last 30 minutes — stronger pulse + slight scale, signals "any minute now" */
+.pet.pre-evolve-imminent {
+  animation: bob 2.0s ease-in-out infinite,
+             pre-evolve-imminent-glow 1.2s ease-in-out infinite;
+}
+@keyframes pre-evolve-imminent-glow {
+  0%, 100% {
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15)) drop-shadow(0 0 4px #FFEC8B);
+    transform: scale(1);
+  }
+  50% {
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15)) drop-shadow(0 0 22px #FF89A7);
+    transform: scale(1.04);
+  }
+}
+body.reduce-motion .pet.pre-evolve-imminent { animation: none !important; }
+
+/* Egg-stage shake — intensity ramps with growthScore (character-sheet §2.1
+   "egg with subtle wobble + crack progress"). 3 levels keep it readable. */
+.pet.egg-shake-low {
+  animation: bob 2.5s ease-in-out infinite, egg-wobble-low 4s ease-in-out infinite;
+}
+.pet.egg-shake-med {
+  animation: bob 2.5s ease-in-out infinite, egg-wobble-med 1.6s ease-in-out infinite;
+}
+.pet.egg-shake-high {
+  animation: bob 2s ease-in-out infinite, egg-wobble-high 0.7s ease-in-out infinite,
+             pre-evolve-glow 1.8s ease-in-out infinite;
+}
+
+@keyframes egg-wobble-low {
+  0%, 100% { transform: rotate(0deg); }
+  25%      { transform: rotate(-1deg); }
+  75%      { transform: rotate(1deg); }
+}
+@keyframes egg-wobble-med {
+  0%, 100% { transform: rotate(0deg); }
+  20%      { transform: rotate(-3deg); }
+  60%      { transform: rotate(3deg); }
+  80%      { transform: rotate(-2deg); }
+}
+@keyframes egg-wobble-high {
+  0%, 100% { transform: rotate(0deg) translateX(0); }
+  15%      { transform: rotate(-7deg) translateX(-3px); }
+  35%      { transform: rotate(6deg)  translateX(3px); }
+  55%      { transform: rotate(-5deg) translateX(-2px); }
+  75%      { transform: rotate(5deg)  translateX(2px); }
+}
+body.reduce-motion .pet.egg-shake-low,
+body.reduce-motion .pet.egg-shake-med,
+body.reduce-motion .pet.egg-shake-high { animation: none !important; }
 
 @keyframes pre-evolve-glow {
   0%, 100% { filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15)) drop-shadow(0 0 0px #FFEC8B); }
@@ -311,6 +362,15 @@ body.reduce-motion .toast { animation: toast-in 0.001s ease-out, toast-out 0.001
   height: 100px;
   z-index: 2;
 }
+.accessory.wing {
+  top: 38px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 200px;
+  z-index: 1;  /* behind the pet body */
+  filter: drop-shadow(0 1px 4px rgba(255, 137, 167, 0.3));
+}
 
 .speech-bubble {
   position: absolute;
@@ -385,7 +445,7 @@ body.reduce-motion .toast { animation: toast-in 0.001s ease-out, toast-out 0.001
 .stage-info {
   position: relative;
   z-index: 2;
-  margin-bottom: 14px;
+  margin-bottom: 6px;
   background: rgba(255, 255, 255, 0.85);
   padding: 4px 14px;
   border-radius: 999px;
@@ -393,6 +453,26 @@ body.reduce-motion .toast { animation: toast-in 0.001s ease-out, toast-out 0.001
   font-weight: 700;
   border: 2px solid var(--c-ink);
 }
+/* Gentle guidance bubble that appears while the player is figuring things out
+   — egg/early-chick stages mostly, hidden once they're past it. */
+.stage-hint {
+  position: relative;
+  z-index: 2;
+  margin-bottom: 14px;
+  background: var(--c-pink-soft);
+  border: 2px dashed var(--c-pink-deep);
+  padding: 4px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--c-ink);
+  animation: stage-hint-pulse 2.5s ease-in-out infinite;
+}
+@keyframes stage-hint-pulse {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.04); }
+}
+body.reduce-motion .stage-hint { animation: none; }
 #stage-name { transition: background 0.2s; padding: 0 4px; border-radius: 6px; }
 #stage-name:hover { background: rgba(255, 216, 107, 0.6); }
 #stage-name::after { content: " ✏️"; font-size: 10px; opacity: 0.5; }
@@ -654,6 +734,13 @@ body.reduce-motion .toast { animation: toast-in 0.001s ease-out, toast-out 0.001
   border-bottom: 1px dashed rgba(44,44,44,0.2);
 }
 .settings-row:last-child { border-bottom: 0; }
+.settings-row.pet-row {
+  border-radius: 10px;
+  padding: 8px 8px;
+  transition: background 0.15s;
+}
+.settings-row.pet-row:hover { background: var(--c-pink-soft); }
+.settings-row.pet-row:focus { outline: 2px solid var(--c-pink-deep); outline-offset: 2px; }
 .toggle {
   width: 40px; height: 22px;
   background: rgba(44,44,44,0.2);

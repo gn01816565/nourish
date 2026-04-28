@@ -4,6 +4,505 @@
 
 ---
 
+## 2026-04-28 21:08 · Session A — extreme final-30min imminent glow + GDD v0.2/v0.3 進度核對
+
+**觸發**：cron 第 31 輪
+**為什麼**：上輪解了 chick (~2h) / junior (~4h) pre-evolve glow 看時間太長會「習慣化」的問題（log 自己標的 trade-off）。本輪加 final 30 min 的「imminent」二級強度。同時 v0.2 / v0.3 大量功能已實作但 GDD 還是 [ ] 未勾，需要核對更新。
+
+**動作（CSS + JS：3 級進化前奏）**：
+- 新 `.pet.pre-evolve-imminent` class：
+  - `pre-evolve-imminent-glow` 1.2s 短週期 keyframe（vs soon glow 的 2.6s）
+  - drop-shadow 從 4px → **22px 粉紅 #FF89A7**（更亮、更熱烈）
+  - **scale 1 → 1.04 微微膨脹**（呼吸感）
+  - bob 也加快到 2.0s
+  - reduced-motion 自動禁用
+- render `preEvolve` 邏輯升級為三檔：
+  - `null`：>window 或 score 不夠 → 無 glow
+  - `"soon"`：window 內（最後 8% 或 60min 取大）→ 既有 pre-evolve glow
+  - `"imminent"`：最後 30 分鐘 → 新 pre-evolve-imminent
+- 蛋階段不參與（egg-shake-high 已負責）
+- 睡眠中不 glow
+
+**動作（GDD §10.2 / §10.3 進度核對）**：
+全部勾選 + 註明實作的 iteration 編號：
+
+§10.2 v0.2 必做（原預計 MVP 後 4 週）— **8/8 全做**
+- 7 種終態 / 5 食物 / 5 玩耍 / 隨機事件 / 每日任務 / 圖鑑 / 取名 / 對話系統
+
+§10.3 v0.3（原預計 8 週後）— **3/6 提早完成**
+- ✅ 裝飾商店、成就系統、截圖分享
+- ⏸️ 多隻寵物 / 老年互動 / 雲端存檔（後三項仍按原時程）
+
+加上「Bonus」區段列出**沒寫進 GDD 但實作了的**：Wants 系統 / 鍵盤捷徑 / 存檔匯出匯入 / 紀念卡 / pre-evolve 三級視覺 / character-sheet / market-2026 / R-1 拆檔 / 蛋搖晃可視化等
+
+**影響檔案**：
+- `src/style.css`（+18 行 imminent class + keyframe）
+- `src/game.js`（render preEvolve 三檔判定 + 兩個 toggle）
+- `docs/gdd.md`（§10.2 / §10.3 重寫，標記實作狀態 + iter# 引用）
+
+**驗證**：`node --check` ✅
+
+**對玩家體驗的影響**：
+- chick / junior 進化前奏現在有「快了 → 真的快了！」兩階段
+  - chick: 最後 2h pre-evolve（金黃 4px glow）→ 最後 30min 強烈 22px 粉紅 + 微膨脹
+  - junior: 最後 4h pre-evolve → 最後 30min 強烈
+- 配合 pre-evolve 既有的 stage-hint 文案 + 進化粒子 + sound effect，整個 5 階段是：
+  1. 預備（70% 分數達標 + 進入 8% 視窗）
+  2. **soon glow**（柔和金黃）
+  3. **imminent glow**（強烈粉紅 + 微膨脹）
+  4. 進化儀式（粒子放射 + evolve SFX）
+  5. 終態揭曉（modal）
+
+**對專案管理的影響**（GDD 更新）：
+- v0.2 完成度：1/19 (mvp) → 19/19 (mvp) + 8/8 (v0.2) = **覆蓋率 ≥ 100%**
+- v0.3 完成度：0/6 → **3/6**（裝扮 / 成就 / 分享）
+- 自動循環在 ~3 小時內推完原本 12 週路線圖的功能（Bonus 區還列了 9 個沒寫進 GDD 的功能）
+
+**下輪候選**：
+1. R-1 step 3 拆 dex.js（已連續推 3 輪，下輪認真做）
+2. 多隻寵物 v0.4 起步（v0.3 最後一塊，配合 GDD 標記）
+3. 老年互動（成雞後 30 天加新事件）
+
+---
+
+## 2026-04-28 21:03 · Session A — INTENT: extreme final-30min glow + GDD §10.2/§10.3 v0.2 進度核對
+
+(已完成)
+
+---
+
+## 2026-04-28 20:55 · Session A — pre-evolve 階段感知 + 接近進化事件加強 + chick/junior 倒數 hint
+
+**觸發**：cron 第 30 輪
+**為什麼**：上輪做了蛋階段的搖晃進度可視化，但 chick (24h) 和 junior (48h) 階段缺對應的「快進化了」視覺信號 — 既有 pre-evolve glow 寫死「最後 60 分鐘 + 70% 分數」，對 24h+48h 階段而言是 ≤ 4% 的時段，玩家完全注意不到。
+
+**動作**：
+
+- **pre-evolve 視窗改階段感知**（render 內）：
+  - 公式：`window = max(60min, duration × 8%)`
+  - chick 24h × 8% = 115 分鐘
+  - junior 48h × 8% = 230 分鐘 (~ 4 小時)
+  - egg 維持自家 egg-shake-high 處理（明確排除）
+  - 條件保留 score ≥ 70% 門檻，避免分數沒到也閃光誤導玩家
+  - 結果：chick 最後 2 小時、junior 最後 4 小時都有粉色金光脈動
+
+- **隨機事件 spawn 機率階段加成**（maybeSpawnEvent 內）：
+  - 階段進度 ≥ 80% 時，spawn chance 從 0.30 → 0.48（×1.6 倍，cap 0.60）
+  - 「守線」獎勵：玩家在進化前最後 20% 上線會看到更多事件氣泡
+  - 蛋階段不影響（蛋本來就不 spawn 事件）
+
+- **chick / junior 倒數 hint**（stage-hint 邏輯）：
+  - 進度 ≥ 92% + 分數 ≥ 70% threshold 時：
+    - chick → 「🌟 啾啾準備變成幼雞了…」
+    - junior → 「🌟 啾啾即將長大成雞！」
+  - 跟既有 chick stage 的「未餵食 / 未取名」hints 互斥（用 else 鏈）
+
+**影響檔案**：`src/game.js`（+15 行，3 處區塊小修）
+
+**驗證**：`node --check` ✅
+
+**對全階段視覺一致性的影響**：
+| 階段 | 進化前奏視覺 | 進化前奏文案 |
+|------|-----------|------------|
+| 蛋 (6h) | 0-50% low / 50-85% med / **85%+ high + 金光** | ✨ 即將孵化…屏住呼吸！ |
+| 雛雞 (24h) | **最後 ~2h pre-evolve glow** | 🌟 啾啾準備變成幼雞了… |
+| 幼雞 (48h) | **最後 ~4h pre-evolve glow** | 🌟 啾啾即將長大成雞！ |
+| 成雞 | (進化儀式) | (粒子 + 進化 modal) |
+
+**對留存的影響**：
+- D1 救星已就位（蛋階段視覺進度）
+- D3-D5 補強：chick / junior 進化前奏時段都有「快了」的視覺 + 文案 + 事件加成三重 cue
+- 玩家在 chick 階段第 22 小時開始，就會看到啾啾發光、頻繁撿到飼料幣、提示說「準備變幼雞了」，三層暗示「現在上線正划算」
+
+**設計 trade-off**：
+- pre-evolve 8% 視窗會讓 junior 玩家看金光看 4 小時，可能會「習慣化」失去儀式感
+- 解法（待後續觀察）：可加一個 final 30 min 「extreme glow」二級強度（reuse egg-shake-high 思路）
+- 目前先用單一強度，等玩家回饋再說
+
+**下輪候選**：
+1. R-1 step 3 拆 dex.js（已連續推 2 輪）
+2. final 30min extreme pre-evolve glow（如果上面 trade-off 成真）
+3. 多寵物欄位 v0.4 起步
+
+---
+
+## 2026-04-28 20:50 · Session A — INTENT: pre-evolve 改階段感知 + 接近進化時事件加強
+
+(已完成)
+
+---
+
+## 2026-04-28 20:42 · Session A — 蛋搖晃 3 級進度可視化 + 即將孵化興奮提示
+
+**觸發**：cron 第 29 輪
+**為什麼**：character-sheet §2.1 規格寫「靜態橢圓，輕微晃動，有裂痕進度條」，但目前蛋只有跟其他寵物一樣的 bob 浮動。新玩家在 6 小時等待中沒有「看得到的進度感」是體驗最大缺口（蛋階段 stage-countdown 只是文字，沒有視覺）。
+
+**動作（CSS：3 級搖晃 keyframe）**：
+- `.pet.egg-shake-low` — 輕微 ±1° 旋轉，4s 週期（0-50% 進度，主要是 bob 主導）
+- `.pet.egg-shake-med` — ±3° 旋轉，1.6s 週期（50-85% 進度，明顯但不焦慮）
+- `.pet.egg-shake-high` — ±7° 旋轉 + 平移，0.7s 週期 + **粉色金光脈動** (reuse `pre-evolve-glow`)（85%+ 進度，即將孵化）
+- 都跟 bob 共存，加 reduced-motion override
+
+**動作（JS：進度判定）**：
+- render 在處理蛋階段時計算 `progress = (timeProgress + scoreProgress) / 2`
+  - 時間進度：`elapsed / 6h`
+  - 分數進度：`growthScore / 30`（30 = egg.scoreToEvolve）
+  - 平均代表「這蛋在時間上和照顧上有多接近孵化」
+- 三檔切換：≥85% → high、≥50% → med、其他 → low
+- 睡眠中時無搖晃（保留 sleep dimming 既有效果）
+
+**動作（hint：興奮提示）**：
+- stage-hint 邏輯加新分支：蛋階段 + 進度 ≥ 85% → 顯示 「✨ 即將孵化…屏住呼吸！」
+- 此 hint 比其他蛋階段 hint 優先，玩家最後 30 分鐘會持續看到
+- 配合 high-shake 的金光脈動 + 高頻搖晃，形成「視覺 + 文案」雙倍儀式感
+
+**影響檔案**：`src/style.css`（+38 行 keyframes）、`src/game.js`（+13 行 render 進度判定 + hint 分支）
+
+**驗證**：`node --check` ✅
+
+**對玩家體驗的影響**：
+- 玩家進來看到蛋微微晃 → 摸幾下後晃動明顯加大 → 5-6 小時後孵化前狂震 + 金光：完整視覺進度條，不必看數字
+- D1 留存救星：6 小時等待從「看數字猜什麼時候好」 → 「看蛋越搖越用力期待孵化」
+- 「即將孵化…屏住呼吸！」hint 把玩家鎖在最後 30 分鐘上線（D7 之前的 first-hatch achievement 確保玩家會回來看）
+- character-sheet §2.1 規格從「未實作」 → ✅ 完整實作
+
+**設計小決策**：
+- 「分數 + 時間平均」而非「兩者都滿足」：避免玩家「時間到了但分數沒到」時看到搖很大但不孵化的混淆
+- low/med/high 三檔而非連續：CSS variable 連續調整在 Safari 表現不穩定 + 三檔在玩家認知上更易區分階段
+- high-shake reuse `pre-evolve-glow` keyframe：色票一致 + 不增 CSS 體積
+
+**下輪候選**：
+1. R-1 step 3 拆 dex.js（已連續推 1 輪）
+2. 雛雞同款進度可視化（雞冠紅點漸明 / 體型微縮放）
+3. 隨機事件 spawn 機率隨進度動態調整（接近進化時加強）
+
+---
+
+## 2026-04-28 20:36 · Session A — INTENT: 蛋搖晃強度進度可視化 + 即將孵化興奮提示
+
+(已完成)
+
+---
+
+## 2026-04-28 20:28 · Session A — 蛋階段引導提示（review-v2 P1-5 完整收尾）
+
+**觸發**：cron 第 28 輪
+**為什麼**：review-v2 P1-5「探索性入口分散，新玩家會迷路」上輪只解了一半（header 加 🏅 / 🎀 / 📖 / ⚙️ 4 顆按鈕）。蛋階段的 6 小時等待 + 開蛋後的 chick 早期是新玩家最可能流失的時段，需要主動的提示而非 onboarding modal 一次性引導。
+
+**動作**：
+- HTML 新元素 `<div class="stage-hint" id="stage-hint">`，放在 stage-info 下方
+- CSS `.stage-hint`：淺粉底 #FFE0E8 + 粉紅虛線框 + 圓角 999px pill + 緩慢 pulse 動畫（reduced-motion 自動禁用）
+- render 函式每 tick 重評估狀態決定提示文案：
+  - `egg` 階段 + 從未摸頭：💡「輕觸蛋蛋來摸頭吧～」
+  - `egg` 階段 + 已摸過 + 進度 < 50%：🥚「多陪陪蛋，孵化會更快」
+  - `chick` 階段 + 從未餵食：🍗「試試左下角『餵食』喔」
+  - `chick` 階段 + 未取名：✏️「點寵物名字可以幫牠取名」
+  - 其他：靜默（隱藏）
+- 提示是 idempotent 條件的展示，玩家做了該動作後該則 hint 自動消失，下一個情境再現
+
+**設計原則**：
+- 不打擾：只在「該知道但還沒做」的條件成立時出現
+- 自動消失：玩家做了 → 條件不再成立 → 下次 render 自動 hidden
+- 同時間最多 1 條：避免訊息洪水
+- 跟隨 reduced-motion：尊重 a11y 設定
+
+**影響檔案**：`index.html` (+1 div)、`src/style.css` (+22 行 .stage-hint + keyframe)、`src/game.js` (+18 行 render hint logic)
+
+**驗證**：`node --check` ✅
+
+**對留存的影響**：
+- 新玩家在蛋階段 6 小時內**至少看過 2 條 hint**：摸頭引導 → 進度催化
+- 開蛋後立刻看到「試試餵食」→ 填補從蛋到完整玩法的橋樑
+- 取名提示（之前只有 first_hatch 一次性 toast，現在還會持續顯示直到玩家取名）
+- review-v2 P1-5 完整解決：header icon（探索性）+ stage-hint（時序引導）+ onboarding modal（首次規則）三層保險
+
+**新玩家動線完整對照**：
+1. 啟動 → onboarding modal 一次性介紹 4 條規則
+2. 蛋階段（0-6h）→ 「輕觸摸頭」hint → 玩家點擊 → 「多陪陪蛋」hint
+3. 孵化 → first_hatch 成就 + 取名提示 toast
+4. chick 階段 → 「試試餵食」hint → 玩家餵 → 「點名字取名」hint
+5. 全部走過 → hint 自動隱藏，UI 乾淨
+
+**下輪候選**：
+1. R-1 step 3 拆 dex.js / achievements.js
+2. mood overlay 換 emoji（review-v2 P2-3 提到 mood SVG 在不同 OS render 不一致，但既然已 PNG 化問題不大了）
+3. 蛋的搖晃越強的視覺 cue（成長進度高時搖更兇）
+
+---
+
+## 2026-04-28 20:22 · Session A — INTENT: 蛋階段引導提示 + 階段適應 hint（review-v2 P1-5 收尾）
+
+(已完成)
+
+---
+
+## 2026-04-28 20:14 · Session A — R-1 step 2：share.js 拆出（game.js 1922 → 1707）
+
+**觸發**：cron 第 27 輪。R-1 step 2 已連續推遲 3 輪，本輪實質完成。
+
+**為什麼**：game.js 已 1922 行，share card 區塊 ~237 行最自然可拆（自包含、邏輯獨立、依賴明確）。拆完後 game.js 主邏輯閱讀體驗大幅改善，第三個檔案也驗證雙模組架構可行。
+
+**動作**：
+- **新檔 `src/share.js`（266 行 IIFE）**：移過去 5 個 function：
+  - `generateShareCard(past)` — 主畫卡，~170 行
+  - `shareOrDownloadCard(past)` — Web Share API + download fallback
+  - `wrapText(ctx, text, maxWidth)` — CJK-friendly 換行
+  - `loadImage(src)` — Promise 包 Image()
+  - `roundRect(ctx, x, y, w, h, r)` — Canvas 圓角 path
+- **bridge `window.NourishAPI`**（game.js 暴露給 share.js）：
+  - `getState()` / `getLastPetSrc()` — 動態 getter（state 是 closure-bound）
+  - 函式 reference：`stageLabel / formLabel / formDescription / unlockedFormsSet / toast`
+- **share.js 透過 `api()` lazy 取得 NourishAPI**，避開 script 載入時序問題
+- **game.js 留薄壁紙**：`shareOrDownloadCard(past) { return window.NourishShare.shareOrDownloadCard(past); }` 兩行 wrapper，原本 callers 完全不動
+- **index.html script 順序**：`cfg.js → share.js → game.js`（share.js 依 NourishCFG eager + NourishAPI lazy）
+
+**影響檔案**：
+- `src/share.js`（新檔，266 行）
+- `src/game.js`（-225 行，1922 → 1697 行；之後 +13 行 bridge → 1710）
+- `index.html`（+1 `<script>` tag）
+
+**驗證**：
+- `node --check` 三檔 ✅
+- HTTP 200：cfg.js / share.js / game.js / index.html
+- 行數：1697 (game.js) + 266 (share.js) + 197 (cfg.js) + 721 (style.css) = 2881 total
+- bridge 在 game.js 1546 line（init 之前 module-scope 即執行）
+
+**架構意義**：
+- 雙檔抽出（cfg.js + share.js）= R-1 進度 30% → game.js 主邏輯仍佔 60%，但 file size 增長壓力解除
+- 之後加新 v0.4 / v0.5 功能不會立刻撞 2000 行天花板
+- 模組架構驗證：lazy bridge 模式 (`window.NourishAPI`) 可重複用於下一波 R-1 step 3 拆 dex.js / achievements.js
+- **無 build step 原則維持**：HTML 用 script tag 順序當依賴鏈
+
+**R-1 進度**：
+- ✅ step 1：CFG → cfg.js（第 14 輪）
+- ✅ step 2：share card → share.js（**本輪**）
+- ⏸️ step 3：dex / achievements / accessory shop 拆出（建議下一輪做 dex，~150 行可移）
+- ⏸️ step 4：modal / toast UI primitives 拆出
+- ⏸️ R-5：i18n 骨架（v0.2 中英切換鋪路）
+
+**下輪候選**：
+1. R-1 step 3：拆 `dex.js`（archiveCurrentPet / startNewEgg / loadDex / saveDex / unlockedFormsSet / openDexMenu / openPetDetail，~140 行）
+2. R-1 step 3 替代：拆 `achievements.js`（更小、更獨立）
+3. 蛋階段 onboarding 補強（review-v2 P1-5 還沒完全處理）
+4. 加分享卡的 individual SKU sticker 設計
+
+---
+
+## 2026-04-28 20:05 · Session A — INTENT: R-1 step 2 — 拆 src/share.js（200+ 行從 game.js 移出）
+
+(已完成)
+
+---
+
+## 2026-04-28 19:57 · Session A — 3 條穿搭成就 + Session B 任務簡報文件
+
+**觸發**：cron 第 26 輪
+**為什麼**：第 21-25 輪堆了大量裝扮系統（6 配件 / 3 slots / 紀念卡），但**沒有玩家激勵的 milestone**。加 3 條穿搭成就把行為串起來。同時雙 session 協作要明確分工，寫個 Session B 簡報文件讓對方知道下一批產什麼 PNG。
+
+**動作（成就 +3）**：
+新增到 `CFG.achievements`（cfg.js line 68 附近）+ 鉤入 `checkAchievements`：
+
+| ID | icon | 名稱 | 條件 |
+|---|---|---|---|
+| `dressup_first` | 🎀 | 小裝扮家 | 購入第一件飾品（owned ≥ 1） |
+| `dressup_set` | ✨ | 全套搭配 | 同時戴 hat + neck + wing |
+| `dressup_collector` | 💎 | 衣櫥達人 | 擁有全部飾品（owned 數 = CFG.accessories 總數，目前 6） |
+
+`checkAchievements` hook 加在 `buyAccessory` 結尾、`equipAccessory` 結尾，每次裝扮商店操作都會檢查。
+
+**動作（Session B 任務簡報）**：
+新檔 `docs/session-b-tasks.md`，給雙 session 並行協作明確介面：
+
+- **§1 待辦：wings PNG**（最高優先，第 23 輪 Session A 加的 SVG 還沒 PNG 化）
+- **§2 mood 5 張白邊去除**（Session B 自己標記過）
+- **§3 chick-young 視覺差異化**（Session B 自己標記，DreamShaperXL Turbo 不分 baby/juvenile）
+- **§4 v0.4 額外配件 prompt 預覽**（小耳機 / 太陽眼鏡 / 圍巾 / 派對帽 / 蝴蝶結項圈）
+- 一致性檢查清單（character-sheet §1.3 + §8）
+- 完成 SOP（更新 path → 寫 log → 移交回 Session A）
+
+**影響檔案**：
+- `src/cfg.js`（+3 achievements entries）
+- `src/game.js`（+3 checks、+2 hook 點）
+- `docs/session-b-tasks.md`（新檔）
+
+**驗證**：`node --check src/game.js src/cfg.js` ✅
+
+**對玩家行為的引導**：
+- 第一次點開商店 → 一買 → 立刻金光「🎀 小裝扮家」（教育玩家「裝扮系統會給回饋」）
+- 中後期玩家會主動湊 hat + neck + wing 全套（dressup_set）→ 拉動 wing 銷售（350 FC，最貴的一件）
+- 重度玩家會把所有配件買齊（1430 FC 總價，遠超「日常產出 80 FC」單日量）→ 14 天養成目標
+- 完整 21 條成就（v0.1 17 + 本輪 +3 + 未來 +1 dressup 還沒想）→ collect_all 之外的長尾留存
+
+**雙 session 介面**：
+- Session A 改 cfg.js / game.js / SVG 邏輯
+- Session B 改 ComfyUI 跑 PNG，更新 cfg.js path
+- iteration-log.md 雙方都寫（append-only 在最上方）
+- session-b-tasks.md 是 Session A → Session B 的「待辦清單」單向通信
+
+**下輪候選**：
+1. R-1 step 2（拆 share.js，~200 行可移）— 已連續推 2 輪
+2. 「我可以做什麼」探索性提示（review-v2 P1-5 還沒完全處理，雖然加了 header 入口但新玩家蛋階段還是會迷茫）
+3. 蛋階段的 6 小時等待時間能做什麼提示（onboarding 補強）
+
+---
+
+## 2026-04-28 19:50 · Session A — INTENT: 3 條穿搭成就 + Session B 配件 PNG 任務簡報
+
+(已完成)
+
+---
+
+## 2026-04-28 19:42 · Session A — 個別寵物紀念卡（退役寵物的專屬分享卡）
+
+**觸發**：cron 第 25 輪
+**為什麼**：上輪做了圖鑑詳情頁，自然延伸 — 玩家會想把那隻退役寵物的紀念分享出去（女性向 TA：「紀念價值 + 自我表達」雙重命中）。
+
+**動作**：
+- `generateShareCard(past)` 簽名變成 optional：傳入 dex completedPets 條目時切到 **紀念卡 layout**，不傳就維持原本「現役寵物」layout
+- **紀念版差異**：
+  - 背景：粉 → 米白漸層（vs 現役的暖黃 → 粉）
+  - 標題：「✨ 紀念冊 ✨」 / 副標 「ChickaDay · Memory」
+  - 立繪：用 `past.finalForm` 對應的 portrait（PNG 或 SVG）
+  - 配件：用 `past.appearance` snapshot 而非 `state.pet.appearance`
+  - 名字行：「{name} · {finalForm}」（無階段、無括號）
+  - 「陪伴了 {totalDays} 天」（過去式）
+  - 4 條 stat 條 → 換成：
+    - 形態描述（自動 word-wrap，最多 3 行）
+    - 「📅 {誕生日期} → 🌙 {退休日期}」
+    - 5 顆粉紅 ♡ 一字排
+    - 「永遠記得你 💕」+ 「我和啾啾的回憶」+ 「ChickaDay」signature
+  - 純粹紀念，不放成就 / 圖鑑數字（避免「跟現役玩家混」）
+- 新增 `wrapText(ctx, text, maxWidth)` helper（簡單 char-by-char 換行，CJK 友好）
+- `shareOrDownloadCard(past)` 也加 optional：filename 改 `chickaday-memory-X.png`、share text 改「紀念我養過的 X 💕」、toast 改「✨ 紀念卡已下載」
+- **`openPetDetail` 詳情頁加「📸 紀念卡」按鈕**（與「回圖鑑」並列）
+
+**影響檔案**：`src/game.js`（+~75 行）
+
+**驗證**：`node --check` ✅ + game.js 1854 → 1922 行
+
+**對玩家體驗的影響**：
+- 完整三層分享/紀念體系：
+  1. **現役分享卡**（截當下狀態）— 對外炫耀
+  2. **詳情頁**（在遊戲內看歷代）— 個人翻閱
+  3. **紀念卡**（退役寵物的專屬卡）— 跟朋友分享「我曾經養過」
+- 紀念卡的「永遠記得你 💕」+ 5 顆粉紅愛心 + 過去式陪伴 X 天，把 emotional payoff 拉滿
+- 開新蛋的儀式感 +：玩家知道「這隻退役後我還能拿牠的紀念卡分享」 → 開新蛋的心理門檻降低
+- 對病毒拉新的影響 ×：玩家會把多隻寵物的紀念卡都分享出去，曝光次數不再受限於「當前寵物」
+
+**file size 警告**：game.js 已破 1900 行，R-1 step 2 拆 share.js 的 ROI 越來越高。建議下一輪做。
+
+**下輪候選**：
+1. **R-1 step 2：拆 share.js**（含 generateShareCard / wrapText / loadImage / roundRect / shareOrDownloadCard，約 200+ 行可移動）
+2. accessory PNG 化（Session B 下次 ComfyUI 配合）
+3. 合併現役 + 紀念卡的「整套圖鑑分享卡」（畫上所有歷代）— 病毒效應更強但複雜度高
+
+---
+
+## 2026-04-28 19:33 · Session A — INTENT: 個別寵物分享卡（紀念退役寵物，extension 第 4 候選）
+
+(已完成)
+
+---
+
+## 2026-04-28 19:25 · Session A — 圖鑑歷代寵物點擊查看詳情（強化情感連結）
+
+**觸發**：cron 第 24 輪
+**為什麼**：上輪做完歷代飾品 snapshot，但 dex 列表只是「一行字 + emoji 串」。點擊 row 看到完整紀念頁能把「我曾經養過這隻」感放大 ×3，符合女性向 TA 的「關係建立 + 紀念價值」訴求（feedback_target_audience.md）。
+
+**動作**：
+- 既有 `.settings-row` 在 dex 用，加上 `.pet-row` 修飾類 + `data-pet-idx` 屬性 + `tabindex="0"`，可點擊 / 鍵盤 focus
+- onMount 端解析 `loadDex().completedPets[idx]` → 呼叫新函式 `openPetDetail(p)`
+- 鍵盤 Enter / Space 也能開（review-v2 P2-8 a11y 延伸）
+- **新增 `openPetDetail(p)`**：紀念詳情 modal，含
+  - 寵物終態立繪（140×140，用對應 PNG/SVG，加粉色 drop-shadow）
+  - 4 條紀錄：終態 / 誕生時間 / 退休時間 / 飼養天數
+  - 穿搭區（如果有）：每件配件一 row，含縮圖 + icon + 名稱 + slot 標籤
+  - 沒穿搭時顯示「沒有配戴飾品」灰字
+  - 形象描述（reuse `formDescription(finalForm)`）
+  - 「回圖鑑」按鈕關閉並重開 dex（不要往回按一層層）
+- CSS `.settings-row.pet-row`：圓角 10px、hover 變淺粉、focus 顯示粉紅 outline（鍵盤可達）
+
+**影響檔案**：`src/game.js` (+47 行)、`src/style.css` (+8 行)
+
+**驗證**：`node --check` ✅
+
+**對玩家體驗的影響**：
+- 圖鑑從「列表」 → 「相簿 + 簡歷」感
+- 退役寵物的紀念價值 +：玩家會回頭翻看「我那隻戴皇冠的小白」「養了 12 天的元氣雞」
+- 鍵盤 / 觸控通用（pointer-events 都吃，hover 桌機也好看）
+- 跟分享卡形成內外雙佈展：分享卡是對外炫耀、圖鑑詳情是個人紀念
+
+**下輪候選**：
+1. R-1 step 2（拆 share.js / pet detail 也可以順便拆）
+2. accessory PNG 化（Session B 下次 ComfyUI 批次配合 wings 也產 PNG）
+3. mood 5 張白邊去除（Session B 已標記）
+4. 圖鑑詳情頁加「分享這隻寵物」按鈕（生成 individual share card）
+
+---
+
+## 2026-04-28 19:18 · Session A — INTENT: 圖鑑歷代寵物點擊查看詳情（穿搭 / 飼養天數 / 終態）
+
+(已完成)
+
+---
+
+## 2026-04-28 19:10 · Session A — wing slot + dex 歷代飾品 snapshot（記憶寵物的造型）
+
+**觸發**：cron 第 23 輪。Session B 在這同時段把 5 張 accessory SVG → PNG（路徑改 `assets/images/acc-*.png`）+ 5 張 event SVG → PNG。
+
+**動作（wing slot 第 3 個 slot）**：
+- 新 SVG `acc-wings.svg`：粉紅雙翅 + 白羽脈紋 + 兩顆深粉 ✦ + 高光（character-sheet §1.3 色票）
+- `cfg.js accessories` 加 `wings: { slot:"wing", price:350 }` — 暫用 SVG 路徑，等 Session B 後續批次 ComfyUI 產 PNG
+- `defaultState.pet.appearance` 加 `wing: null`（deepMerge 對舊存檔安全）
+- HTML 加 `<img class="accessory wing" id="acc-wing">` **放在 pet img 前面**（z-index 1，襯在身體後方，符合「翅膀在身後」物理直覺）
+- CSS `.accessory.wing`：top 38、寬 200×200（比身體大、超出 pet img）+ 粉色光暈 drop-shadow
+- render `ACC_SLOTS` 陣列 `["hat", "neck"]` → `["hat", "neck", "wing"]`
+
+**動作（dex 歷代飾品 snapshot）**：
+- `archiveCurrentPet` 在打包進 dex 前 snapshot `state.pet.appearance` 三個 slot 當下值
+- 新增 `appearance: { hat, neck, wing }` 欄位入 `completedPets[i]`，紀錄該寵物退役當下「穿什麼」
+- `openDexMenu` 歷代列表渲染：依 snapshot 對映 `CFG.accessories[id].icon`，把 emoji icon 串起來貼在名字後（例如「🐣 啾啾 · 元氣雞 🎀📿🪽」）
+- 玩家養新蛋後，仍能在圖鑑看到「我之前那隻啾啾穿了什麼」 — 強化情感連結 + 收集滿足感
+
+**動作（分享卡）**：
+- 既有 `ACC_DRAW` 表加 wing slot：`{ x:0.5, y:0.45, size:1.10 }`（最大尺寸，襯在身後）
+- **wing 在表中放第一個**（Object.keys 迭代順序）→ 最先 drawImage，被身體 + 飾品蓋上半部，符合視覺層次
+
+**影響檔案**：
+- `assets/svg/acc-wings.svg`（新檔，Session B 後續可生 PNG 替換）
+- `src/cfg.js` (+1 wings entry)、`src/game.js` (~10 行 dex snapshot + render slot 陣列 + share card ACC_DRAW)、`src/style.css` (+9 行 .accessory.wing)、`index.html` (+1 wing overlay)
+
+**驗證**：`node --check src/game.js src/cfg.js` ✅ + wings SVG HTTP 200
+
+**對玩家體驗的影響**：
+- 商店現在 6 件、3 slots：玩家可組「皇冠 + 項鍊 + 翅膀」一身天使裝（總價 1030 FC，符合長期目標）
+- 退休的小雞在圖鑑保留造型回憶 — 從「就是另一隻成雞」 → 「我那隻穿粉紅項鍊的小啾啾」
+- 圖鑑列表的 emoji icon 串等於迷你「穿搭印章」，每隻獨一無二
+
+**6 件配件總覽**（5 in 商店現可買 + 1 wings 新加）：
+| Slot | 配件 | 價格 |
+|------|------|------|
+| hat  | 蝴蝶髮帶 | 80 |
+| hat  | 蝴蝶結   | 120 |
+| hat  | 花環     | 200 |
+| hat  | 皇冠     | 500 |
+| neck | 珍珠項鍊 | 180 |
+| **wing** | **夢幻翅膀** | **350** |
+
+**下輪候選**：
+1. 圖鑑歷代列表加上點擊查看詳情（含當時 final stats / appearance / 飼養天數紀錄）
+2. mood 5 張 PNG 白邊去除（Session B 標記）
+3. R-1 step 2（拆 share.js）
+4. accessory PNG 化（Session B 下次 ComfyUI 批次配合）
+
+---
+
+## 2026-04-28 19:03 · Session A — INTENT: dex 紀錄歷代飾品 snapshot + wing slot + 第 3 件飾品
+
+(已完成)
+
+---
+
 ## 2026-04-28 18:55 · Session A — neck slot 配件 + 分享卡渲染配戴的飾品（炫耀價值升級）
 
 **觸發**：cron 第 22 輪

@@ -66,6 +66,9 @@
       star_caught:    { icon:"⭐", label:"幸運星",     desc:"接住流星事件" },
       rich:           { icon:"💰", label:"小富翁",     desc:"累積飼料幣 500" },
       perfect_day:    { icon:"🌟", label:"完美的一天", desc:"四項數值同時 >70 持續 30 分" },
+      dressup_first:  { icon:"🎀", label:"小裝扮家",   desc:"購入第一件飾品" },
+      dressup_set:    { icon:"✨", label:"全套搭配",   desc:"同時配戴頭飾 + 項鍊 + 翅膀" },
+      dressup_collector: { icon:"💎", label:"衣櫥達人", desc:"擁有全部飾品" },
     },
     wants: {
       lifetimeMs: 5 * 60 * 1000,
@@ -163,6 +166,8 @@
       flower:   { slot:"hat",  art:"assets/images/acc-flower.png",   label:"粉色花環",   icon:"🌸", price:200 },
       crown:    { slot:"hat",  art:"assets/images/acc-crown.png",    label:"閃耀皇冠",   icon:"👑", price:500 },
       necklace: { slot:"neck", art:"assets/images/acc-necklace.png", label:"珍珠項鍊",   icon:"📿", price:180 },
+      wings:       { slot:"wing", art:"assets/images/acc-wings-angel.png", label:"夢幻翅膀", icon:"🪽", price:350 },
+      wings_fairy: { slot:"wing", art:"assets/images/acc-wings-fairy.png", label:"彩虹翅膀", icon:"🌈", price:480 },
     },
     petArt: {
       egg:    "assets/images/egg.png",

@@ -46,8 +46,8 @@
         want: null,                  // active want (see CFG.wants); null when none
         wantCooldownUntil: 0,        // ms timestamp; suppress new spawns before this
         isSleeping: false,
-        appearance: { hat: null, neck: null }, // currently-equipped accessory id per slot
-        ownedAccessories: {},                  // id → unlockedAt; persisted across pets
+        appearance: { hat: null, neck: null, wing: null }, // currently-equipped accessory id per slot
+        ownedAccessories: {},                              // id → unlockedAt; persisted across pets
       },
       economy: { feedCoin: 50, totalEarned: 50, totalSpent: 0 },
       cooldowns: {},
@@ -136,10 +136,17 @@
   function archiveCurrentPet() {
     if (!state.pet.finalForm) return;
     const dex = loadDex();
+    // Snapshot equipped cosmetics so the dex remembers each pet's "moment in time".
+    const appearanceSnapshot = state.pet.appearance
+      ? { hat: state.pet.appearance.hat || null,
+          neck: state.pet.appearance.neck || null,
+          wing: state.pet.appearance.wing || null }
+      : null;
     dex.completedPets.unshift({
       id: state.pet.id,
       name: state.pet.name,
       finalForm: state.pet.finalForm,
+      appearance: appearanceSnapshot,
       bornAt: state.pet.bornAt,
       archivedAt: Date.now(),
       totalDays: Math.max(1, Math.round((Date.now() - state.pet.bornAt) / 86400000)),
@@ -498,6 +505,9 @@
       ["collect_all",   dexUnlocked.size >= 7],
       ["rich",          (state.economy?.totalEarned || 0) >= 500],
       ["perfect_day",   (state.pet.traits?.perfectStreakMinutes || 0) >= 30],
+      ["dressup_first", Object.keys(state.pet.ownedAccessories || {}).length >= 1],
+      ["dressup_set",   !!(state.pet.appearance?.hat && state.pet.appearance?.neck && state.pet.appearance?.wing)],
+      ["dressup_collector", Object.keys(state.pet.ownedAccessories || {}).length >= Object.keys(CFG.accessories).length],
     ];
     for (const [id, met] of checks) if (met) unlockAchievement(id);
   }
@@ -591,16 +601,25 @@
       $("stage-countdown").textContent = `成長 ${Math.round(state.pet.growthScore)}`;
     }
 
-    // Pre-evolve glow: D7 retention hook — the pet visibly "shimmers" in the last
-    // hour before its next stage, signalling something special is about to happen.
-    const preEvolve = (() => {
-      if (!cfg.next) return false;
+    // Pre-evolve glow: D7 retention hook — the pet visibly "shimmers" in the
+    // run-up to its next stage. Window scales with stage length so junior (48h)
+    // also gets a meaningful cue, not just the last fixed hour. Last 30 min
+    // upgrades to "imminent" pulse + scale so the climax doesn't habituate.
+    const preEvolveLevel = (() => {
+      if (!cfg.next) return null;
+      if (state.pet.stage === "egg") return null; // egg uses egg-shake-high instead
+      if (state.pet.isSleeping) return null;
       const elapsed2 = Date.now() - state.pet.stageStartedAt;
       const remain2 = cfg.duration - elapsed2;
       const scoreReady = state.pet.growthScore >= cfg.scoreToEvolve * 0.7;
-      return remain2 > 0 && remain2 <= 60 * 60 * 1000 && scoreReady;
+      if (!scoreReady || remain2 <= 0) return null;
+      const window = Math.max(60 * 60 * 1000, cfg.duration * 0.08);
+      if (remain2 <= 30 * 60 * 1000) return "imminent";
+      if (remain2 <= window) return "soon";
+      return null;
     })();
-    petImg.classList.toggle("pre-evolve", preEvolve && !state.pet.isSleeping);
+    petImg.classList.toggle("pre-evolve", preEvolveLevel === "soon");
+    petImg.classList.toggle("pre-evolve-imminent", preEvolveLevel === "imminent");
 
     // pet image (cached to skip needless src reassignments / reflow)
     let petSrc;
@@ -619,9 +638,22 @@
     if (lastPetSrc !== petSrc) { petImg.src = petSrc; lastPetSrc = petSrc; }
     petImg.classList.toggle("dim",
       s.mood < CFG.thresholds.low || s.hunger < CFG.thresholds.low);
+    // Egg-shake progression (character-sheet §2.1): ramp wobble intensity with
+    // growthScore so the player can SEE the egg getting livelier toward hatch.
+    petImg.classList.remove("egg-shake-low", "egg-shake-med", "egg-shake-high");
+    if (state.pet.stage === "egg" && !state.pet.isSleeping) {
+      const eggThreshold = CFG.stages.egg.scoreToEvolve;
+      const elapsed = Date.now() - state.pet.stageStartedAt;
+      const timeProgress = Math.min(1, elapsed / CFG.stages.egg.duration);
+      const scoreProgress = Math.min(1, state.pet.growthScore / eggThreshold);
+      const progress = (timeProgress + scoreProgress) / 2; // average of time + care
+      if (progress >= 0.85) petImg.classList.add("egg-shake-high");
+      else if (progress >= 0.5) petImg.classList.add("egg-shake-med");
+      else petImg.classList.add("egg-shake-low");
+    }
 
     // accessory overlays (all slots, iterate)
-    const ACC_SLOTS = ["hat", "neck"];
+    const ACC_SLOTS = ["hat", "neck", "wing"];
     const eqByPet = state.pet.appearance || {};
     ACC_SLOTS.forEach(slot => {
       const equipId = eqByPet[slot];
@@ -679,6 +711,44 @@
 
     // streak
     $("streak").textContent = `🔥 連續 ${state.daily.loginStreak || 0} 天`;
+    // Stage-aware guidance hint: helps new players know what to do during quiet
+    // stretches (esp. the 6-hour egg phase). Hides once the player has settled in.
+    const hintEl = $("stage-hint");
+    if (hintEl) {
+      let hint = null;
+      const h = state.history || {};
+      const totalPet = h.petCount || 0;
+      const totalFeed = h.feedCount || 0;
+      if (state.pet.stage === "egg") {
+        const elapsedEgg = Date.now() - state.pet.stageStartedAt;
+        const eggDur = CFG.stages.egg.duration;
+        const eggScoreReady = state.pet.growthScore >= CFG.stages.egg.scoreToEvolve * 0.85;
+        if (eggScoreReady && elapsedEgg >= eggDur * 0.85) hint = "✨ 即將孵化…屏住呼吸！";
+        else if (totalPet === 0) hint = "💡 輕觸蛋蛋來摸頭吧～";
+        else if (state.pet.growthScore < CFG.stages.egg.scoreToEvolve * 0.5)
+          hint = "🥚 多陪陪蛋，孵化會更快";
+        // else: silent — player has clearly figured it out
+      } else if (state.pet.stage === "chick" && totalFeed < 1) {
+        hint = "🍗 試試左下角「餵食」喔";
+      } else if (state.pet.stage === "chick" && !state.pet.nameSet) {
+        hint = "✏️ 點寵物名字可以幫牠取名";
+      } else {
+        // Near-evolution hints for chick/junior — reinforces the "守線" loop with
+        // an explicit countdown narrative when the pet is about to level up.
+        const stageCfg = CFG.stages[state.pet.stage];
+        if (stageCfg && stageCfg.next) {
+          const elapsed = Date.now() - state.pet.stageStartedAt;
+          const progress = elapsed / stageCfg.duration;
+          const scoreReady = state.pet.growthScore >= stageCfg.scoreToEvolve * 0.7;
+          if (progress >= 0.92 && scoreReady) {
+            if (state.pet.stage === "chick")  hint = "🌟 啾啾準備變成幼雞了…";
+            else if (state.pet.stage === "junior") hint = "🌟 啾啾即將長大成雞！";
+          }
+        }
+      }
+      if (hint) { hintEl.textContent = hint; hintEl.hidden = false; }
+      else      { hintEl.hidden = true; }
+    }
     // daily tasks footer
     const t = (state.daily && state.daily.tasks) || {};
     const parts = [];
@@ -868,6 +938,7 @@
     state.pet.ownedAccessories[id] = Date.now();
     SFX.coin();
     toast(`🎀 解鎖 ${cfg.label}！`, "gold");
+    checkAchievements();
     save();
     openShopMenu();
   }
@@ -878,6 +949,7 @@
     if (!state.pet.appearance) state.pet.appearance = { hat: null };
     state.pet.appearance[cfg.slot] = state.pet.appearance[cfg.slot] === id ? null : id;
     SFX.click();
+    checkAchievements();
     save(); render(); openShopMenu();
   }
 
@@ -1029,175 +1101,13 @@
     });
   }
 
-  // ============ Share card (Canvas → PNG) ============
-  // Renders a 720×1280 portrait card with pet portrait + stats. Uses Web Share
-  // API where available, falls back to download.
-  async function generateShareCard() {
-    const W = 720, H = 1280;
-    const canvas = document.createElement("canvas");
-    canvas.width = W; canvas.height = H;
-    const ctx = canvas.getContext("2d");
-
-    // Background gradient (matches body)
-    const bg = ctx.createLinearGradient(0, 0, 0, H);
-    bg.addColorStop(0, "#FFE6B0");
-    bg.addColorStop(0.5, "#FFEFC1");
-    bg.addColorStop(1, "#FFD9E0");
-    ctx.fillStyle = bg;
-    ctx.fillRect(0, 0, W, H);
-
-    // Card frame
-    ctx.fillStyle = "#FFF8E7";
-    roundRect(ctx, 40, 60, W - 80, H - 120, 32);
-    ctx.fill();
-    ctx.lineWidth = 6;
-    ctx.strokeStyle = "#2C2C2C";
-    ctx.stroke();
-
-    // Title
-    ctx.fillStyle = "#2C2C2C";
-    ctx.textAlign = "center";
-    ctx.font = "bold 64px sans-serif";
-    ctx.fillText("啾啾日常", W / 2, 160);
-    ctx.font = "24px sans-serif";
-    ctx.fillStyle = "#8B5A2B";
-    ctx.fillText("ChickaDay · v0.1", W / 2, 195);
-
-    // Pet portrait (current displayed art) + equipped accessories on top
-    const petSrc = lastPetSrc || CFG.petArt.egg;
-    const portraitSize = 360;
-    const portraitX = (W - portraitSize) / 2;
-    const portraitY = 240;
-    try {
-      const img = await loadImage(petSrc);
-      ctx.drawImage(img, portraitX, portraitY, portraitSize, portraitSize);
-    } catch (e) {
-      ctx.fillStyle = "#FFD86B";
-      ctx.beginPath();
-      ctx.arc(W / 2, 420, 150, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    // Render equipped accessories at their pet-relative positions, scaled to
-    // the share-card portrait size so they line up with the pet illustration.
-    const ACC_DRAW = {
-      hat:  { x: 0.5, y: 0.18, size: 0.42, anchor: "center" }, // top of head
-      neck: { x: 0.5, y: 0.55, size: 0.55, anchor: "center" }, // chest
-    };
-    const equipped = state.pet.appearance || {};
-    for (const slot of Object.keys(ACC_DRAW)) {
-      const id = equipped[slot];
-      if (!id || !CFG.accessories[id]) continue;
-      try {
-        const aImg = await loadImage(CFG.accessories[id].art);
-        const place = ACC_DRAW[slot];
-        const aw = portraitSize * place.size;
-        const ax = portraitX + portraitSize * place.x - aw / 2;
-        const ay = portraitY + portraitSize * place.y - aw / 2;
-        ctx.drawImage(aImg, ax, ay, aw, aw);
-      } catch (_) { /* skip on load failure */ }
-    }
-
-    // Name + stage line
-    ctx.fillStyle = "#2C2C2C";
-    ctx.font = "bold 48px sans-serif";
-    const nameLine = `${state.pet.name || "啾啾"} · ${stageLabel(state.pet.stage)}` +
-                     (state.pet.finalForm ? `（${formLabel(state.pet.finalForm)}）` : "");
-    ctx.fillText(nameLine, W / 2, 680);
-
-    // Days raised
-    const days = Math.max(1, Math.round((Date.now() - state.pet.bornAt) / 86400000));
-    ctx.font = "26px sans-serif";
-    ctx.fillStyle = "#8B5A2B";
-    ctx.fillText(`已陪伴 ${days} 天`, W / 2, 720);
-
-    // Stats panel
-    const stats = state.pet.stats;
-    const labels = [
-      { k: "hunger", l: "🍗 飢餓" },
-      { k: "mood",   l: "💖 心情" },
-      { k: "clean",  l: "🛁 清潔" },
-      { k: "energy", l: "⚡ 體力" },
-    ];
-    const baseY = 800;
-    labels.forEach((s, i) => {
-      const y = baseY + i * 70;
-      ctx.font = "30px sans-serif";
-      ctx.textAlign = "left";
-      ctx.fillStyle = "#2C2C2C";
-      ctx.fillText(s.l, 110, y);
-      // bar
-      const v = Math.round(stats[s.k]);
-      ctx.fillStyle = "rgba(44,44,44,0.15)";
-      roundRect(ctx, 280, y - 26, 320, 32, 16); ctx.fill();
-      ctx.fillStyle = v >= 70 ? "#6BCB77" : v >= 40 ? "#FFD86B" : v >= 20 ? "#FF9F43" : "#B23A48";
-      roundRect(ctx, 280, y - 26, 320 * (v / 100), 32, 16); ctx.fill();
-      ctx.fillStyle = "#2C2C2C";
-      ctx.textAlign = "right";
-      ctx.font = "bold 28px sans-serif";
-      ctx.fillText(v, 660, y);
-    });
-
-    // Achievements + dex count
-    const achCount = Object.keys(state.achievements || {}).length;
-    const achTotal = Object.keys(CFG.achievements).length;
-    const dexCount = unlockedFormsSet().size;
-    ctx.textAlign = "center";
-    ctx.font = "26px sans-serif";
-    ctx.fillStyle = "#2C2C2C";
-    ctx.fillText(`🏅 成就 ${achCount}/${achTotal}    📖 圖鑑 ${dexCount}/7`, W / 2, 1130);
-
-    // Footer
-    ctx.font = "22px sans-serif";
-    ctx.fillStyle = "#8B5A2B";
-    ctx.fillText("一起來養屬於你的小雞~", W / 2, 1180);
-    ctx.font = "18px sans-serif";
-    ctx.fillStyle = "#B23A48";
-    ctx.fillText("ChickaDay · 啾啾日常", W / 2, 1210);
-
-    return new Promise((resolve, reject) =>
-      canvas.toBlob(b => b ? resolve(b) : reject(new Error("toBlob failed")), "image/png")
-    );
+  // ============ Share card ============
+  // Implementation moved to src/share.js. This file just exposes a thin alias
+  // so existing callers keep working; window.NourishAPI bridges the closure.
+  function shareOrDownloadCard(past) {
+    return window.NourishShare.shareOrDownloadCard(past);
   }
 
-  function loadImage(src) {
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      img.onload  = () => resolve(img);
-      img.onerror = reject;
-      img.src = src;
-    });
-  }
-
-  function roundRect(ctx, x, y, w, h, r) {
-    ctx.beginPath();
-    ctx.moveTo(x + r, y);
-    ctx.arcTo(x + w, y,     x + w, y + h, r);
-    ctx.arcTo(x + w, y + h, x,     y + h, r);
-    ctx.arcTo(x,     y + h, x,     y,     r);
-    ctx.arcTo(x,     y,     x + w, y,     r);
-    ctx.closePath();
-  }
-
-  async function shareOrDownloadCard() {
-    try {
-      const blob = await generateShareCard();
-      const filename = `chickaday-${state.pet.name || "chick"}.png`;
-      const file = new File([blob], filename, { type: "image/png" });
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        await navigator.share({ files: [file], title: "啾啾日常", text: "看我養的小雞~" });
-        toast("分享完成！", "good");
-      } else {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url; a.download = filename; a.click();
-        setTimeout(() => URL.revokeObjectURL(url), 1000);
-        toast("📸 卡片已下載", "good");
-      }
-    } catch (e) {
-      console.warn("share card failed", e);
-      toast("⚠️ 分享卡產生失敗", "bad");
-    }
-  }
 
   function openDexMenu() {
     const allForms = ["healthy","fatty","ugly","fighter","sage","diva","divine"];
@@ -1213,11 +1123,17 @@
     const past = dex.completedPets.slice(0, 10);
     const pastHTML = past.length === 0
       ? `<p class="muted center" style="padding:6px 0;">尚未養成任何小雞</p>`
-      : past.map(p => {
+      : past.map((p, idx) => {
           const d = new Date(p.archivedAt || p.bornAt).toLocaleDateString();
-          return `<div class="settings-row">
-            <span>🐣 <strong>${escapeHtml(p.name || "?")}</strong> · ${formLabel(p.finalForm)}</span>
-            <small>${d} · ${p.totalDays}天</small>
+          // Show worn-cosmetic icons to keep each pet's identity vivid.
+          const accIcons = (() => {
+            if (!p.appearance) return "";
+            const ids = ["hat","neck","wing"].map(s => p.appearance[s]).filter(Boolean);
+            return ids.map(id => CFG.accessories[id]?.icon || "").join("");
+          })();
+          return `<div class="settings-row pet-row" data-pet-idx="${idx}" style="cursor:pointer;" tabindex="0">
+            <span>🐣 <strong>${escapeHtml(p.name || "?")}</strong> · ${formLabel(p.finalForm)}${accIcons ? " " + accIcons : ""}</span>
+            <small>${d} · ${p.totalDays}天 ›</small>
           </div>`;
         }).join("");
     const achCount = Object.keys(state.achievements || {}).length;
@@ -1240,7 +1156,59 @@
         if (b) b.onclick = () => { closeModal(); openAchievementsMenu(); };
         const s = card.querySelector("#goto-share");
         if (s) s.onclick = () => { closeModal(); shareOrDownloadCard(); };
+        // Each past-pet row opens a detail modal — clicking remembers the pet.
+        const fullPast = loadDex().completedPets;
+        card.querySelectorAll(".pet-row").forEach(row => {
+          const open = () => {
+            const p = fullPast[parseInt(row.dataset.petIdx, 10)];
+            if (p) { closeModal(); openPetDetail(p); }
+          };
+          row.onclick = open;
+          row.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); } };
+        });
       },
+    });
+  }
+
+  function openPetDetail(p) {
+    const d = new Date(p.archivedAt || p.bornAt).toLocaleString();
+    const born = new Date(p.bornAt).toLocaleString();
+    const portrait = (CFG.petArt.adult && CFG.petArt.adult[p.finalForm]) || CFG.petArt.adult.healthy;
+    const accList = ["hat","neck","wing"].map(slot => {
+      const id = p.appearance && p.appearance[slot];
+      if (!id) return null;
+      const cfg = CFG.accessories[id];
+      if (!cfg) return null;
+      return `<div class="settings-row">
+        <span><img src="${cfg.art}" width="24" height="24" style="vertical-align:middle;margin-right:6px;">${cfg.icon} ${cfg.label}</span>
+        <small>${slot}</small>
+      </div>`;
+    }).filter(Boolean).join("");
+    showModal({
+      title: `🐣 ${escapeHtml(p.name || "?")} · ${formLabel(p.finalForm)}`,
+      body: `
+        <div style="text-align:center;margin:6px 0 10px;">
+          <img src="${portrait}" alt="" width="140" height="140"
+            style="filter:drop-shadow(0 3px 6px rgba(255,137,167,0.3));">
+        </div>
+        <div class="modal-list">
+          <div class="settings-row"><span>🌟 終態</span><strong>${formLabel(p.finalForm)}</strong></div>
+          <div class="settings-row"><span>📅 誕生</span><small>${born}</small></div>
+          <div class="settings-row"><span>🌙 退休</span><small>${d}</small></div>
+          <div class="settings-row"><span>💝 飼養天數</span><strong>${p.totalDays} 天</strong></div>
+        </div>
+        ${accList ? `
+        <div class="modal-title" style="font-size:13px;margin:10px 0 4px;">當時的穿搭</div>
+        <div class="modal-list">${accList}</div>` : `
+        <p class="muted center" style="margin-top:8px;">沒有配戴飾品</p>`}
+        <p class="muted center" style="margin-top:10px;line-height:1.6;">
+          ${formDescription(p.finalForm)}
+        </p>
+      `,
+      buttons: [
+        { label: "📸 紀念卡", close: false, action: () => { closeModal(); shareOrDownloadCard(p); } },
+        { label: "回圖鑑",   close: false, action: () => { closeModal(); openDexMenu(); } },
+      ],
     });
   }
 
@@ -1517,7 +1485,16 @@
     if (state.pet.isSleeping) return;
     if (state.pet.stage === "egg") return;
     if (modalOpen) return;
-    if (Math.random() > CFG.randomEvents.spawnChance) return;
+    // Boost spawn rate during the last 20% of the stage — players who linger
+    // near evolution get richer reward density, reinforcing the "守線" loop.
+    let chance = CFG.randomEvents.spawnChance;
+    const cfg = CFG.stages[state.pet.stage];
+    if (cfg && cfg.next) {
+      const elapsed = Date.now() - state.pet.stageStartedAt;
+      const progress = elapsed / cfg.duration;
+      if (progress >= 0.8) chance = Math.min(0.6, chance * 1.6);
+    }
+    if (Math.random() > chance) return;
     spawnEvent();
   }
 
@@ -1634,6 +1611,18 @@
   function applyReducedMotionPref() {
     document.body.classList.toggle("reduce-motion", !!state.settings?.reducedMotion);
   }
+
+  // Bridge for src/share.js — exposes the closure-bound state + helpers it needs.
+  // Functions are passed by reference (hoisted), state via getter so it's always live.
+  window.NourishAPI = {
+    getState: () => state,
+    getLastPetSrc: () => lastPetSrc,
+    stageLabel,
+    formLabel,
+    formDescription,
+    unlockedFormsSet,
+    toast,
+  };
 
   function init() {
     state = load();
