@@ -11,7 +11,14 @@
 - **類型**：寵物養成網頁遊戲（Tamagotchi 系 + Adopt Me 進化分支 + Neko Atsume 的零壓力底線）
 - **階段**：v0.1 MVP 已上線本機；v0.2 進行中；App 為第二階段（PWA / Capacitor / Tauri 之後再說）
 - **主角**：小雞（預設名「啾啾」），未來可擴充其他動物
-- **目標玩家**：18–35 歲，輕度療癒、上班分頁旁掛著、5 分鐘 micro loop
+- **目標玩家**：18–35 歲女性為核心 TA，輕度療癒、上班分頁旁掛著、5 分鐘 micro loop
+- **TA 設計約束**（**重要，所有視覺 / 文案 / 玩法決策都看這條**）：
+  - 粉嫩色系優先（粉 #FFB7B7、桃紅、暖黃），避免過冷 / 過男性化
+  - 圓角 / 曲線 > 銳角；愛心 / 星星 / 花朵 / 緞帶符號優先
+  - 文案語氣：溫暖、撒嬌、療癒；避免戰鬥 / 力量類動詞
+  - 進化分支「戰鬥雞」保留但軟化（活力 / 元氣 / 運動感，非攻擊感）
+  - 玩法重「關係建立 + 自我表達」 > 純成就 / 競爭 / PvP
+  - 裝扮系統 v0.3 必做（蝴蝶結 / 皇冠 / 髮帶 / 花環 > 運動類配件）
 
 ---
 
@@ -33,12 +40,14 @@ nourish/
 ├── index.html                   ← 入口 HTML
 ├── src/
 │   ├── style.css                ← 所有樣式
-│   └── game.js                  ← 全部遊戲邏輯（IIFE，無 import）
+│   ├── cfg.js                   ← 純資料（CFG 物件）→ window.NourishCFG
+│   └── game.js                  ← 遊戲邏輯（IIFE，從 window.NourishCFG 讀 config）
 ├── assets/svg/                  ← 19 張 SVG（pet + mood + food + bg）
 ├── docs/
 │   ├── gdd.md                   ← 完整 Game Design Document（核心參考）
+│   ├── character-sheet.md       ← 角色設定書（生圖前必讀，gating factor）
 │   ├── market-research.md       ← 市場調查
-│   ├── image-prompts.md         ← AI 生圖 prompt 清單
+│   ├── image-prompts.md         ← AI 生圖 prompt 清單（必須先讀 character-sheet）
 │   ├── review.md                ← Code review 紀錄（P0/P1/P2）
 │   └── iteration-log.md         ← 自動循環日誌（雙 session 交接介面，§6）
 └── tests/                       ← 預留，目前空
@@ -68,9 +77,11 @@ nourish/
 
 ### 程式碼
 - ES2020+ 純 JS，無 transpile
-- 無 import：`game.js` 用 IIFE 把所有東西包起來
-- 數值與互動表都集中在 `CFG` 物件（檔頭），**改數值不要散落到別處**
+- 無 import：用 `<script>` 載入順序當依賴鏈（`cfg.js` 先，`game.js` 後）
+- 數值與互動表全部在 `src/cfg.js` 的 CFG 物件，**改數值只動 cfg.js，不要散落**
+- `randomEvents.pool[].apply` 用 string id（純資料），實作在 `game.js` 的 `RANDOM_EVENT_APPLIES` dispatch 表
 - `state` 是唯一可變物件，每次 mutation 後呼叫 `save() + render()`
+- 拆檔 R-1 進度：step 1 已完（CFG 抽出），step 2-4（render / interactions / events / modal）未做
 
 ### CSS
 - 色票定義在 `:root`（`--c-yellow` `--c-orange` …），**不要新增硬編碼色**
@@ -173,6 +184,7 @@ node --check src/game.js
 ## 9. GDD 真相之源
 
 任何遊戲性問題請先讀 `docs/gdd.md` §11 平衡參數。**不要憑印象改數值**。
+任何美術產出請先讀 `docs/character-sheet.md`。**畫風是 gating factor，不是 polish。**
 
 當前 MVP 完成度：18/19（GDD §10.1 必做清單，~95%）。剩下：正式設定頁（音效 / 語言）。
 

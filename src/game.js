@@ -2,101 +2,26 @@
  * Pure HTML+CSS+JS, no build step. Single source of truth: state object,
  * persisted to localStorage with schemaVersion gating. Tick loop drives both
  * stat decay and growth score; offline elapsed time is reconciled on load.
+ *
+ * Configuration data lives in src/cfg.js → window.NourishCFG.
+ * Random event side-effects (apply: "<id>") are dispatched via RANDOM_EVENT_APPLIES below.
  */
 (() => {
   "use strict";
 
-  // ============ Configuration (from GDD §11) ============
-  const CFG = {
-    save: { key: "nourish.save.v1", schemaVersion: 1, autosaveMs: 30 * 1000 },
-    decay: {
-      online:  { hunger: -0.40, mood: -0.25, clean: -0.15, energy: -0.30 },
-      offline: { hunger: -0.20, mood: -0.15, clean: -0.10, energy: +0.30 },
-      energySleep: +0.50,
-      offlineCapHours: 12,
-    },
-    thresholds: { high: 70, mid: 40, low: 20 },
-    growth: {
-      hungerHighBonus: 1.0, moodHighBonus: 1.5, cleanHighBonus: 0.5, energyHighBonus: 0.5,
-      perfectBonus: 2.0,
-      hungerLowPenalty: -1.0, moodLowPenalty: -1.5,
-      interactionScore: 5,
-      offline24hPenalty: -50,
-    },
-    stages: {
-      egg:    { duration: 6  * 3600 * 1000, scoreToEvolve: 30,   next: "chick"  },
-      chick:  { duration: 24 * 3600 * 1000, scoreToEvolve: 200,  next: "junior" },
-      junior: { duration: 48 * 3600 * 1000, scoreToEvolve: 600,  next: "adult"  },
-      adult:  { duration: Infinity,         scoreToEvolve: 1500, next: null     },
-    },
-    interactions: {
-      feed_basic:  { hunger:+25, mood:+2,  clean:-3,  energy:0,   cost:0,  cd:30,  unlock:"egg",    label:"基礎飼料", icon:"🥣", free:true },
-      feed_corn:   { hunger:+35, mood:+5,  clean:-3,  energy:+5,  cost:5,  cd:60,  unlock:"chick",  label:"玉米粒",   icon:"🌽" },
-      feed_berry:  { hunger:+20, mood:+15, clean:0,   energy:+5,  cost:10, cd:60,  unlock:"chick",  label:"莓果",     icon:"🍓" },
-      feed_worm:   { hunger:+40, mood:+10, clean:-8,  energy:+10, cost:8,  cd:90,  unlock:"junior", label:"小蟲蟲",   icon:"🪱" },
-      feed_cake:   { hunger:+50, mood:+25, clean:-10, energy:0,   cost:25, cd:300, unlock:"adult",  label:"蛋糕",     icon:"🎂", fatPoints:1 },
+  // Pure config data, see src/cfg.js. Loaded via <script> tag before this file.
+  const CFG = window.NourishCFG;
+  if (!CFG) throw new Error("NourishCFG missing — load src/cfg.js before src/game.js");
 
-      play_ball:   { mood:+15, energy:-10, clean:-5,  cost:3,  cd:120, unlock:"chick",  label:"追逐毛球", icon:"⚽" },
-      play_toy:    { mood:+20, energy:-15, clean:-3,  cost:5,  cd:180, unlock:"junior", label:"玩具蟲蟲", icon:"🧸" },
-      play_punch:  { mood:+25, energy:-25, clean:-10, cost:8,  cd:300, unlock:"junior", label:"打沙包",   icon:"🥊", battlePoints:3 },
-      play_puzzle: { mood:+18, energy:-8,  clean:0,   cost:6,  cd:240, unlock:"adult",  label:"思考拼圖", icon:"🧩", intelligencePoints:2 },
-      play_sing:   { mood:+30, energy:-15, clean:0,   cost:10, cd:360, unlock:"adult",  label:"唱歌比賽", icon:"🎤", singCount:1 },
-
-      bath:        { clean:+60, mood:+5,   energy:-5, cost:3, cd:600, unlock:"chick",  label:"洗澡",     icon:"🛁" },
-      pet_head:    { mood:+3,   cost:0, cd:30,  unlock:"egg",   label:"摸頭",     icon:"✋" },
-      pet_belly:   { mood:+5,   cost:0, cd:60,  unlock:"chick", label:"摸肚子",   icon:"🤲", chuckle:0.10 },
-      talk:        { mood:+2,   cost:0, cd:20,  unlock:"egg",   label:"對話",     icon:"💬" },
-    },
-    randomEvents: {
-      spawnIntervalMs: 60 * 1000,
-      spawnChance: 0.30,
-      lifetimeMs: 90 * 1000,
-      pool: [
-        { id:"coin_drop", emoji:"💰", weight:55, label:"撿到飼料幣", apply:s => { const c = rand(5,15); grantCoin(c, "撿到"); } },
-        { id:"herb",      emoji:"🌿", weight:18, label:"神祕草藥",   apply:s => { applyDelta(s.pet.stats, { hunger:+30, mood:+5, clean:+5, energy:+30 }); toast("🌿 神祕草藥！全身舒暢", "good"); } },
-        { id:"butterfly", emoji:"🦋", weight:14, label:"蝴蝶飛過",   apply:s => { applyDelta(s.pet.stats, { mood:+10 }); toast("🦋 蝴蝶讓啾啾很開心", "good"); } },
-        { id:"fly",       emoji:"🪰", weight:10, label:"趕走果蠅",   apply:s => { applyDelta(s.pet.stats, { clean:+5, mood:+3 }); toast("🪰 趕走果蠅！清潔 +5", "good"); } },
-        { id:"star",      emoji:"⭐", weight:3,  label:"神秘流星",   apply:s => { applyDelta(s.pet.stats, { hunger:+10, mood:+10, clean:+10, energy:+10 }); grantCoin(50, "流星祝福"); toast("⭐ 流星許願！全屬性 +10", "gold"); } },
-      ],
-    },
-    economy: { dailyLogin: 30, evolveReward: 100, streak7: 50, streak30: 200 },
-    welcomeBack: [
-      { maxMs: 30*60*1000,            text: null /* silent */ },
-      { maxMs: 3 *3600*1000,          text: "歡迎回來！咕咕～" },
-      { maxMs: 8 *3600*1000,          text: "主人你回來了！我有點餓了" },
-      { maxMs: 12*3600*1000,          text: "主人……我以為你不要我了……" },
-      { maxMs: Infinity,              text: "主人！！我等了好久！", giveCoin: 20 },
-    ],
-    speech: {
-      idle:    ["咕咕", "啾~", "嗯哼", "✨", "🌸"],
-      hungry:  ["肚子餓了…", "想吃飯", "咕嚕咕嚕"],
-      sad:     ["不開心…", "陪我玩嘛", "嗚嗚"],
-      dirty:   ["好癢…", "想洗澡"],
-      tired:   ["想睡覺…", "好累"],
-      happy:   ["好幸福！", "嘿嘿~", "最喜歡主人了"],
-    },
-    petArt: {
-      egg:    "assets/svg/egg.svg",
-      egg2:   "assets/svg/egg-cracked.svg",
-      chick:  "assets/svg/chick-baby.svg",
-      junior: "assets/svg/chick-young.svg",
-      adult: {
-        healthy: "assets/svg/chick-adult-healthy.svg",
-        fatty:   "assets/svg/chick-adult-fat.svg",
-        ugly:    "assets/svg/chick-adult-ugly.svg",
-        divine:  "assets/svg/chick-adult-divine.svg",
-        fighter: "assets/svg/chick-adult-fighter.svg",
-        sage:    "assets/svg/chick-adult-sage.svg",
-        diva:    "assets/svg/chick-adult-diva.svg",
-      },
-    },
-    moodArt: {
-      happy: "assets/svg/mood-happy.svg",
-      neutral: "assets/svg/mood-neutral.svg",
-      sad: "assets/svg/mood-sad.svg",
-      sleeping: "assets/svg/mood-sleeping.svg",
-      dirty: "assets/svg/mood-dirty.svg",
-    },
+  // Random-event side-effects (closures over grantCoin / applyDelta / toast).
+  // Lookup table indexed by CFG.randomEvents.pool[].apply (string id).
+  // Defined here (not in cfg.js) because they reference helpers below.
+  const RANDOM_EVENT_APPLIES = {
+    coin_drop: s => { const c = rand(5,15); grantCoin(c, "撿到"); },
+    herb:      s => { applyDelta(s.pet.stats, { hunger:+30, mood:+5, clean:+5, energy:+30 }); toast("🌿 神祕草藥！全身舒暢", "good"); },
+    butterfly: s => { applyDelta(s.pet.stats, { mood:+10 }); toast("🦋 蝴蝶讓啾啾很開心", "good"); },
+    fly:       s => { applyDelta(s.pet.stats, { clean:+5, mood:+3 }); toast("趕走果蠅！清潔 +5", "good"); },
+    star:      s => { applyDelta(s.pet.stats, { hunger:+10, mood:+10, clean:+10, energy:+10 }); grantCoin(50, "流星祝福"); toast("⭐ 流星許願！全屬性 +10", "gold"); },
   };
 
   // ============ State ============
@@ -118,6 +43,8 @@
         stats: { hunger: 80, mood: 80, clean: 80, energy: 80 },
         traits: { fatPoints: 0, battlePoints: 0, intelligencePoints: 0, singCount: 0, lowMoodMinutes: 0, perfectStreakMinutes: 0 },
         nameSet: false,
+        want: null,                  // active want (see CFG.wants); null when none
+        wantCooldownUntil: 0,        // ms timestamp; suppress new spawns before this
         isSleeping: false,
       },
       economy: { feedCoin: 50, totalEarned: 50, totalSpent: 0 },
@@ -131,15 +58,26 @@
           pet_count:  { current: 0, target: 4, claimed: false },
         },
       },
-      history: { totalSessions: 0 },
+      history: { totalSessions: 0, feedCount: 0, bathCount: 0, petCount: 0, playCount: 0 },
+      achievements: {},
+      settings: { soundEnabled: true, reducedMotion: false },
     };
   };
 
   let state = null;
-  let tickTimer = null, autoSaveTimer = null;
+  let tickTimer = null, autoSaveTimer = null, wantsTimer = null;
   let lastTick = Date.now();
   let lastVisibleAt = Date.now();
   let lastPetSrc = null, lastMoodSrc = null, lastBgKey = null;
+  let isReadOnlyTab = false; // P1-2: set true when another tab takes ownership
+
+  // P1-1: gate developer-only buttons; players see only the legitimate "reset" row.
+  const DEBUG = (() => {
+    try {
+      return new URLSearchParams(location.search).has("debug")
+          || localStorage.getItem("nourish.debug") === "1";
+    } catch (_) { return false; }
+  })();
 
   // ============ Save / Load ============
   function load() {
@@ -155,10 +93,15 @@
     }
   }
   function save() {
+    if (isReadOnlyTab) return; // P1-2: another tab owns the save slot
     try {
       state.updatedAt = Date.now();
       localStorage.setItem(CFG.save.key, JSON.stringify(state));
     } catch (e) {
+      // P1-3: surface quota errors so the player knows their progress is at risk.
+      if (e && (e.name === "QuotaExceededError" || e.code === 22)) {
+        toast("⚠️ 存檔空間不足，進度可能無法保留", "bad");
+      }
       console.warn("Save failed:", e);
     }
   }
@@ -175,7 +118,12 @@
     } catch (_) { return { schemaVersion: 1, completedPets: [] }; }
   }
   function saveDex(dex) {
-    try { localStorage.setItem(DEX_KEY, JSON.stringify(dex)); } catch (_) {}
+    try { localStorage.setItem(DEX_KEY, JSON.stringify(dex)); }
+    catch (e) {
+      if (e && (e.name === "QuotaExceededError" || e.code === 22)) {
+        toast("⚠️ 圖鑑空間不足", "bad");
+      }
+    }
   }
   function unlockedFormsSet() {
     const set = new Set();
@@ -321,6 +269,7 @@
     state.pet.stage = cfg.next;
     state.pet.stageStartedAt = Date.now();
     pulseEvolve();
+    SFX.evolve();
     toast(`進化！現在是${stageLabel(cfg.next)}！`, "gold");
     // bonus on every evolution
     grantCoin(20, "進化獎勵");
@@ -341,6 +290,8 @@
     else if (t.lowMoodMinutes >= 720) form = "ugly";
     state.pet.finalForm = form;
     grantCoin(CFG.economy.evolveReward, "終態獎勵");
+    spawnEvolveParticles();
+    checkAchievements();
     const days = Math.max(1, Math.round((Date.now()-state.pet.bornAt)/86400000));
     showModal({
       title: `🎉 進化完成！${formLabel(form)}`,
@@ -397,11 +348,12 @@
       toast("體力太低，沒辦法玩耍", "bad"); return;
     }
 
-    // overfeed: hunger > 95 and feeding
+    // overfeed: hunger > 95 and feeding. P2-7: skip the +1 if the food itself
+    // already grants fatPoints (cake), so cake at hunger>95 doesn't double-count.
     if (key.startsWith("feed_") && state.pet.stats.hunger > 95) {
       state.pet.stats.mood = clamp(state.pet.stats.mood - 10, 0, 100);
       state.pet.stats.clean = clamp(state.pet.stats.clean - 15, 0, 100);
-      state.pet.traits.fatPoints += 1;
+      if (!cfg.fatPoints) state.pet.traits.fatPoints += 1;
       toast("吃太飽了…肥肥+1", "bad");
     }
 
@@ -419,12 +371,19 @@
     setCooldown(key, cfg.cd);
     state.pet.growthScore += CFG.growth.interactionScore;
     trackDailyTask(key);
+    bumpHistory(key);
+    fulfillWantIfMatches(key);
+    checkAchievements();
 
     // small free coin reward for play
     if (key.startsWith("play_")) grantCoin(rand(3, 6), null, true);
 
+    playReactionAnim(key);
+    SFX.success();
     toast(`${cfg.icon} ${cfg.label} +${formatDelta(cfg)}`, "good");
-    speak(pickHappy());
+    // Action-specific reply when available; fall back to generic happy line.
+    const replies = CFG.speech[`action_${key}`];
+    speak(replies ? rand0(replies) : pickHappy());
     save();
     render();
   }
@@ -452,6 +411,7 @@
     state.economy.feedCoin += amount;
     state.economy.totalEarned += amount;
     if (!silent) toast(`💰 +${amount} FC${reason ? "（"+reason+"）" : ""}`, "gold");
+    if (state.economy.totalEarned >= 500) unlockAchievement("rich");
   }
   function spendCoin(amount) {
     state.economy.feedCoin -= amount;
@@ -475,6 +435,7 @@
     grantCoin(CFG.economy.dailyLogin, "每日登入");
     if (state.daily.loginStreak === 7)  grantCoin(CFG.economy.streak7,  "連續 7 天！");
     if (state.daily.loginStreak === 30) grantCoin(CFG.economy.streak30, "連續 30 天！！");
+    checkAchievements();
   }
 
   function resetDailyTasks() {
@@ -483,6 +444,58 @@
       play_count: { current: 0, target: 3, claimed: false },
       pet_count:  { current: 0, target: 4, claimed: false },
     };
+  }
+
+  function bumpHistory(interactionKey) {
+    if (!state.history) state.history = { totalSessions: 0 };
+    const h = state.history;
+    if (interactionKey.startsWith("feed_")) h.feedCount = (h.feedCount || 0) + 1;
+    else if (interactionKey === "bath")     h.bathCount = (h.bathCount || 0) + 1;
+    else if (interactionKey.startsWith("play_")) h.playCount = (h.playCount || 0) + 1;
+    else if (interactionKey.startsWith("pet_") || interactionKey === "talk") h.petCount = (h.petCount || 0) + 1;
+  }
+
+  // ============ Achievements ============
+  function unlockAchievement(id) {
+    if (!state.achievements) state.achievements = {};
+    if (state.achievements[id]) return false;
+    const cfg = CFG.achievements[id];
+    if (!cfg) return false;
+    state.achievements[id] = Date.now();
+    SFX.achievement();
+    toast(`🏅 ${cfg.icon} ${cfg.label}`, "gold");
+    setTimeout(() => toast(`「${cfg.desc}」`, "good"), 350);
+    spawnAchievementParticles();
+    // P1-4 part 2: nudge the player toward the naming UI on first hatch.
+    if (id === "first_hatch" && !state.pet.nameSet) {
+      setTimeout(() => toast("💡 點寵物名字可以取名喔～", "good"), 1500);
+    }
+    return true;
+  }
+
+  function checkAchievements() {
+    const h = state.history || {};
+    const dexUnlocked = unlockedFormsSet();
+    const checks = [
+      ["first_feed",    (h.feedCount || 0) >= 1],
+      ["feed_50",       (h.feedCount || 0) >= 50],
+      ["bath_10",       (h.bathCount || 0) >= 10],
+      ["pet_50",        (h.petCount  || 0) >= 50],
+      ["first_hatch",   state.pet.stage !== "egg"],
+      ["first_evolve",  state.pet.stage === "adult"],
+      ["streak_7",      (state.daily?.loginStreak || 0) >= 7],
+      ["streak_30",     (state.daily?.loginStreak || 0) >= 30],
+      ["form_divine",   dexUnlocked.has("divine")],
+      ["form_diva",     dexUnlocked.has("diva")],
+      ["form_fighter",  dexUnlocked.has("fighter")],
+      ["form_sage",     dexUnlocked.has("sage")],
+      ["collect_3",     dexUnlocked.size >= 3],
+      ["collect_5",     dexUnlocked.size >= 5],
+      ["collect_all",   dexUnlocked.size >= 7],
+      ["rich",          (state.economy?.totalEarned || 0) >= 500],
+      ["perfect_day",   (state.pet.traits?.perfectStreakMinutes || 0) >= 30],
+    ];
+    for (const [id, met] of checks) if (met) unlockAchievement(id);
   }
 
   function trackDailyTask(interactionKey) {
@@ -558,12 +571,32 @@
     if (cfg.next) {
       const elapsed = Date.now() - state.pet.stageStartedAt;
       const remainMs = Math.max(0, cfg.duration - elapsed);
-      const remainScore = Math.max(0, cfg.scoreToEvolve - state.pet.growthScore);
-      $("stage-countdown").textContent =
-        `下一階段 ${formatTime(remainMs)} · 成長 ${Math.round(state.pet.growthScore)}/${cfg.scoreToEvolve}`;
+      const score = state.pet.growthScore;
+      const need = Math.max(0, cfg.scoreToEvolve - score);
+      // P2-10: explain *why* a "ready" pet hasn't evolved yet (time done but score short).
+      let line;
+      if (remainMs > 0) {
+        line = `下一階段 ${formatTime(remainMs)} · 成長 ${Math.round(score)}/${cfg.scoreToEvolve}`;
+      } else if (need > 0) {
+        line = `再多互動 ${Math.ceil(need)} 點就能進化`;
+      } else {
+        line = `準備進化中…`;
+      }
+      $("stage-countdown").textContent = line;
     } else {
       $("stage-countdown").textContent = `成長 ${Math.round(state.pet.growthScore)}`;
     }
+
+    // Pre-evolve glow: D7 retention hook — the pet visibly "shimmers" in the last
+    // hour before its next stage, signalling something special is about to happen.
+    const preEvolve = (() => {
+      if (!cfg.next) return false;
+      const elapsed2 = Date.now() - state.pet.stageStartedAt;
+      const remain2 = cfg.duration - elapsed2;
+      const scoreReady = state.pet.growthScore >= cfg.scoreToEvolve * 0.7;
+      return remain2 > 0 && remain2 <= 60 * 60 * 1000 && scoreReady;
+    })();
+    petImg.classList.toggle("pre-evolve", preEvolve && !state.pet.isSleeping);
 
     // pet image (cached to skip needless src reassignments / reflow)
     let petSrc;
@@ -604,10 +637,19 @@
     document.getElementById("stage").classList.toggle("sleeping", state.pet.isSleeping);
     $("sleep-label").textContent = state.pet.isSleeping ? "起床" : "睡眠";
 
+    // wants bubble
+    const wantEl = $("want-bubble");
+    if (state.pet.want && !state.pet.isSleeping) {
+      wantEl.innerHTML = `${state.pet.want.icon} ${state.pet.want.text}<span class="want-mark">!</span>`;
+      wantEl.hidden = false;
+    } else {
+      wantEl.hidden = true;
+    }
+
     // background (cached)
     const bgKey = (state.pet.stage === "egg" || state.pet.stage === "chick") ? "bg-coop" : "bg-grass";
     if (lastBgKey !== bgKey) {
-      $("stage-bg").style.backgroundImage = `url("assets/svg/${bgKey}.svg")`;
+      $("stage-bg").style.backgroundImage = `url("assets/images/${bgKey}.png")`;
       lastBgKey = bgKey;
     }
 
@@ -722,28 +764,109 @@
     });
   }
 
+  // ============ Audio (Web Audio API, procedural — no assets) ============
+  // Synthesised tones via OscillatorNode + GainNode envelopes. AudioContext is
+  // created lazily on first user gesture so autoplay policies don't shut us out.
+  let audioCtx = null;
+  function ensureAudioCtx() {
+    if (audioCtx) return audioCtx;
+    try {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    } catch (_) { audioCtx = null; }
+    return audioCtx;
+  }
+  function soundOn() {
+    return state && state.settings && state.settings.soundEnabled !== false;
+  }
+  function playTone(freq, ms, type = "sine", gain = 0.12) {
+    if (!soundOn()) return;
+    const ctx = ensureAudioCtx();
+    if (!ctx) return;
+    const osc = ctx.createOscillator();
+    const g = ctx.createGain();
+    osc.type = type;
+    osc.frequency.value = freq;
+    g.gain.value = 0;
+    osc.connect(g).connect(ctx.destination);
+    const now = ctx.currentTime;
+    g.gain.linearRampToValueAtTime(gain, now + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, now + ms / 1000);
+    osc.start(now);
+    osc.stop(now + ms / 1000 + 0.05);
+  }
+  // Composite SFX = chained playTone calls with delays. Tuned so achievement
+  // and evolve land louder than routine clicks.
+  const SFX = {
+    click:       () => playTone(660, 60, "square", 0.08),
+    success:     () => { playTone(660, 80, "sine", 0.1); setTimeout(() => playTone(880, 100, "sine", 0.1), 60); },
+    fail:        () => { playTone(220, 100, "sawtooth", 0.08); setTimeout(() => playTone(180, 120, "sawtooth", 0.08), 80); },
+    achievement: () => { [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => playTone(f, 110, "triangle", 0.12), i * 100)); },
+    evolve:      () => { [523, 659, 784, 1047, 1319].forEach((f, i) => setTimeout(() => playTone(f, 140, "triangle", 0.14), i * 90)); },
+    want:        () => { playTone(523, 90, "sine", 0.1); setTimeout(() => playTone(784, 90, "sine", 0.1), 90); },
+    event:       () => playTone(932, 80, "sine", 0.1),
+    coin:        () => { playTone(988, 60, "square", 0.08); setTimeout(() => playTone(1319, 80, "square", 0.08), 50); },
+  };
+
+  // ============ Save export / import ============
+  // Bundle save + dex into a single base64 string the player can paste into a
+  // new browser / device. Useful as a manual cloud-sync stand-in (no backend).
+  function exportSaveBundle() {
+    const bundle = {
+      v: 1,
+      exportedAt: Date.now(),
+      save: state,
+      dex:  loadDex(),
+    };
+    try {
+      const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(bundle))));
+      return b64;
+    } catch (_) { return null; }
+  }
+  function importSaveBundle(b64) {
+    try {
+      const raw = decodeURIComponent(escape(atob(b64.trim())));
+      const bundle = JSON.parse(raw);
+      if (!bundle || !bundle.save || bundle.v !== 1) return false;
+      localStorage.setItem(CFG.save.key, JSON.stringify(bundle.save));
+      if (bundle.dex) localStorage.setItem("nourish.dex.v1", JSON.stringify(bundle.dex));
+      return true;
+    } catch (_) { return false; }
+  }
+
   function openSettingsMenu() {
     const t = state.pet.traits;
     const html = `
       <div class="modal-list">
+        <div class="settings-row"><span>🔊 音效</span>
+          <button class="menu-item" id="toggle-sound" style="padding:4px 10px;">${state.settings?.soundEnabled === false ? "已關閉" : "已開啟"}</button></div>
+        <div class="settings-row"><span>🌀 減少動畫</span>
+          <button class="menu-item" id="toggle-motion" style="padding:4px 10px;">${state.settings?.reducedMotion ? "已開啟" : "跟隨系統"}</button></div>
+        <hr style="border:0;border-top:1px dashed rgba(0,0,0,0.15);margin:4px 0;">
         <div class="settings-row"><span>連續登入</span><strong>${state.daily.loginStreak || 0} 天</strong></div>
         <div class="settings-row"><span>成長分數</span><strong>${Math.round(state.pet.growthScore)}</strong></div>
         <div class="settings-row"><span>誕生時間</span><strong>${new Date(state.pet.bornAt).toLocaleString()}</strong></div>
         <div class="settings-row"><span>🥯 肥胖點數</span><strong>${t.fatPoints}/10 → 胖雞</strong></div>
-        <div class="settings-row"><span>🥊 戰鬥點數</span><strong>${t.battlePoints}/30 → 戰鬥雞</strong></div>
+        <div class="settings-row"><span>💪 活力點數</span><strong>${t.battlePoints}/30 → 元氣雞</strong></div>
         <div class="settings-row"><span>🧩 智慧點數</span><strong>${t.intelligencePoints}/30 → 智慧雞</strong></div>
         <div class="settings-row"><span>🎤 唱歌次數</span><strong>${t.singCount}/20 → 歌姬雞</strong></div>
         <div class="settings-row"><span>😢 低落分鐘</span><strong>${Math.round(t.lowMoodMinutes)}/720 → 醜雞</strong></div>
         <div class="settings-row"><span>✨ 幸福連續</span><strong>${Math.round(t.perfectStreakMinutes)}/1440 → 神雞</strong></div>
         <hr style="border:0;border-top:1px dashed rgba(0,0,0,0.15);margin:4px 0;">
+        ${DEBUG ? `
         <div class="settings-row"><span>給 100 飼料幣（除錯）</span>
           <button class="menu-item" id="dbg-give" style="padding:4px 10px;">+100</button></div>
         <div class="settings-row"><span>跳到下一階段（除錯）</span>
           <button class="menu-item" id="dbg-evolve" style="padding:4px 10px;">⏭️</button></div>
+        ` : ""}
         ${state.pet.finalForm ? `
         <div class="settings-row"><span>🥚 孵化新蛋</span>
           <button class="menu-item" id="act-newegg" style="padding:4px 10px;color:var(--c-orange);">開始</button></div>
         ` : ""}
+        <hr style="border:0;border-top:1px dashed rgba(0,0,0,0.15);margin:4px 0;">
+        <div class="settings-row"><span>📤 匯出存檔</span>
+          <button class="menu-item" id="act-export" style="padding:4px 10px;">複製到剪貼簿</button></div>
+        <div class="settings-row"><span>📥 匯入存檔</span>
+          <button class="menu-item" id="act-import" style="padding:4px 10px;">貼上字串</button></div>
         <div class="settings-row"><span>重置存檔（清除本機資料）</span>
           <button class="menu-item" id="dbg-reset" style="padding:4px 10px;color:var(--c-red);">重置</button></div>
       </div>`;
@@ -752,14 +875,54 @@
       body: html,
       buttons: [{ label: "關閉", close: true }],
       onMount: card => {
-        card.querySelector("#dbg-give").onclick = () => { grantCoin(100, "除錯"); save(); render(); };
-        card.querySelector("#dbg-evolve").onclick = () => {
+        const soundBtn = card.querySelector("#toggle-sound");
+        if (soundBtn) soundBtn.onclick = () => {
+          if (!state.settings) state.settings = {};
+          state.settings.soundEnabled = !state.settings.soundEnabled;
+          SFX.click();
+          save(); closeModal(); openSettingsMenu();
+        };
+        const motionBtn = card.querySelector("#toggle-motion");
+        if (motionBtn) motionBtn.onclick = () => {
+          if (!state.settings) state.settings = {};
+          state.settings.reducedMotion = !state.settings.reducedMotion;
+          applyReducedMotionPref();
+          save(); closeModal(); openSettingsMenu();
+        };
+        const giveBtn = card.querySelector("#dbg-give");
+        if (giveBtn) giveBtn.onclick = () => { grantCoin(100, "除錯"); save(); render(); };
+        const evolveBtn = card.querySelector("#dbg-evolve");
+        if (evolveBtn) evolveBtn.onclick = () => {
           state.pet.growthScore = CFG.stages[state.pet.stage].scoreToEvolve;
           state.pet.stageStartedAt = Date.now() - CFG.stages[state.pet.stage].duration - 1;
           maybeEvolve(); save(); render();
         };
         const newEggBtn = card.querySelector("#act-newegg");
         if (newEggBtn) newEggBtn.onclick = () => { closeModal(); confirmNewEgg(); };
+        const expBtn = card.querySelector("#act-export");
+        if (expBtn) expBtn.onclick = async () => {
+          const b64 = exportSaveBundle();
+          if (!b64) { toast("匯出失敗", "bad"); return; }
+          try {
+            await navigator.clipboard.writeText(b64);
+            toast(`✅ 已複製 ${b64.length} 字元到剪貼簿`, "good");
+          } catch (_) {
+            // fallback: show in prompt for manual copy
+            window.prompt("複製這串字元到他處保存：", b64);
+          }
+        };
+        const impBtn = card.querySelector("#act-import");
+        if (impBtn) impBtn.onclick = () => {
+          const input = window.prompt("貼上之前匯出的存檔字串：");
+          if (!input) return;
+          if (!confirm("確定要覆蓋現有存檔？建議先匯出當前進度。")) return;
+          if (importSaveBundle(input)) {
+            toast("✅ 匯入成功，重新載入中…", "good");
+            setTimeout(() => location.reload(), 800);
+          } else {
+            toast("匯入失敗：字串格式不正確", "bad");
+          }
+        };
         card.querySelector("#dbg-reset").onclick = () => {
           if (confirm("確定要清除存檔重來？（圖鑑也會一起清空）")) {
             localStorage.removeItem(CFG.save.key);
@@ -769,6 +932,174 @@
         };
       },
     });
+  }
+
+  function openAchievementsMenu() {
+    const ach = state.achievements || {};
+    const all = Object.keys(CFG.achievements);
+    const got = all.filter(id => ach[id]);
+    const rows = all.map(id => {
+      const cfg = CFG.achievements[id];
+      const have = !!ach[id];
+      return `<div class="settings-row" style="${have?"":"opacity:0.4"}">
+        <span>${have ? cfg.icon : "🔒"} <strong>${cfg.label}</strong></span>
+        <small style="text-align:right;max-width:60%;">${have ? cfg.desc : "??"}</small>
+      </div>`;
+    }).join("");
+    showModal({
+      title: `🏅 成就 ${got.length}/${all.length}`,
+      body: `<div class="modal-list">${rows}</div>`,
+      buttons: [{ label: "關閉", close: true }],
+    });
+  }
+
+  // ============ Share card (Canvas → PNG) ============
+  // Renders a 720×1280 portrait card with pet portrait + stats. Uses Web Share
+  // API where available, falls back to download.
+  async function generateShareCard() {
+    const W = 720, H = 1280;
+    const canvas = document.createElement("canvas");
+    canvas.width = W; canvas.height = H;
+    const ctx = canvas.getContext("2d");
+
+    // Background gradient (matches body)
+    const bg = ctx.createLinearGradient(0, 0, 0, H);
+    bg.addColorStop(0, "#FFE6B0");
+    bg.addColorStop(0.5, "#FFEFC1");
+    bg.addColorStop(1, "#FFD9E0");
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, W, H);
+
+    // Card frame
+    ctx.fillStyle = "#FFF8E7";
+    roundRect(ctx, 40, 60, W - 80, H - 120, 32);
+    ctx.fill();
+    ctx.lineWidth = 6;
+    ctx.strokeStyle = "#2C2C2C";
+    ctx.stroke();
+
+    // Title
+    ctx.fillStyle = "#2C2C2C";
+    ctx.textAlign = "center";
+    ctx.font = "bold 64px sans-serif";
+    ctx.fillText("啾啾日常", W / 2, 160);
+    ctx.font = "24px sans-serif";
+    ctx.fillStyle = "#8B5A2B";
+    ctx.fillText("ChickaDay · v0.1", W / 2, 195);
+
+    // Pet portrait (current displayed art)
+    const petSrc = lastPetSrc || CFG.petArt.egg;
+    try {
+      const img = await loadImage(petSrc);
+      const size = 360;
+      ctx.drawImage(img, (W - size) / 2, 240, size, size);
+    } catch (e) {
+      ctx.fillStyle = "#FFD86B";
+      ctx.beginPath();
+      ctx.arc(W / 2, 420, 150, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Name + stage line
+    ctx.fillStyle = "#2C2C2C";
+    ctx.font = "bold 48px sans-serif";
+    const nameLine = `${state.pet.name || "啾啾"} · ${stageLabel(state.pet.stage)}` +
+                     (state.pet.finalForm ? `（${formLabel(state.pet.finalForm)}）` : "");
+    ctx.fillText(nameLine, W / 2, 680);
+
+    // Days raised
+    const days = Math.max(1, Math.round((Date.now() - state.pet.bornAt) / 86400000));
+    ctx.font = "26px sans-serif";
+    ctx.fillStyle = "#8B5A2B";
+    ctx.fillText(`已陪伴 ${days} 天`, W / 2, 720);
+
+    // Stats panel
+    const stats = state.pet.stats;
+    const labels = [
+      { k: "hunger", l: "🍗 飢餓" },
+      { k: "mood",   l: "💖 心情" },
+      { k: "clean",  l: "🛁 清潔" },
+      { k: "energy", l: "⚡ 體力" },
+    ];
+    const baseY = 800;
+    labels.forEach((s, i) => {
+      const y = baseY + i * 70;
+      ctx.font = "30px sans-serif";
+      ctx.textAlign = "left";
+      ctx.fillStyle = "#2C2C2C";
+      ctx.fillText(s.l, 110, y);
+      // bar
+      const v = Math.round(stats[s.k]);
+      ctx.fillStyle = "rgba(44,44,44,0.15)";
+      roundRect(ctx, 280, y - 26, 320, 32, 16); ctx.fill();
+      ctx.fillStyle = v >= 70 ? "#6BCB77" : v >= 40 ? "#FFD86B" : v >= 20 ? "#FF9F43" : "#B23A48";
+      roundRect(ctx, 280, y - 26, 320 * (v / 100), 32, 16); ctx.fill();
+      ctx.fillStyle = "#2C2C2C";
+      ctx.textAlign = "right";
+      ctx.font = "bold 28px sans-serif";
+      ctx.fillText(v, 660, y);
+    });
+
+    // Achievements + dex count
+    const achCount = Object.keys(state.achievements || {}).length;
+    const achTotal = Object.keys(CFG.achievements).length;
+    const dexCount = unlockedFormsSet().size;
+    ctx.textAlign = "center";
+    ctx.font = "26px sans-serif";
+    ctx.fillStyle = "#2C2C2C";
+    ctx.fillText(`🏅 成就 ${achCount}/${achTotal}    📖 圖鑑 ${dexCount}/7`, W / 2, 1130);
+
+    // Footer
+    ctx.font = "22px sans-serif";
+    ctx.fillStyle = "#8B5A2B";
+    ctx.fillText("一起來養屬於你的小雞~", W / 2, 1180);
+    ctx.font = "18px sans-serif";
+    ctx.fillStyle = "#B23A48";
+    ctx.fillText("ChickaDay · 啾啾日常", W / 2, 1210);
+
+    return new Promise((resolve, reject) =>
+      canvas.toBlob(b => b ? resolve(b) : reject(new Error("toBlob failed")), "image/png")
+    );
+  }
+
+  function loadImage(src) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload  = () => resolve(img);
+      img.onerror = reject;
+      img.src = src;
+    });
+  }
+
+  function roundRect(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y,     x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x,     y + h, r);
+    ctx.arcTo(x,     y + h, x,     y,     r);
+    ctx.arcTo(x,     y,     x + w, y,     r);
+    ctx.closePath();
+  }
+
+  async function shareOrDownloadCard() {
+    try {
+      const blob = await generateShareCard();
+      const filename = `chickaday-${state.pet.name || "chick"}.png`;
+      const file = new File([blob], filename, { type: "image/png" });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: "啾啾日常", text: "看我養的小雞~" });
+        toast("分享完成！", "good");
+      } else {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url; a.download = filename; a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        toast("📸 卡片已下載", "good");
+      }
+    } catch (e) {
+      console.warn("share card failed", e);
+      toast("⚠️ 分享卡產生失敗", "bad");
+    }
   }
 
   function openDexMenu() {
@@ -792,6 +1123,8 @@
             <small>${d} · ${p.totalDays}天</small>
           </div>`;
         }).join("");
+    const achCount = Object.keys(state.achievements || {}).length;
+    const achTotal = Object.keys(CFG.achievements).length;
     showModal({
       title: "📖 圖鑑",
       body: `
@@ -799,8 +1132,18 @@
         <div class="modal-list">${formsHTML}</div>
         <div class="modal-title" style="font-size:14px;margin:14px 0 4px;">歷代小雞</div>
         <div class="modal-list">${pastHTML}</div>
+        <div style="margin-top:14px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+          <button class="modal-close" id="goto-ach">🏅 成就 ${achCount}/${achTotal}</button>
+          <button class="modal-close" id="goto-share">📸 分享卡</button>
+        </div>
       `,
       buttons: [{ label: "關閉", close: true }],
+      onMount: card => {
+        const b = card.querySelector("#goto-ach");
+        if (b) b.onclick = () => { closeModal(); openAchievementsMenu(); };
+        const s = card.querySelector("#goto-share");
+        if (s) s.onclick = () => { closeModal(); shareOrDownloadCard(); };
+      },
     });
   }
 
@@ -904,17 +1247,17 @@
     return ({ egg: "蛋", chick: "雛雞", junior: "幼雞", adult: "成雞" })[s] || s;
   }
   function formLabel(f) {
-    return ({ healthy: "健康成雞", fatty: "胖雞", ugly: "醜雞", divine: "神雞", fighter: "戰鬥雞", sage: "智慧雞", diva: "歌姬雞" })[f] || f;
+    return ({ healthy: "健康成雞", fatty: "圓潤雞", ugly: "迷因雞", divine: "天使雞", fighter: "元氣雞", sage: "智慧雞", diva: "歌姬雞" })[f] || f;
   }
   function formDescription(f) {
     return ({
       healthy: "毛色光亮、神采奕奕，是模範生雞。",
-      fatty:   "圓滾滾很可愛，但走路會喘。",
-      ugly:    "毛亂亂、表情委屈，但有很多粉絲，迷因路線。",
-      divine:  "金色光環、純白羽毛，傳說中的存在。",
-      fighter: "戴頭巾、戴拳套，眼神銳利。打沙包打出來的硬漢路線。",
-      sage:    "戴半月眼鏡、書卷氣，思考拼圖累積的智慧路線。",
-      diva:    "彩虹尾羽配麥克風，唱歌唱出來的明星路線。",
+      fatty:   "圓滾滾很可愛，抱起來軟綿綿。",
+      ugly:    "毛亂亂的，但反而有種獨特的魅力，有自己的粉絲團。",
+      divine:  "粉金光環、純白羽毛，傳說中的天使存在。",
+      fighter: "粉色運動帶、活力滿點，跳跳活蹦的元氣派路線。",
+      sage:    "戴半月眼鏡、氣質溫柔，思考拼圖累積的智慧路線。",
+      diva:    "彩虹尾羽配麥克風，唱歌唱出來的閃亮明星。",
     })[f] || "";
   }
 
@@ -922,6 +1265,150 @@
     const img = $("pet-img");
     img.classList.add("evolving");
     setTimeout(() => img.classList.remove("evolving"), 3500);
+    spawnEvolveParticles();
+  }
+
+  function playReactionAnim(interactionKey) {
+    const img = $("pet-img");
+    if (!img) return;
+    let cls = null, floats = [];
+    // TA = 女性，愛撫多愛心 / 玩耍多甜美音符（character-sheet §10.3）
+    if (interactionKey.startsWith("feed_"))      { cls = "react-eat";   floats = ["🍴", "♡"]; }
+    else if (interactionKey.startsWith("play_")) { cls = "react-shake"; floats = ["♪","🎵","✨"]; }
+    else if (interactionKey === "bath")          { cls = "react-bath";  floats = ["🫧","🫧","✨"]; }
+    else if (interactionKey === "pet_head")      { cls = "react-love";  floats = ["💕","♡"]; }
+    else if (interactionKey === "pet_belly")     { cls = "react-love";  floats = ["💖","♡","♡"]; }
+    else if (interactionKey === "talk")          { cls = "react-love";  floats = ["💬","♡"]; }
+    if (!cls) return;
+    img.classList.remove("react-eat","react-shake","react-bath","react-love");
+    void img.offsetWidth; // restart animation
+    img.classList.add(cls);
+    setTimeout(() => img.classList.remove(cls), 1500);
+    floats.forEach((emoji, i) => {
+      setTimeout(() => spawnFloatEmoji(emoji, i), i * 220);
+    });
+  }
+
+  function spawnFloatEmoji(emoji, idx) {
+    const wrapper = $("pet-wrapper");
+    if (!wrapper) return;
+    if (wrapper.querySelectorAll(".float-emoji").length > 8) return; // P1-6 cap
+    const el = document.createElement("span");
+    el.className = "float-emoji";
+    // Hearts get a pink tint to play with the female-oriented palette.
+    if (emoji === "♡" || emoji === "💕" || emoji === "💖") el.classList.add("heart");
+    el.textContent = emoji;
+    el.style.left = (50 + (idx % 2 === 0 ? -1 : 1) * (10 + Math.random() * 20)) + "%";
+    el.style.top  = "10%";
+    wrapper.appendChild(el);
+    setTimeout(() => el.remove(), 1500);
+  }
+
+  // Particle DOM cap so a unlucky combo (evolve + achievement + spam click)
+  // can't pile 50+ animated nodes on the stage.
+  const PARTICLE_CAP = 30;
+  function particleSlotsLeft(stage) {
+    return PARTICLE_CAP - stage.querySelectorAll(".particle").length;
+  }
+
+  function spawnAchievementParticles() {
+    const stage = $("stage");
+    if (!stage) return;
+    const slots = Math.min(8, particleSlotsLeft(stage));
+    if (slots <= 0) return;
+    const symbols = ["🏅","✨","⭐","🌟"];
+    for (let i = 0; i < slots; i++) {
+      const p = document.createElement("span");
+      p.className = "particle";
+      p.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+      const angle = (i / 8) * Math.PI * 2;
+      const dist = 70 + Math.random() * 30;
+      p.style.setProperty("--dx", Math.cos(angle) * dist + "px");
+      p.style.setProperty("--dy", Math.sin(angle) * dist + "px");
+      p.style.left = "50%";
+      p.style.top  = "55%";
+      p.style.animationDelay = (Math.random() * 0.2) + "s";
+      stage.appendChild(p);
+      setTimeout(() => p.remove(), 1700);
+    }
+  }
+
+  function spawnEvolveParticles() {
+    const stage = $("stage");
+    if (!stage) return;
+    const slots = Math.min(14, particleSlotsLeft(stage));
+    if (slots <= 0) return;
+    const symbols = ["✨","⭐","🌟","💫","✦"];
+    for (let i = 0; i < slots; i++) {
+      const p = document.createElement("span");
+      p.className = "particle";
+      p.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+      const angle = (i / slots) * Math.PI * 2 + Math.random() * 0.4;
+      // Mobile-safe distance: stage is 480px wide, so cap radius ~110.
+      const dist = 90 + Math.random() * 30;
+      p.style.setProperty("--dx", Math.cos(angle) * dist + "px");
+      p.style.setProperty("--dy", Math.sin(angle) * dist + "px");
+      p.style.left = "50%";
+      p.style.top  = "55%";
+      p.style.animationDelay = (Math.random() * 0.3) + "s";
+      stage.appendChild(p);
+      setTimeout(() => p.remove(), 1800);
+    }
+  }
+
+  // ============ Wants ============
+  // Pet broadcasts a specific desire. Fulfilling within the lifetime grants a
+  // chunky mood + coin bonus and growth nudge — a far stronger feedback than a
+  // generic random event because the player chose to satisfy *this specific* ask.
+  function maybeSpawnWant() {
+    if (state.pet.want) return;
+    if (state.pet.isSleeping) return;
+    if (state.pet.stage === "egg") return;
+    if (modalOpen) return;
+    if (Date.now() < (state.pet.wantCooldownUntil || 0)) return;
+    if (Math.random() > CFG.wants.spawnChance) return;
+    spawnWant();
+  }
+
+  function spawnWant() {
+    const stageOrder = ["egg", "chick", "junior", "adult"];
+    const curIdx = stageOrder.indexOf(state.pet.stage);
+    const eligible = CFG.wants.pool.filter(w => stageOrder.indexOf(w.stage) <= curIdx);
+    if (eligible.length === 0) return;
+    const pick = eligible[Math.floor(Math.random() * eligible.length)];
+    state.pet.want = {
+      id: pick.id,
+      needs: pick.needs,
+      text: pick.text,
+      icon: pick.icon,
+      spawnedAt: Date.now(),
+    };
+    SFX.want();
+    save();
+    render();
+  }
+
+  function expireWantIfStale() {
+    const w = state.pet.want;
+    if (!w) return;
+    if (Date.now() - w.spawnedAt < CFG.wants.lifetimeMs) return;
+    state.pet.want = null;
+    state.pet.wantCooldownUntil = Date.now() + CFG.wants.cooldownMs;
+    render();
+  }
+
+  function fulfillWantIfMatches(interactionKey) {
+    const w = state.pet.want;
+    if (!w) return;
+    if (w.needs !== interactionKey) return;
+    const r = CFG.wants.reward;
+    state.pet.stats.mood = clamp(state.pet.stats.mood + r.mood, 0, 100);
+    grantCoin(r.coin, "滿足願望");
+    state.pet.growthScore += r.growth;
+    state.pet.want = null;
+    state.pet.wantCooldownUntil = Date.now() + CFG.wants.cooldownMs;
+    toast(`💖 滿足了 ${w.icon} ${w.text} 的願望！`, "gold");
+    speak("謝謝主人！");
   }
 
   // ============ Random events ============
@@ -948,7 +1435,15 @@
     const el = document.createElement("button");
     el.className = "event-bubble";
     el.type = "button";
-    el.textContent = pick.emoji;
+    if (pick.art) {
+      const img = document.createElement("img");
+      img.src = pick.art;
+      img.alt = pick.label;
+      img.draggable = false;
+      el.appendChild(img);
+    } else if (pick.emoji) {
+      el.textContent = pick.emoji;
+    }
     el.title = pick.label;
     el.style.left = (15 + Math.random() * 70) + "%";
     el.style.top  = (10 + Math.random() * 25) + "%";
@@ -971,34 +1466,83 @@
     node.classList.add("leave");
     setTimeout(() => node.remove(), 250);
     if (!claimed) return;
-    def.apply(state);
+    const fn = RANDOM_EVENT_APPLIES[def.apply || def.id];
+    if (fn) fn(state);
+    if (def.id === "coin_drop") SFX.coin(); else SFX.event();
     state.pet.growthScore += 3;
+    if (def.id === "star") unlockAchievement("star_caught");
     save();
     render();
   }
 
   // ============ Idle behaviour ============
   let idleTimer = null;
+
+  // Picks a contextual line: stat distress > want nag > time-of-day flavor >
+  // stage flavor > generic quirk. Each branch is probabilistic so the same
+  // condition doesn't return the same kind of line every tick.
+  function pickContextualLine() {
+    const s = state.pet.stats;
+    const sp = CFG.speech;
+    // Critical stats first (return immediately so the player notices)
+    if (s.hunger < 8)  return rand0(sp.veryHungry);
+    if (s.mood   < 8)  return rand0(sp.verySad);
+    if (s.clean  < 8)  return rand0(sp.veryDirty);
+    if (s.energy < 8)  return rand0(sp.veryTired);
+    if (s.hunger < CFG.thresholds.low) return rand0(sp.hungry);
+    if (s.mood   < CFG.thresholds.low) return rand0(sp.sad);
+    if (s.clean  < CFG.thresholds.low) return rand0(sp.dirty);
+    if (s.energy < CFG.thresholds.low) return rand0(sp.tired);
+
+    // Active want nag — only sometimes, so it's a hint not spam
+    if (state.pet.want && Math.random() < 0.25) return rand0(sp.wantNag);
+
+    // All four stats >70 perfect bliss
+    const perfect = s.hunger > CFG.thresholds.high && s.mood > CFG.thresholds.high
+                 && s.clean  > CFG.thresholds.high && s.energy > CFG.thresholds.high;
+    if (perfect && Math.random() < 0.4) return rand0(sp.perfect);
+
+    // Probabilistic flavor pool (mix stage / time / quirk)
+    const r = Math.random();
+    if (r < 0.25) return rand0(sp[`stage_${state.pet.stage}`] || sp.idle);
+    if (r < 0.45) {
+      const h = new Date().getHours();
+      if (h >= 5  && h < 10) return rand0(sp.morning);
+      if (h >= 10 && h < 14) return rand0(sp.noon);
+      if (h >= 14 && h < 18) return rand0(sp.idle);
+      if (h >= 18 && h < 22) return rand0(sp.evening);
+      if (h >= 22 || h < 1)  return rand0(sp.night);
+      return rand0(sp.lateNight);
+    }
+    if (r < 0.55 && state.pet.finalForm) {
+      return rand0(sp[`form_${state.pet.finalForm}`] || sp.idle);
+    }
+    if (r < 0.62 && (state.economy?.feedCoin || 0) >= 200) return rand0(sp.rich);
+    if (r < 0.78) return rand0(sp.quirk);
+    return rand0(sp.idle);
+  }
+
   function startIdleSpeech() {
     if (idleTimer) clearInterval(idleTimer);
     idleTimer = setInterval(() => {
       if (modalOpen || state.pet.isSleeping) return;
-      const s = state.pet.stats;
-      let line;
-      if (s.hunger < CFG.thresholds.low) line = rand0(CFG.speech.hungry);
-      else if (s.mood < CFG.thresholds.low) line = rand0(CFG.speech.sad);
-      else if (s.clean < CFG.thresholds.low) line = rand0(CFG.speech.dirty);
-      else if (s.energy < CFG.thresholds.low) line = rand0(CFG.speech.tired);
-      else if (Math.random() < 0.35) line = rand0(CFG.speech.idle);
+      // Slightly biased: ~70% chance to actually speak (silence is also character).
+      if (Math.random() > 0.7) return;
+      const line = pickContextualLine();
       if (line) speak(line);
     }, 8000);
   }
 
   // ============ Bootstrap ============
+  function applyReducedMotionPref() {
+    document.body.classList.toggle("reduce-motion", !!state.settings?.reducedMotion);
+  }
+
   function init() {
     state = load();
     const { elapsedMs } = reconcileOffline();
     handleDailyLogin();
+    applyReducedMotionPref();
     save();
 
     // wire up buttons
@@ -1009,6 +1553,7 @@
     $("btn-pet").onclick     = openPetMenu;
     $("btn-settings").onclick = openSettingsMenu;
     $("btn-dex").onclick     = openDexMenu;
+    $("btn-ach").onclick     = openAchievementsMenu;
     $("pet-wrapper").onclick = () => performInteraction("pet_head");
     $("stage-name").onclick  = openNameDialog;
     $("stage-name").style.cursor = "pointer";
@@ -1019,10 +1564,29 @@
     startTick();
     autoSaveTimer = setInterval(save, CFG.save.autosaveMs);
     eventTimer = setInterval(maybeSpawnEvent, CFG.randomEvents.spawnIntervalMs);
+    wantsTimer = setInterval(() => { expireWantIfStale(); maybeSpawnWant(); }, CFG.wants.spawnIntervalMs);
     startIdleSpeech();
 
     // visibility — when hidden, freeze online tick and let offline reconcile
     // reapply on resume. Avoids ~8h backgrounded tab being treated as online.
+    // P1-2: cross-tab race. If another tab writes the save, this tab is now stale.
+    // Drop into read-only and prompt for refresh; users see exactly one warning.
+    window.addEventListener("storage", e => {
+      if (e.key !== CFG.save.key) return;
+      if (isReadOnlyTab) return;
+      isReadOnlyTab = true;
+      if (tickTimer) { clearInterval(tickTimer); tickTimer = null; }
+      showModal({
+        title: "⚠️ 在另一個分頁開啟",
+        body: `<p style="text-align:center;line-height:1.7;">
+          偵測到另一個分頁正在玩啾啾日常。<br>
+          這個分頁會停在唯讀模式。<br><br>
+          <small class="muted">點重新整理可接續另一個分頁的進度。</small>
+        </p>`,
+        buttons: [{ label: "重新整理", close: false, action: () => location.reload() }],
+      });
+    });
+
     document.addEventListener("visibilitychange", () => {
       if (document.hidden) {
         save();
@@ -1039,6 +1603,30 @@
     });
     window.addEventListener("focus", () => { lastVisibleAt = Date.now(); });
     window.addEventListener("beforeunload", save);
+
+    // Keyboard shortcuts. ESC closes modals (review-v2 P2-8 a11y). Number keys
+    // hit primary actions; letters open header menus. Skip when typing in inputs.
+    window.addEventListener("keydown", e => {
+      const tag = (e.target && e.target.tagName) || "";
+      if (tag === "INPUT" || tag === "TEXTAREA") return;
+      if (e.key === "Escape" && modalOpen) { closeModal(); return; }
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      if (modalOpen) return; // don't fire game shortcuts while a menu is open
+      switch (e.key) {
+        case "1": openFeedMenu(); break;
+        case "2": openPlayMenu(); break;
+        case "3": performInteraction("bath"); break;
+        case "4": toggleSleep(); break;
+        case "5": openPetMenu(); break;
+        case "a": case "A": openAchievementsMenu(); break;
+        case "d": case "D": openDexMenu(); break;
+        case "s": case "S": openSettingsMenu(); break;
+        case "n": case "N": openNameDialog(); break;
+        case "?": case "h": case "H": openHelpDialog(); break;
+        default: return;
+      }
+      e.preventDefault();
+    });
 
     // first-time greeting
     render();
@@ -1065,6 +1653,21 @@
       maybeEvolve();
       render();
     }, 1000);
+  }
+
+  function openHelpDialog() {
+    showModal({
+      title: "⌨️ 鍵盤快捷鍵",
+      body: `<div class="modal-list" style="font-size:14px;line-height:1.7;">
+        <div class="settings-row"><span><kbd>1</kbd> 餵食</span><span><kbd>2</kbd> 玩耍</span></div>
+        <div class="settings-row"><span><kbd>3</kbd> 洗澡</span><span><kbd>4</kbd> 睡眠</span></div>
+        <div class="settings-row"><span><kbd>5</kbd> 愛撫</span><span><kbd>N</kbd> 取名</span></div>
+        <div class="settings-row"><span><kbd>A</kbd> 成就</span><span><kbd>D</kbd> 圖鑑</span></div>
+        <div class="settings-row"><span><kbd>S</kbd> 設定</span><span><kbd>ESC</kbd> 關閉視窗</span></div>
+        <div class="settings-row"><span><kbd>?</kbd> 顯示這份提示</span><span></span></div>
+      </div>`,
+      buttons: [{ label: "好的", close: true }],
+    });
   }
 
   function showOnboarding() {

@@ -1,24 +1,44 @@
 # AI 生圖 Prompt 清單 — 啾啾日常 (ChickaDay)
 
-> 用途：把 SVG 占位圖換成 GPT/Gemini 生成的 PNG。
-> 所有 prompt 設計為**可獨立貼上使用**（複製整段含「全域風格」+ 主體段落）。
-> 建議匯出尺寸：512×512 PNG，透明背景（背景圖除外）。
+> ⚠️ **生圖前必讀**：[`docs/character-sheet.md`](character-sheet.md) — 角色設定書是單一真相之源。
+> 不讀那份直接生圖會生出 18 隻不同的雞，**整套作廢**。
+
+> 用途：把 SVG 占位圖換成 PNG（推薦 Midjourney v6 + `--cref`）。
+> 工作流程：先生 1 張**官方 v1 雛雞**參考圖 → 後續每張用它當 character reference。
+> 詳見 character-sheet.md §6。
 
 ---
 
-## 全域風格（每張都要保留這段）
+## 全域風格 + 角色錨定（每張都要保留這整段）
 
 ```
-Style: cute cartoon, soft pastel palette, thick black outlines (~3px), flat shading
-with light gradient highlights, centered subject, friendly rounded shapes, big head
-small body proportions, large expressive eyes. Avoid neon colors, photorealism, dark
-or scary tones. Output: 512×512 PNG with transparent background unless otherwise noted.
-Color palette to use: warm yellow #FFD86B, orange #FF9F43, brown #8B5A2B, cream
+SUBJECT IDENTITY (must apply to ALL variants — same individual across all images):
+A single small chick character named "Chickaboo" (啾啾). Identity is fixed:
+- Body color: warm yellow #FFD86B (NEVER lemon, mustard, neon, or pure yellow)
+- Eyes: large round black dots with single white highlight on upper-left
+- Beak: small downward-pointing orange triangle (#FF9F43), narrow (≈14% head width)
+- Body proportion: head as large as or larger than body, round and plump
+- Outline: thick black ink ~3px equivalent
+- Style: cute cartoon, flat shading + light gradient highlight, NO realism
+
+STYLE: cute cartoon, soft pastel palette, thick black outlines, flat shading with
+light gradient highlights, centered subject, friendly rounded shapes, big head small
+body proportions, large expressive eyes. Avoid neon colors, photorealism, dark or
+scary tones.
+
+PALETTE (only use these): warm yellow #FFD86B, orange #FF9F43, brown #8B5A2B, cream
 #FFF8E7, ink black #2C2C2C, sky blue #6BCBFF, leaf green #6BCB77, soft pink #FFB7B7,
 crimson #B23A48.
+
+OUTPUT: 512×512 PNG, transparent background unless explicitly background image.
+
+FORBIDDEN: lemon yellow, duck-shaped beak, anthropomorphic human pose, 3D realistic
+feathers, almond-shaped eyes, double pupils.
+
+This is the SAME individual chick across all stages and moods.
 ```
 
-> 中文：可愛卡通、柔和粉彩配色、粗黑線條、平塗加微漸層高光、主體置中、友善圓潤形狀、大頭小身、大眼有神。避免螢光、寫實、暗色恐怖。512×512 PNG 透明背景（除背景圖）。
+> 中文：上面整段是「角色錨定 + 風格 + 色票 + 禁止項」，**每張 prompt 必須完整貼上**。然後再加各別狀態描述。
 
 ---
 
@@ -189,11 +209,32 @@ bottom for placing a chicken character.
 
 ## 使用建議
 
-1. **批次生成**：複製整段 prompt → 貼到 GPT-4 Image / Gemini → 一張一張生。
-2. **保持一致性**：每張都帶上「全域風格」段落，否則色票和線條粗細會跑掉。
-3. **修圖**：生出後可能要在 Photoshop / Photopea 用魔法棒去背一次，確保透明 PNG 乾淨。
-4. **命名規則**：生出的 PNG 直接覆蓋同名 SVG 即可（同檔名換副檔名 `.png`），程式會自動切換到 PNG。
-5. **替換時機**：MVP 上線後不急，先跑遊戲性。等玩家回饋穩定後再投入美術。
+### 推薦工作流程（角色一致性優先）
+
+1. **先生 v1 參考圖**：用 #3 雛雞 prompt + Midjourney `/imagine` → 從 4 張選 1 張**最符合 character-sheet §1.2 五項視覺 DNA** 的圖 → **這就是你的「官方 v1」**
+2. **過 character-sheet §8 五道 gating checklist**：色 / 眼 / 喙 / 線稿 / 比例 5 項全過才能升上 v1
+3. **後續每張**：`/imagine [上面的 prompt] --cref [v1 圖片 URL] --cw 80`，僅變狀態描述
+4. **檢查相鄰圖**：每張新圖跟 v1 並排看，問自己「這是同一隻雞嗎？」
+5. **去背**：MJ 出來通常有背景，用 [remove.bg](https://remove.bg) 或 Photopea 魔法棒去背
+6. **命名**：生出的 PNG 直接覆蓋同名 SVG 即可（同檔名換副檔名 `.png`），程式 `CFG.petArt` 改副檔名一行就完成切換
+
+### Workflow Anti-pattern（不要這樣做）
+
+❌ **平行 batch**：一次貼 18 條 prompt 給 GPT-image 或無 `--cref` 的 MJ → 18 隻不同雞
+❌ **跳過 v1**：直接從成雞分支開始生 → 沒有錨點，後續每張漂移
+❌ **混工具**：先 MJ 生雛雞、再 Gemini 生成雞 → 兩家風格 bias 不同會分裂
+
+### 成本與時程估算
+
+- v1 雛雞參考圖：MJ 30 分鐘（含挑圖 + gating），$10/月訂閱
+- 完整 18 張：~3 小時（v1 鎖好之後每張 5–10 分鐘）
+- LoRA 路線（如果想長期穩定）：先準備 10–15 張 v1 變體 → 訓練 ~1 小時 → 後續一鍵生圖
+
+### 替換時機
+
+- v0.1 MVP：先用 SVG 占位（已完成 19 張）
+- v0.2 起步：**先生 v1 雛雞，鎖角色** → 再陸續換其他狀態
+- v0.3 公開：18 張 PNG 全完成，過 gating
 
 ---
 

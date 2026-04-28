@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <ellipse cx="35" cy="40" rx="22" ry="14" fill="#FFFFFF" stroke="#2C2C2C" stroke-width="2.5" opacity="0.85"/>
+  <ellipse cx="65" cy="40" rx="22" ry="14" fill="#FFFFFF" stroke="#2C2C2C" stroke-width="2.5" opacity="0.85"/>
+  <ellipse cx="50" cy="60" rx="20" ry="14" fill="#2C2C2C"/>
+  <ellipse cx="42" cy="55" rx="6" ry="5" fill="#FF9F43"/>
+  <ellipse cx="58" cy="55" rx="6" ry="5" fill="#FF9F43"/>
+  <circle cx="42" cy="55" r="2.5" fill="#2C2C2C"/>
+  <circle cx="58" cy="55" r="2.5" fill="#2C2C2C"/>
+  <circle cx="43" cy="54" r="0.8" fill="#FFFFFF"/>
+  <circle cx="59" cy="54" r="0.8" fill="#FFFFFF"/>
+  <line x1="46" y1="48" x2="44" y2="42" stroke="#2C2C2C" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="54" y1="48" x2="56" y2="42" stroke="#2C2C2C" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="40" y1="72" x2="38" y2="80" stroke="#2C2C2C" stroke-width="2" stroke-linecap="round"/>
+  <line x1="60" y1="72" x2="62" y2="80" stroke="#2C2C2C" stroke-width="2" stroke-linecap="round"/>
+  <line x1="50" y1="74" x2="50" y2="84" stroke="#2C2C2C" stroke-width="2" stroke-linecap="round"/>
+</svg>

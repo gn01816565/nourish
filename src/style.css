@@ -7,6 +7,8 @@
   --c-blue: #6BCBFF;
   --c-green: #6BCB77;
   --c-pink: #FFB7B7;
+  --c-pink-deep: #FF89A7;       /* 桃紅 — 主強調 */
+  --c-pink-soft: #FFE0E8;       /* 淺粉 — 大面積背景用 */
   --c-red: #B23A48;
   --c-bg: #FFEFC1;
   --c-card: #FFFFFF;
@@ -16,7 +18,9 @@
   --c-low:  #FF9F43;
   --c-bad:  #B23A48;
 
-  --radius: 14px;
+  /* TA = 女性向：圓角拉大、曲線優先（character-sheet §10.1） */
+  --radius: 20px;
+  --radius-sm: 14px;
   --shadow: 0 4px 14px rgba(44, 44, 44, 0.12);
   --font: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
 }
@@ -25,7 +29,8 @@
 
 html, body {
   height: 100%;
-  background: linear-gradient(160deg, #FFE6B0 0%, #FFEFC1 50%, #FFD9E0 100%);
+  /* 粉色比例提高：粉紅在中段、淺粉在尾段、暖黃只佔起始小段 */
+  background: linear-gradient(160deg, #FFE6B0 0%, #FFD9E0 45%, #FFCFE2 100%);
   font-family: var(--font);
   color: var(--c-ink);
   -webkit-font-smoothing: antialiased;
@@ -41,7 +46,23 @@ html, body {
   grid-template-rows: auto auto 1fr auto auto;
   background: var(--c-cream);
   box-shadow: var(--shadow);
+  position: relative;
 }
+/* 女性向裝飾：app 兩側若有空間，飄一些粉色愛心 */
+#app::before, #app::after {
+  content: "♡";
+  position: fixed;
+  top: 50%;
+  font-size: 50px;
+  color: var(--c-pink);
+  opacity: 0.18;
+  pointer-events: none;
+  z-index: 0;
+  transform: translateY(-50%);
+}
+#app::before { left: calc(50% - 320px); transform: translateY(-50%) rotate(-12deg); }
+#app::after  { right: calc(50% - 320px); transform: translateY(-50%) rotate(15deg); }
+@media (max-width: 720px) { #app::before, #app::after { display: none; } }
 
 /* ============ Header ============ */
 .header {
@@ -49,7 +70,8 @@ html, body {
   justify-content: space-between;
   align-items: center;
   padding: 10px 16px;
-  background: linear-gradient(135deg, var(--c-yellow), var(--c-orange));
+  /* 黃 → 粉漸層，比純黃柔和女性化（character-sheet §10.1） */
+  background: linear-gradient(135deg, var(--c-yellow), var(--c-pink));
   border-bottom: 3px solid var(--c-ink);
 }
 .logo { display: flex; align-items: center; gap: 8px; }
@@ -110,20 +132,31 @@ html, body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pet, .pet-shadow { animation: none !important; }
+  .pet, .pet-shadow, .pet.pre-evolve { animation: none !important; }
   .stage.sleeping::after { animation: none !important; }
   .toast { animation: toast-in 0.001s ease-out, toast-out 0.001s ease-in 1.7s forwards; }
   .stat[data-warn="true"] .bar-fill,
   .stat[data-warn="true"] .stat-icon,
   .stat[data-warn="true"] .stat-label { animation: none !important; }
 }
+/* Manual toggle from settings page (overrides system pref off-state). */
+body.reduce-motion .pet,
+body.reduce-motion .pet-shadow,
+body.reduce-motion .pet.pre-evolve,
+body.reduce-motion .stage.sleeping::after,
+body.reduce-motion .stat[data-warn="true"] .bar-fill,
+body.reduce-motion .stat[data-warn="true"] .stat-icon,
+body.reduce-motion .stat[data-warn="true"] .stat-label,
+body.reduce-motion .event-bubble,
+body.reduce-motion .want-bubble { animation: none !important; }
+body.reduce-motion .toast { animation: toast-in 0.001s ease-out, toast-out 0.001s ease-in 1.7s forwards; }
 
 .coin {
   grid-column: span 2;
   text-align: center;
-  background: linear-gradient(90deg, var(--c-yellow), #FFEC8B);
+  background: linear-gradient(90deg, var(--c-yellow), #FFEC8B, var(--c-pink-soft));
   border: 2px solid var(--c-ink);
-  border-radius: var(--radius);
+  border-radius: 999px;
   padding: 4px 10px;
   font-weight: 700;
   font-size: 13px;
@@ -187,6 +220,61 @@ html, body {
 .pet-wrapper:active .pet { transform: scale(0.96); }
 .pet.dim { filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15)) saturate(0.5) brightness(0.85); }
 .pet.evolving { animation: evolve-flash 0.6s ease-in-out 5; }
+.pet.pre-evolve { animation: bob 2.5s ease-in-out infinite, pre-evolve-glow 2.6s ease-in-out infinite; }
+
+@keyframes pre-evolve-glow {
+  0%, 100% { filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15)) drop-shadow(0 0 0px #FFEC8B); }
+  50%      { filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15)) drop-shadow(0 0 14px #FFEC8B); }
+}
+
+/* Reaction animations override the idle bob while playing */
+.pet.react-eat   { animation: pet-eat 0.45s ease-in-out 3; }
+.pet.react-shake { animation: pet-shake 0.55s ease-in-out 2; }
+.pet.react-bath  { animation: pet-bath 0.6s ease-in-out 3; }
+.pet.react-love  { animation: pet-love 0.5s ease-in-out 2; }
+
+@keyframes pet-eat {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  40%      { transform: translateY(14px) rotate(-2deg); }
+  70%      { transform: translateY(0) rotate(0); }
+}
+@keyframes pet-shake {
+  0%, 100% { transform: translateX(0) rotate(0); }
+  20%      { transform: translateX(-12px) rotate(-6deg); }
+  40%      { transform: translateX(10px)  rotate(5deg); }
+  60%      { transform: translateX(-8px)  rotate(-4deg); }
+  80%      { transform: translateX(6px)   rotate(3deg); }
+}
+@keyframes pet-bath {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px) scale(1.04); }
+}
+@keyframes pet-love {
+  0%, 100% { transform: scale(1); }
+  40%      { transform: scale(1.08); }
+  70%      { transform: scale(0.96); }
+}
+
+/* Floating reaction emojis (hearts on pet, bubbles on bath) */
+.float-emoji {
+  position: absolute;
+  z-index: 6;
+  font-size: 26px;
+  pointer-events: none;
+  animation: float-up 1.4s ease-out forwards;
+  filter: drop-shadow(0 1px 3px rgba(0,0,0,0.25));
+}
+.float-emoji.heart {
+  color: var(--c-pink-deep);
+  font-size: 28px;
+  text-shadow: 0 0 6px var(--c-pink), 0 0 12px var(--c-pink-soft);
+  filter: drop-shadow(0 1px 3px rgba(255, 137, 167, 0.45));
+}
+@keyframes float-up {
+  0%   { transform: translate(-50%, 0)    scale(0.5); opacity: 0; }
+  20%  { transform: translate(-50%, -18px) scale(1.2); opacity: 1; }
+  100% { transform: translate(-50%, -90px) scale(0.7); opacity: 0; }
+}
 
 .mood-icon {
   position: absolute;
@@ -213,6 +301,50 @@ html, body {
   pointer-events: none;
   animation: pop 0.3s ease-out;
 }
+
+/* Wants bubble: yellow + ! mark, longer-lived (until fulfilled or 5 min) */
+.want-bubble {
+  position: absolute;
+  top: -46px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #FFEC8B, #FFD86B);
+  border: 2px solid var(--c-ink);
+  border-radius: 14px;
+  padding: 5px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  z-index: 5;
+  animation: want-pop 0.4s ease-out, want-bob 1.6s ease-in-out 0.4s infinite;
+  box-shadow: 0 3px 0 var(--c-ink);
+}
+.want-bubble::after {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0; height: 0;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-top: 8px solid var(--c-ink);
+}
+.want-bubble .want-mark {
+  display: inline-block;
+  margin-left: 4px;
+  color: var(--c-red);
+  font-weight: 900;
+}
+@keyframes want-pop {
+  0%   { transform: translate(-50%, 8px) scale(0.5); opacity: 0; }
+  60%  { transform: translate(-50%, -2px) scale(1.1); opacity: 1; }
+  100% { transform: translate(-50%, 0) scale(1); opacity: 1; }
+}
+@keyframes want-bob {
+  0%, 100% { transform: translate(-50%, 0); }
+  50%      { transform: translate(-50%, -4px); }
+}
 .speech-bubble::after {
   content: "";
   position: absolute;
@@ -236,6 +368,9 @@ html, body {
   font-weight: 700;
   border: 2px solid var(--c-ink);
 }
+#stage-name { transition: background 0.2s; padding: 0 4px; border-radius: 6px; }
+#stage-name:hover { background: rgba(255, 216, 107, 0.6); }
+#stage-name::after { content: " ✏️"; font-size: 10px; opacity: 0.5; }
 .stage-sep { margin: 0 6px; opacity: 0.5; }
 
 @keyframes bob {
@@ -256,11 +391,27 @@ html, body {
   50% { filter: drop-shadow(0 0 30px white) brightness(1.5); }
 }
 
+.particle {
+  position: absolute;
+  z-index: 5;
+  font-size: 22px;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  animation: particle-fly 1.6s ease-out forwards;
+  filter: drop-shadow(0 0 4px rgba(255, 240, 150, 0.9));
+}
+@keyframes particle-fly {
+  0%   { opacity: 0;   transform: translate(-50%, -50%) scale(0.4); }
+  20%  { opacity: 1;   transform: translate(-50%, -50%) scale(1.2); }
+  100% { opacity: 0;
+         transform: translate(calc(-50% + var(--dx, 0px)), calc(-50% + var(--dy, 0px))) scale(0.6) rotate(180deg); }
+}
+
 .event-bubble {
   position: absolute;
   z-index: 4;
   font-size: 32px;
-  width: 54px; height: 54px;
+  width: 60px; height: 60px;
   border: 2px solid var(--c-ink);
   background: white;
   border-radius: 50%;
@@ -269,6 +420,13 @@ html, body {
   box-shadow: 0 3px 0 var(--c-ink);
   animation: event-pop 0.35s ease-out, event-bob 1.4s ease-in-out 0.35s infinite;
   padding: 0;
+  overflow: hidden;
+}
+.event-bubble img {
+  width: 78%;
+  height: 78%;
+  pointer-events: none;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.15));
 }
 .event-bubble:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--c-ink); }
 .event-bubble.leave { animation: event-leave 0.25s forwards; }
@@ -313,7 +471,7 @@ html, body {
   justify-content: center;
   gap: 4px;
   padding: 10px 4px;
-  background: white;
+  background: linear-gradient(180deg, #FFFFFF, var(--c-pink-soft));
   border: 2px solid var(--c-ink);
   border-radius: var(--radius);
   font-family: inherit;
@@ -324,6 +482,9 @@ html, body {
   position: relative;
   transition: transform 0.08s, background 0.2s;
   box-shadow: 0 3px 0 var(--c-ink);
+}
+.action-btn:hover:not(:disabled) {
+  background: linear-gradient(180deg, #FFFFFF, var(--c-pink));
 }
 .action-btn:active:not(:disabled) {
   transform: translateY(2px);
@@ -390,13 +551,16 @@ html, body {
   padding: 10px 12px;
   background: white;
   border: 2px solid var(--c-ink);
-  border-radius: 12px;
+  border-radius: 16px;
   cursor: pointer;
   font-family: inherit;
   font-size: 14px;
   font-weight: 600;
-  transition: transform 0.08s;
+  transition: transform 0.08s, background 0.2s;
   box-shadow: 0 2px 0 var(--c-ink);
+}
+.menu-item:hover:not(:disabled) {
+  background: var(--c-pink-soft);
 }
 .menu-item:active:not(:disabled) { transform: translateY(1px); box-shadow: 0 1px 0 var(--c-ink); }
 .menu-item:disabled { opacity: 0.45; cursor: not-allowed; }
@@ -409,9 +573,9 @@ html, body {
   display: block;
   margin: 14px auto 0;
   padding: 8px 24px;
-  background: var(--c-yellow);
+  background: linear-gradient(180deg, var(--c-yellow), var(--c-pink));
   border: 2px solid var(--c-ink);
-  border-radius: 12px;
+  border-radius: 999px;
   font-family: inherit;
   font-weight: 700;
   cursor: pointer;
@@ -488,6 +652,20 @@ html, body {
 
 /* small text helpers */
 .muted { opacity: 0.6; font-size: 11px; }
+
+/* keyboard hint chip */
+kbd {
+  display: inline-block;
+  background: white;
+  border: 1.5px solid var(--c-ink);
+  border-radius: 6px;
+  padding: 1px 6px;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  box-shadow: 0 2px 0 var(--c-ink);
+  margin: 0 2px;
+}
 .center { text-align: center; }
 .welcome-back {
   font-size: 14px;

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <defs>
+    <radialGradient id="starGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFEC8B" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#FFD86B" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <circle cx="50" cy="50" r="48" fill="url(#starGlow)"/>
+  <polygon points="50,12 60,40 90,42 66,60 76,90 50,72 24,90 34,60 10,42 40,40"
+           fill="#FFEC8B" stroke="#FF9F43" stroke-width="3" stroke-linejoin="round"/>
+  <polygon points="50,22 56,42 74,43 60,55 66,76 50,64 34,76 40,55 26,43 44,42"
+           fill="#FFD86B"/>
+  <ellipse cx="42" cy="38" rx="6" ry="4" fill="#FFFFFF" opacity="0.7" transform="rotate(-25 42 38)"/>
+  <text x="20" y="22" font-size="10" fill="#FFFFFF">✦</text>
+  <text x="78" y="80" font-size="10" fill="#FFFFFF">✦</text>
+</svg>
