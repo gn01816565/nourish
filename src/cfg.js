@@ -71,6 +71,8 @@
       dressup_collector: { icon:"💎", label:"衣櫥達人", desc:"擁有全部飾品" },
       elder_week:     { icon:"🌅", label:"相伴一週",   desc:"成雞陪伴 7 天" },
       elder_month:    { icon:"💖", label:"終生伴侶",   desc:"成雞陪伴 30 天" },
+      face_first:     { icon:"🕶️", label:"Cool Cat",   desc:"購入第一件臉部飾品" },
+      dressup_full:   { icon:"💯", label:"全副武裝",   desc:"同時配戴頭飾、臉部、項鍊、翅膀 4 種 slot" },
     },
     wants: {
       lifetimeMs: 5 * 60 * 1000,
@@ -172,8 +174,8 @@
       flower:   { slot:"hat",  art:"assets/images/acc-flower.png",   label:"粉色花環",   icon:"🌸", price:200 },
       crown:    { slot:"hat",  art:"assets/images/acc-crown.png",    label:"閃耀皇冠",   icon:"👑", price:500 },
       sunglasses: { slot:"face", art:"assets/images/acc-sunglasses.png", label:"心形墨鏡", icon:"🕶️", price:180 },
-      scarf:    { slot:"neck", art:"assets/images/acc-scarf.png",    label:"毛茸圍巾",   icon:"🧣", price:150 },
       necklace: { slot:"neck", art:"assets/images/acc-necklace.png", label:"珍珠項鍊",   icon:"📿", price:180 },
+      scarf:    { slot:"neck", art:"assets/images/acc-scarf.png",    label:"毛茸圍巾",   icon:"🧣", price:150 },
       wings:       { slot:"wing", art:"assets/images/acc-wings-angel.png", label:"夢幻翅膀", icon:"🪽", price:350 },
       wings_fairy: { slot:"wing", art:"assets/images/acc-wings-fairy.png", label:"彩虹翅膀", icon:"🌈", price:480 },
     },

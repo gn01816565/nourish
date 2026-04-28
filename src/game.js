@@ -46,7 +46,7 @@
         want: null,                  // active want (see CFG.wants); null when none
         wantCooldownUntil: 0,        // ms timestamp; suppress new spawns before this
         isSleeping: false,
-        appearance: { hat: null, neck: null, wing: null }, // currently-equipped accessory id per slot
+        appearance: { hat: null, face: null, neck: null, wing: null }, // currently-equipped accessory id per slot
         ownedAccessories: {},                              // id → unlockedAt; persisted across pets
       },
       economy: { feedCoin: 50, totalEarned: 50, totalSpent: 0 },
@@ -469,6 +469,10 @@
       ["dressup_first", Object.keys(state.pet.ownedAccessories || {}).length >= 1],
       ["dressup_set",   !!(state.pet.appearance?.hat && state.pet.appearance?.neck && state.pet.appearance?.wing)],
       ["dressup_collector", Object.keys(state.pet.ownedAccessories || {}).length >= Object.keys(CFG.accessories).length],
+      ["face_first", Object.entries(state.pet.ownedAccessories || {})
+                       .some(([id]) => CFG.accessories[id]?.slot === "face")],
+      ["dressup_full", !!(state.pet.appearance?.hat && state.pet.appearance?.face
+                          && state.pet.appearance?.neck && state.pet.appearance?.wing)],
       ["elder_week",    state.pet.stage === "adult"
                           && (Date.now() - state.pet.stageStartedAt) >= 7  * 86400000],
       ["elder_month",   state.pet.stage === "adult"
@@ -618,7 +622,7 @@
     }
 
     // accessory overlays (all slots, iterate)
-    const ACC_SLOTS = ["hat", "neck", "wing"];
+    const ACC_SLOTS = ["hat", "face", "neck", "wing"];
     const eqByPet = state.pet.appearance || {};
     ACC_SLOTS.forEach(slot => {
       const equipId = eqByPet[slot];
@@ -921,8 +925,8 @@
   function openShopMenu() {
     const equipped = state.pet.appearance || {};
     // Group by slot so the catalog stays scannable as it grows.
-    const SLOT_LABELS = { hat: "👒 頭飾", neck: "📿 項鍊 / 圍巾", wing: "🪽 翅膀" };
-    const SLOT_ORDER = ["hat", "neck", "wing"];
+    const SLOT_LABELS = { hat: "👒 頭飾", face: "🕶️ 臉部", neck: "📿 項鍊 / 圍巾", wing: "🪽 翅膀" };
+    const SLOT_ORDER = ["hat", "face", "neck", "wing"];
     const grouped = {};
     Object.entries(CFG.accessories).forEach(([id, c]) => {
       (grouped[c.slot] = grouped[c.slot] || []).push({ id, c });

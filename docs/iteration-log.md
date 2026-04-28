@@ -4,6 +4,134 @@
 
 ---
 
+## 2026-04-28 22:30 · Session A — INTENT: 2 條 face slot 成就 + session-b-tasks.md 清理
+
+(進行中)
+
+---
+
+## 2026-04-28 22:22 · Session A — 撞檔處理：face slot 接線 + 去除 SKU 重複 entry
+
+**觸發**：cron 第 36 輪 — 我在做新 SKU 同時 Session B 也並行做完同樣兩件 + 多了「sunglasses face slot」+「earbuds / collar 失敗」紀錄。
+**為什麼**：cfg.js 同時段被雙方寫入，產生 `scarf` 兩條重複 key（後者會覆蓋前者，原 PNG path 失效）+ `partyhat` / `party_hat` 兩件視覺一樣的不同 SKU + Session B 加的 `face` slot 在 game.js / share.js / index.html / style.css 都還沒接線，sunglasses 戴上去看不見。
+
+**動作（去重）**：
+- 移除我加的 `partyhat` (svg) 和 `scarf` (svg) 兩條 cfg.js entry — Session B 的 PNG 版本品質更好且已有 ComfyUI 出爐
+- 保留我寫的 `acc-partyhat.svg` / `acc-scarf.svg` 在 `assets/svg/`（無害備份，未來換 model 重生 PNG 失敗時可回退）
+- 結果：cfg.js 每件配件只有 1 個 key，無覆蓋風險
+
+**動作（face slot 接線完整鏈）**：
+- `defaultState.pet.appearance` 加 `face: null`（deepMerge 對舊存檔安全）
+- `index.html` 加 `<img class="accessory face" id="acc-face">`（**位置在 pet-img 之後**，z-index 4 蓋在頭部上）
+- `style.css` `.accessory.face`：top 38px / 70×70 / z-index 4（在 hat 之下）
+- `game.js render` 的 `ACC_SLOTS` 從 `["hat", "neck", "wing"]` → `["hat", "face", "neck", "wing"]`
+- `share.js` `ACC_DRAW` 加 face 條目：`{ x:0.5, y:0.30, size:0.34 }`（眼睛位置 30%、占 34% 寬）
+- `openShopMenu` 的 `SLOT_LABELS` / `SLOT_ORDER` 加「🕶️ 臉部」介於頭飾與項鍊之間
+
+**影響檔案**：
+- `src/cfg.js`（去重 -2 entries）
+- `src/game.js`（appearance schema + ACC_SLOTS + SLOT_LABELS + SLOT_ORDER 各加 face）
+- `src/share.js`（ACC_DRAW 加 face 條目）
+- `src/style.css`（+9 行 .accessory.face）
+- `index.html`（+1 face overlay img）
+
+**驗證**：
+- `node --check cfg.js game.js share.js` ✅
+- `grep -c "scarf:" cfg.js` = 1（無重複）
+- 4 個 slot 全部上線：hat / face / neck / wing
+
+**雙 session 撞檔原因覆盤**：
+- 我和 Session B 在同 10 分鐘內都看到「session-b-tasks.md §4 列了 partyhat / scarf」，都選了它們做，結果一個寫 SVG 一個寫 PNG
+- **應該避免**：寫 INTENT 後 Session B 應該也 update tasks.md「進行中」標記避免撞檔，或我在 INTENT 階段就先 grep 確認沒人在做
+- 目前 CLAUDE.md §6.2 已寫「先寫 INTENT 佔位告訴另一個 session」，但兩邊步調太接近時仍會撞
+
+**對玩家的影響**（總結 9 件配件 / 4 slots）：
+- 👒 頭飾 5 件：髮帶 80 / 派對帽 100 / 蝴蝶結 120 / 花環 200 / 皇冠 500
+- **🕶️ 臉部 1 件**（新 slot）：心形墨鏡 180
+- 📿 項鍊 / 圍巾 2 件：圍巾 150 / 珍珠項鍊 180
+- 🪽 翅膀 2 件：天使 350 / 仙女 480
+- 全套搭配 4 slots 同時戴需 1110 FC（hat 80 + face 180 + neck 150 + wing 350 = 760 FC 起步、攻頂版本 500+180+180+480 = 1340 FC）
+- 全收集 9 件總價 **2360 FC**
+
+**dressup_set 成就邏輯**：目前判定「同時戴 hat + neck + wing」，未把 face 列入必要條件 — 這樣對既有玩家公平（face 是 v0.4 後加的，不應追溯改變達成條件）
+
+**下輪候選**：
+1. 多寵物 v0.4
+2. 推播通知（Notification）
+3. R-1 step 4 拆 UI primitives
+4. 加新成就「Cool Cat」: 配戴 sunglasses（鼓勵 face slot 採購）
+
+---
+
+## 2026-04-28 22:14 · Session A — 新配件 SKU ×2（派對帽 100 FC + 圍巾 150 FC）
+
+**觸發**：cron 第 36 輪
+**為什麼**：商店 slot 分組後（上輪），玩家會明顯注意到「項鍊只有 1 件」「頭飾入門價 80 FC 只有髮帶 1 件」 — 都是空缺。session-b-tasks.md §4 預先設計了 5 個未來配件 prompt，挑兩個最缺位的快速補上。
+
+**動作（兩張新 SVG，character-sheet §1.3 色票）**：
+
+- **`acc-partyhat.svg`** (hat slot, **100 FC**)：
+  - 三角錐形粉色帽 + 深粉橢圓帽底
+  - 5 顆白色 polka dots 點綴
+  - 頂端金色 ✦ 五角星 + 橘色描邊
+  - 旁邊飄浮 ✦ 裝飾 + 高光斜線
+  - 定位：頭飾「中間階」入門 — 比髮帶 80 貴一階、比蝴蝶結 120 便宜，補完入門曲線
+
+- **`acc-scarf.svg`** (neck slot, **150 FC**)：
+  - 主體粉色 #FFB7B7 圍巾繞脖一圈
+  - 兩端深粉 #FF89A7 流蘇飄逸（左右各一）
+  - 中央黃色珠飾 #FFEC8B 點綴
+  - 兩條細紋（深粉 + 白）增加質感
+  - 定位：項鍊 slot 終於有第 2 件 — 比珍珠項鍊 180 便宜，給入門玩家選擇
+
+**動作（cfg.js）**：
+- `accessories` 表新增 2 條 entry，**插入位置貼著對應 slot**：
+  - partyhat 放 hat 群組末尾（皇冠 500 之後不太對，放在 4 件 hat 之間 + 排序會自動依價格）
+  - scarf 放 neck 群組（在 necklace 之後）
+- 商店 slot 分組（上輪做的）會自動排序：價格升冪 → partyhat 在 headband 80 之後、scarf 在 necklace 180 之前
+
+**動作（session-b-tasks.md 同步）**：
+- 在 §4「未來 v0.4 額外配件」prompt 列表上方加新註記：
+  - 「已先用 SVG 占位、待 PNG」section 列 partyhat / scarf
+  - 提示 Session B 下次 ComfyUI 批次優先做這兩張
+  - 用既有 SVG 路徑，PNG 出爐後改 cfg.js path 即可（一行小改）
+
+**影響檔案**：
+- `assets/svg/acc-partyhat.svg`、`assets/svg/acc-scarf.svg`（新檔）
+- `src/cfg.js`（+2 accessories entries）
+- `docs/session-b-tasks.md`（§4 加 SVG 待 PNG 標記）
+
+**驗證**：
+- `node --check src/cfg.js` ✅
+- 兩張 SVG curl 200
+
+**對玩家的影響**：
+- 商店現在 9 件配件 / 3 slots：
+  - 👒 頭飾 5 件：髮帶 80 → **派對帽 100**（新）→ 蝴蝶結 120 → 花環 200 → 皇冠 500
+  - 📿 項鍊 / 圍巾 2 件：**圍巾 150**（新）→ 珍珠項鍊 180
+  - 🪽 翅膀 2 件：天使 350 → 仙女 480
+- 全套搭配總價：2030 FC → **2280 FC**，long-tail 目標再延長 3-4 天
+- 入門玩家（餘額 < 200 FC）現在有 4 件可買（髮帶 / 派對帽 / 蝴蝶結 / 圍巾） — 第一次裝扮體驗從「攢 2 天才買得起」 → 「第一天就能戴」
+
+**雙 session 接力工作流確立**：
+- Session A 加新 SKU 走流程：(1) 寫 SVG (2) 加 cfg entry (3) 在 session-b-tasks.md 標 PNG 待產 (4) 玩家立即可用
+- Session B 補 PNG 走流程：(1) ComfyUI 批次 (2) 改 cfg.js path 從 svg → png (3) 玩家自動升級
+- 不會卡彼此進度，玩家也看不到中間態（SVG 已能完整呈現）
+
+**下輪候選**：
+1. 多寵物 v0.4 起步
+2. 推播通知（Notification API）
+3. R-1 step 4 拆 UI primitives
+4. 從 §4 再撈一條 SKU（小耳機 / 太陽眼鏡 / 蝴蝶結項圈）
+
+---
+
+## 2026-04-28 22:08 · Session A — INTENT: 新配件 SKU ×2（圍巾 neck + 派對帽 hat）
+
+(已完成)
+
+---
+
 ## 2026-04-28 22:00 · Session A — 商店 slot 分組（Session B 加 wings_fairy 後 7 件雜亂）+ 設定頁 PWA 安裝鈕
 
 **觸發**：cron 第 35 輪

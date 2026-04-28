@@ -362,6 +362,14 @@ body.reduce-motion .pet.egg-shake-high { animation: none !important; }
   height: 100px;
   z-index: 2;
 }
+.accessory.face {
+  top: 38px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70px;
+  height: 70px;
+  z-index: 4;  /* over the head, under hat */
+}
 .accessory.wing {
   top: 38px;
   left: 50%;

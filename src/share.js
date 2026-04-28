@@ -123,6 +123,7 @@
     const ACC_DRAW = {
       wing: { x: 0.5, y: 0.45, size: 1.10 }, // behind body, draw FIRST below
       hat:  { x: 0.5, y: 0.18, size: 0.42 }, // top of head
+      face: { x: 0.5, y: 0.30, size: 0.34 }, // eyes
       neck: { x: 0.5, y: 0.55, size: 0.55 }, // chest
     };
     const equipped = isMemorial
