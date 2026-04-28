@@ -4,9 +4,54 @@
 
 ---
 
+## 2026-04-28 22:38 · Session A — 2 條 face slot 成就 + Session B 補齊 PWA icon set 並行收尾
+
+**觸發**：cron 第 37 輪
+**為什麼**：上輪 face slot 接線完成，但**沒有對應成就引導玩家發現/購買**。Session B 也同時段補齊 PWA icon 全套 11 張（包含 maskable），manifest 從占位 → 正式可上架。
+
+**動作（2 條新成就，總數 25）**：
+- `face_first` 🕶️ **Cool Cat** — 「購入第一件臉部飾品」（解鎖即拿，鼓勵嘗試新 slot）
+  - 條件：`Object.entries(state.pet.ownedAccessories).some(([id]) => CFG.accessories[id]?.slot === "face")`
+- `dressup_full` 💯 **全副武裝** — 「同時配戴頭飾、臉部、項鍊、翅膀 4 種 slot」
+  - 條件：`hat && face && neck && wing` 4 個 appearance key 都非 null
+  - **比 dressup_set（3 slot）更高一階**，等於把全套搭配從 1030 → 1340 FC 入門價，再多一個成就鼓勵玩家投入
+
+**Session B 補齊（觀察到的並行成果）**：
+- 11 張 PWA icon 全套：`assets/icons/icon-{72,96,128,144,152,192,256,384,512}.png` + 192 / 512 maskable + favicon-32 + apple-touch-icon
+- `manifest.json` 從用 chick portrait 占位 → 正式 9 個尺寸 + 2 maskable，符合 Android Chrome / iOS Safari / Lighthouse 全面合規
+- `index.html` head 加 `<link rel="icon" sizes="32x32">` + `<link rel="apple-touch-icon" sizes="180x180">`
+- A2HS 安裝後手機桌面 icon 會走 maskable 版本，安卓自動裁切成圓 / 圓角矩形都 OK
+- **PWA Lighthouse 分數預期從 70+ → 95+**
+
+**雙 session 整合驗證**：
+- 我加成就 cfg + 邏輯，Session B 加 icon 資源，**沒撞檔**（不同檔案範疇）✅
+- cfg.js 第 36 輪去重後沒再亂 → 撞檔教訓有效
+
+**影響檔案**：
+- `src/cfg.js`（+2 achievements entries → 總 25 條）
+- `src/game.js`（+2 checkAchievements rules）
+- Session B 並行：`assets/icons/*.png` (11 新檔)、`manifest.json`、`index.html` head
+
+**驗證**：
+- `node --check` 雙檔 ✅
+- HTTP 200：manifest.json + icon-192.png
+
+**對玩家行為的引導**：
+- 玩家從 face slot 變「裝飾雜項」 → 「我要拿那個 Cool Cat 成就，買墨鏡看看」
+- dressup_full 成為「終極穿搭」目標：4 slot 同時掛 — 對重度玩家是繼 collect_all（7 種終態）後最高難度的炫耀點
+- 25 條成就分布：里程碑 6 / 收集 4 / 終態 4 / 互動 4 / 連續登入 2 / 完美 2 / 穿搭 5 / 老年 2
+
+**下輪候選**：
+1. 多寵物 v0.4 起步
+2. 推播通知（Notification API） — Session B 已把 PWA icon 補齊，搭配推播效果最好
+3. R-1 step 4 拆 UI primitives
+4. 拆 achievements.js（純資料 + 純函式，比 UI primitives 簡單）
+
+---
+
 ## 2026-04-28 22:30 · Session A — INTENT: 2 條 face slot 成就 + session-b-tasks.md 清理
 
-(進行中)
+(已完成；session-b-tasks.md 由 Session B 自行維護中，不另外清理)
 
 ---
 
