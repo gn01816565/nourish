@@ -108,52 +108,13 @@
     }
   }
 
-  // Dex (永久圖鑑，獨立鍵以便壞檔不會連動)
-  const DEX_KEY = "nourish.dex.v1";
-  function loadDex() {
-    try {
-      const raw = localStorage.getItem(DEX_KEY);
-      if (!raw) return { schemaVersion: 1, completedPets: [] };
-      const d = JSON.parse(raw);
-      if (!Array.isArray(d.completedPets)) d.completedPets = [];
-      return d;
-    } catch (_) { return { schemaVersion: 1, completedPets: [] }; }
-  }
-  function saveDex(dex) {
-    try { localStorage.setItem(DEX_KEY, JSON.stringify(dex)); }
-    catch (e) {
-      if (e && (e.name === "QuotaExceededError" || e.code === 22)) {
-        toast("⚠️ 圖鑑空間不足", "bad");
-      }
-    }
-  }
-  function unlockedFormsSet() {
-    const set = new Set();
-    loadDex().completedPets.forEach(p => p.finalForm && set.add(p.finalForm));
-    if (state.pet.finalForm) set.add(state.pet.finalForm);
-    return set;
-  }
-  function archiveCurrentPet() {
-    if (!state.pet.finalForm) return;
-    const dex = loadDex();
-    // Snapshot equipped cosmetics so the dex remembers each pet's "moment in time".
-    const appearanceSnapshot = state.pet.appearance
-      ? { hat: state.pet.appearance.hat || null,
-          neck: state.pet.appearance.neck || null,
-          wing: state.pet.appearance.wing || null }
-      : null;
-    dex.completedPets.unshift({
-      id: state.pet.id,
-      name: state.pet.name,
-      finalForm: state.pet.finalForm,
-      appearance: appearanceSnapshot,
-      bornAt: state.pet.bornAt,
-      archivedAt: Date.now(),
-      totalDays: Math.max(1, Math.round((Date.now() - state.pet.bornAt) / 86400000)),
-    });
-    if (dex.completedPets.length > 50) dex.completedPets.length = 50; // cap to avoid bloat
-    saveDex(dex);
-  }
+  // Dex (永久圖鑑，獨立 key) — implementation moved to src/dex.js.
+  // These thin wrappers preserve every existing call site in this file.
+  const DEX_KEY = "nourish.dex.v1"; // kept for the reset-everything path below
+  function loadDex()           { return window.NourishDex.loadDex(); }
+  function saveDex(dex)        { window.NourishDex.saveDex(dex); }
+  function unlockedFormsSet()  { return window.NourishDex.unlockedFormsSet(); }
+  function archiveCurrentPet() { window.NourishDex.archiveCurrentPet(); }
   function startNewEgg() {
     archiveCurrentPet();
     const ownedAcc = state.pet.ownedAccessories || {};
@@ -508,6 +469,10 @@
       ["dressup_first", Object.keys(state.pet.ownedAccessories || {}).length >= 1],
       ["dressup_set",   !!(state.pet.appearance?.hat && state.pet.appearance?.neck && state.pet.appearance?.wing)],
       ["dressup_collector", Object.keys(state.pet.ownedAccessories || {}).length >= Object.keys(CFG.accessories).length],
+      ["elder_week",    state.pet.stage === "adult"
+                          && (Date.now() - state.pet.stageStartedAt) >= 7  * 86400000],
+      ["elder_month",   state.pet.stage === "adult"
+                          && (Date.now() - state.pet.stageStartedAt) >= 30 * 86400000],
     ];
     for (const [id, met] of checks) if (met) unlockAchievement(id);
   }
@@ -1575,6 +1540,16 @@
     const perfect = s.hunger > CFG.thresholds.high && s.mood > CFG.thresholds.high
                  && s.clean  > CFG.thresholds.high && s.energy > CFG.thresholds.high;
     if (perfect && Math.random() < 0.4) return rand0(sp.perfect);
+
+    // Elder companion: long-time adult pets get reflective lines (GDD §10.3).
+    // Triggered after 7 days as adult, with growing weight up to 30 days.
+    if (state.pet.stage === "adult") {
+      const adultDays = (Date.now() - state.pet.stageStartedAt) / 86400000;
+      if (adultDays >= 7) {
+        const elderChance = Math.min(0.35, 0.15 + (adultDays - 7) * 0.01);
+        if (Math.random() < elderChance) return rand0(sp.elder);
+      }
+    }
 
     // Probabilistic flavor pool (mix stage / time / quirk)
     const r = Math.random();

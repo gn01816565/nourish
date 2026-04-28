@@ -4,6 +4,128 @@
 
 ---
 
+## 2026-04-28 21:30 · Session A — 老年互動 v1（GDD §10.3 標 [ ] → [x]）
+
+**觸發**：cron 第 33 輪
+**為什麼**：v0.3 GDD §10.3 剩 3 項（多寵物 / 老年互動 / 雲端存檔）。多寵物需要大改 schema + UI；雲端存檔需要 backend；**老年互動是純 client 內容、可在 10 分鐘做基本版**，把 v0.3 完成度從 3/6 推到 4/6。
+
+**動作**：
+
+- **CFG.speech.elder（7 條反思對白）**：
+  - 「跟你在一起好幸福~」
+  - 「你還記得我們第一次見面嗎?」
+  - 「我看著你也長大了一點」
+  - 「好喜歡這樣的日常」
+  - 「(輕輕靠著主人)」
+  - 「謝謝你一直在」
+  - 「再過幾年也要記得我喔~」
+  - 語氣參考 character-sheet §10.4「溫暖、撒嬌、療癒」do-list，避免「老去 / 死亡 / 悲傷」字眼
+
+- **`pickContextualLine()` 加 elder 分支**：
+  - 條件：`stage === "adult" && adultDays >= 7`
+  - 機率公式：`min(0.35, 0.15 + (adultDays - 7) × 0.01)` — 第 7 天 15% / 第 22 天 30% / 第 27 天封頂 35%
+  - 分支早於 stage flavor / form flavor / 其他概率分布，老朋友的話語優先（但只有 35% 機率）
+
+- **2 條新成就**：
+  - `elder_week` 🌅 相伴一週 — 成雞 stage 持續 7 天
+  - `elder_month` 💖 終生伴侶 — 成雞 stage 持續 30 天
+  - hook 在既有 `checkAchievements` 表，每次 tick / 互動都會檢查
+
+- **GDD §10.3 更新**：「老年互動」從 [ ] 待研 → [x] 完成（含實作 iter#33 引用）
+
+**影響檔案**：
+- `src/cfg.js`（+2 achievement entries + 1 speech 池 = 7 條新對白）
+- `src/game.js`（+8 行 pickContextualLine elder 分支 + 2 行 checkAchievements）
+- `docs/gdd.md`（§10.3 老年互動標完成）
+
+**驗證**：`node --check src/game.js src/cfg.js` ✅
+
+**對 long-tail 留存的影響**：
+- 玩家養出成雞後，**第 7 天會聽到啾啾說「跟你在一起好幸福~」+ 解鎖🌅成就** → 強化「持續陪伴」的 emotional 黏著
+- 第 30 天解鎖💖終生伴侶成就 → 重度玩家的 4 週留存目標
+- 文案柔軟（不講「老」「離別」「死」），符合女性向 TA 的「不焦慮」設計目標
+- 既有的「開新蛋會 archive 當前」流程不受影響 — 玩家可選擇 7 天時開新蛋（拿成就 + 紀念卡）或繼續陪伴衝 30 天
+
+**v0.3 進度**：3/6 → **4/6 完成**
+- ✅ 裝飾商店 ✅ 成就系統 ✅ 截圖分享 ✅ 老年互動
+- ⏸️ 多隻寵物 ⏸️ 雲端存檔
+
+**下輪候選**：
+1. 多寵物 v0.4（schema 重構 + UI 切換器，較大）
+2. 雲端存檔骨架（無 backend 版本：保留現有匯出/匯入字串作為過渡，加 PWA cache 為下一版鋪路）
+3. R-1 step 4：UI primitives 拆出（modal / toast）
+
+---
+
+## 2026-04-28 21:25 · Session A — INTENT: 老年互動（GDD §10.3 最後一塊 web-only 可做的功能）
+
+(已完成)
+
+---
+
+## 2026-04-28 21:18 · Session A — R-1 step 3：dex.js 拆出（已連續推 3 輪後實質完成）
+
+**觸發**：cron 第 32 輪（多次積壓 fire 後在此輪實質執行）
+**為什麼**：R-1 拆檔自第 28 / 29 / 30 輪「下輪候選」連續標 3 次未做。dex 是繼 share 之後最自然可拆的模組（純 storage 邏輯，獨立 localStorage key，UI 留在 game.js）。趁 lazy-bridge 模式驗證可行，把這刀切下去。
+
+**動作**：
+- **新檔 `src/dex.js`（73 行 IIFE）**：
+  - `KEY = "nourish.dex.v1"`
+  - `loadDex()` / `saveDex(dex)` — localStorage I/O，含 QuotaExceeded 兜底（toast via API）
+  - `unlockedFormsSet()` — 跨歷代 + 當前寵物 finalForm 收集
+  - `archiveCurrentPet()` — 把當前寵物 snapshot（含 appearance）推進 dex，cap 50 條
+  - 對外暴露 `window.NourishDex = { KEY, loadDex, saveDex, unlockedFormsSet, archiveCurrentPet }`
+- **`game.js` 留薄壁紙**：4 個 thin wrapper（`function loadDex() { return window.NourishDex.loadDex(); }` 等），既有 callers 完全不動：
+  - `unlockedFormsSet()` 在 finalizeForm / openDexMenu / openAchievementsMenu / share.js (via NourishAPI) 都還能正常 call
+  - `archiveCurrentPet()` 在 startNewEgg 還能正常 call
+  - `loadDex()` 在 openDexMenu / openPetDetail 還能 call
+  - `saveDex` 沒有 game.js 端 caller（dex.js 內部 use only），但保留 wrapper 以備將來
+- **保留 `DEX_KEY` 常數**在 game.js（dbg-reset 還用 `localStorage.removeItem(DEX_KEY)` 直接清，不繞 wrapper）
+- **`index.html` script 順序**：`cfg.js → dex.js → share.js → game.js`
+  - dex.js 在 share.js 之前因為 share.js 不直接 require dex（透過 NourishAPI.unlockedFormsSet）
+  - game.js 最後（仍是 IIFE，IIFE 末段才 set `window.NourishAPI`）
+
+**模組依賴圖**：
+```
+cfg.js   →  window.NourishCFG (eager, pure data)
+dex.js   →  window.NourishCFG (eager), window.NourishAPI (lazy, for getState/toast)
+            window.NourishDex = { KEY, loadDex, saveDex, unlockedFormsSet, archiveCurrentPet }
+share.js →  window.NourishCFG (eager), window.NourishAPI (lazy, for getState/getLastPetSrc/labels/unlockedFormsSet/toast)
+            window.NourishShare = { generateShareCard, shareOrDownloadCard }
+game.js  →  window.NourishCFG (eager), window.NourishShare/NourishDex (lazy)
+            window.NourishAPI = { getState, getLastPetSrc, stageLabel, formLabel, formDescription, unlockedFormsSet, toast }
+```
+
+**影響檔案**：
+- `src/dex.js`（新檔，73 行）
+- `src/game.js`（-49 行 + 5 行 wrapper：1739 vs 上輪 ~1786）
+- `index.html`（+1 `<script>` tag）
+
+**驗證**：
+- `node --check` 全 4 檔 ✅
+- HTTP 200：dex.js / 既有 endpoints
+- 行數：cfg 198 + dex 73 + share 266 + game 1739 = 2276 total（split 進度從 game.js 一支 → 4 支獨立模組）
+
+**R-1 進度更新**：
+- ✅ step 1：CFG → cfg.js（第 14 輪）
+- ✅ step 2：share card → share.js（第 27 輪）
+- ✅ step 3：dex → dex.js（**本輪**）
+- ⏸️ step 4：modal / toast / speech / SFX UI primitives（更難拆，UI 互相依賴）
+- ⏸️ step 5：interactions table / performInteraction（核心邏輯，與 state 高耦合，非必要）
+- ⏸️ R-5：i18n 骨架
+
+**架構意義**：
+- 連續三波拆檔驗證「lazy bridge + thin wrapper」模式可重複用
+- game.js 從單檔 1922 行 → 1739 行，加上 dex/share/cfg 拆出，**單檔閱讀體驗**已大幅改善（cfg 純資料、dex 純 storage、share 純 canvas、game 是業務邏輯 + UI）
+- 之後加新功能可選擇性放在新模組或 game.js，視耦合度決定
+
+**下輪候選**：
+1. 多寵物 v0.4 起步（v0.3 完成 3/6，剩 multi-pet / 老年互動 / 雲端存檔，前 2 個能在 web-only 做）
+2. 老年互動（成雞後特殊內容，30 天後解鎖新事件）
+3. 補強 settings 頁的「我可以做什麼」說明
+
+---
+
 ## 2026-04-28 21:08 · Session A — extreme final-30min imminent glow + GDD v0.2/v0.3 進度核對
 
 **觸發**：cron 第 31 輪

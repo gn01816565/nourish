@@ -14,38 +14,29 @@
 
 ---
 
-## 1. 待辦：wings PNG（最高優先）
+## 1. ✅ 完成：wings PNG（19:15 Session B v3）
 
-| 項目 | 細節 |
-|---|---|
-| 來源 | `assets/svg/acc-wings.svg`（Session A 第 23 輪做） |
-| 目標 | `assets/images/acc-wings.png`，512×512，透明背景 |
-| 主題 | 粉紅雙翅 + 白羽脈紋 + 兩顆深粉 ✦ + 高光 |
-| Prompt 重點 | "small fluffy pink angel wings, pair, soft pastel pink, white feather highlights, sparkles, transparent background, kawaii sticker style, no body, isolated wings only" |
-| 產完更新 | `src/cfg.js` line 167 附近 `wings` entry 的 `art:` 從 `assets/svg/acc-wings.svg` 改 `assets/images/acc-wings.png` |
+- `acc-wings-angel.png`：粉彩虹 + 金色滾邊天使翅膀對稱對，中間留空（350 FC）
+- `acc-wings-fairy.png`：粉紫彩虹 fairy 翅膀對 + 上方迷你彩虹流星裝飾，中間留空（480 FC，premium tier）
+- DreamShaperXL Turbo 預設會在翅膀中間塞鳥/蝴蝶身體；用 cfg=4.0 + "decorative wings ornament with empty gap" 措辭 + 強反角色 negative 才壓住
+- `cfg.js` 第 169 行 `wings` 已指向 angel.png；新增 `wings_fairy` entry 指向 fairy.png（給 wing slot 兩件選擇）
+- 解鎖 `dressup_set` / `dressup_collector` 成就路徑
 
 ---
 
-## 2. 待辦：mood 5 張白邊去除（Session B 自己標記）
+## 2. ◐ 部分完成：mood 5 張白邊去除（19:30 Session B）
 
-| 項目 | 細節 |
-|---|---|
-| 來源 | `assets/images/mood-{happy,neutral,sad,sleeping,dirty}.png` |
-| 問題 | rembg 沒去乾淨，每張帶白色 sticker 外框 |
-| 目標 | 純透明背景，無外框 |
-| Prompt 加強 | "pure transparent background, NO white border, NO frame, NO sticker outline, edges fully alpha-cut" |
-| 替代方案 | 重 rembg（可試 `silueta` model）+ 後製 PIL alpha 邊緣腐蝕 |
+- 全 5 張用 `silueta` model + PIL alpha 邊緣腐蝕（3px MinFilter）→ **白邊 sticker 外框成功去除** ✓
+- 內容方面：`happy / neutral / sad` 3 張完美；`sleeping` 兩次重生都生不出閉眼+Zzz（DreamShaperXL Turbo 強烈拒絕畫閉眼 emoji），目前是「平靜微笑」面孔；`dirty` 變成蒼蠅+泥的混合 creature（不是預期的「髒臉+獨立蒼蠅」但仍可辨認 dirty 概念）
+- 結論：功能上可用，藝術精準度未完全達標。建議 **未來換 model**（如 SDXL Pony 或 Animagine）若 SDXL Turbo bias 持續，或改畫風為「角色全身髒/睡」而非「emoji 表情」
 
 ---
 
-## 3. 中優：chick-young 視覺差異化
+## 3. ✅ 完成：chick-young 視覺差異化（19:30 Session B）
 
-| 項目 | 細節 |
-|---|---|
-| 來源 | `assets/images/chick-young.png` |
-| 問題 | Session B 標記：DreamShaperXL Turbo 不太分得出 baby 跟 juvenile，目前看起來太接近 chick-baby |
-| 目標 | 體型抽高、頭比例略小、雞冠開始發育（紅點微露）、姿勢站立有自信感 |
-| Prompt 加強 | "young teen chick, slimmer body than baby chick, taller posture, red comb starting to grow on top of head, confident pose with small chest puffed out, between fluffy ball stage and adult" |
+- 用 cfg=3.0 + 「TALLER and SLIMMER body, longer legs, RED COMB starting to grow, confident pose, small chest puffed out, NOT a fluffy ball baby」prompt 重生
+- 結果：身體偏粉桃色、頭頂紅冠微露、體型較拉長 — 跟 chick-baby 並排有可辨識差異 ✓
+- 仍非極端不同（plush 風的限制），但夠用
 
 ---
 

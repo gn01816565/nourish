@@ -588,7 +588,7 @@ const migrations = {
 - [x] **成就系統**（20 條：含 form_* / collect_* / dressup_* / streak_* / 等）— iter#5、#26
 - [x] **截圖分享功能**（Canvas 720×1280 PNG，現役 + 紀念卡兩版本，Web Share API + 下載 fallback）— iter#15、#25
 - [ ] **多隻寵物**（同時養 2 隻）— v0.4 起步候選
-- [ ] **老年互動**（成雞後特殊內容）— 待研
+- [x] **老年互動**（基本版）— 成雞 7 天解鎖 7 條反思對白 + elder_week 成就；30 天解鎖 elder_month。iter#33
 - [ ] **雲端存檔**（OAuth 登入）— App 階段以後（目前已有手動匯出/匯入存檔字串作為過渡）
 
 **Bonus**：character-sheet 設計書 + market-research-2026 補強 + review-v2 + extensions 三份戰略文件 / R-1 拆檔 step 1+2（cfg.js + share.js）/ 蛋階段 3 級搖晃進度可視化 / chick/junior 階段倒數 hint

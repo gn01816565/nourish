@@ -69,6 +69,8 @@
       dressup_first:  { icon:"🎀", label:"小裝扮家",   desc:"購入第一件飾品" },
       dressup_set:    { icon:"✨", label:"全套搭配",   desc:"同時配戴頭飾 + 項鍊 + 翅膀" },
       dressup_collector: { icon:"💎", label:"衣櫥達人", desc:"擁有全部飾品" },
+      elder_week:     { icon:"🌅", label:"相伴一週",   desc:"成雞陪伴 7 天" },
+      elder_month:    { icon:"💖", label:"終生伴侶",   desc:"成雞陪伴 30 天" },
     },
     wants: {
       lifetimeMs: 5 * 60 * 1000,
@@ -130,6 +132,9 @@
       stage_chick:  ["我會走路了！", "看那邊！看那邊！", "啾啾喜歡這裡~", "什麼都覺得新鮮"],
       stage_junior: ["翅膀變大了~", "我長大了！", "可以做更多事了", "覺得自己有點帥"],
       stage_adult:  ["已經是大雞了", "經驗豐富的鳥兒", "我看過很多事情了", "回想小時候…"],
+      // Reflective lines unlocked after the pet has been adult for ~7 days.
+      // GDD §10.3「老年互動」— gentle nostalgic companionship, not sad/morbid.
+      elder:        ["跟你在一起好幸福~", "你還記得我們第一次見面嗎?", "我看著你也長大了一點", "好喜歡這樣的日常", "(輕輕靠著主人)", "謝謝你一直在", "再過幾年也要記得我喔~"],
       form_healthy: ["精神奕奕！", "標準帥氣！"],
       form_fatty:   ["再吃一點點就好…", "不胖不胖，是骨架大"],
       form_ugly:    ["其實這樣也滿酷的", "醜雞也有春天"],
