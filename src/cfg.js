@@ -164,12 +164,15 @@
       action_talk:        ["嗯嗯！", "對啊對啊", "你說呢主人？"],
     },
     accessories: {
-      // v0.3 裝扮系統。slot 多種：hat（頭頂）/ neck（脖子）/ wing（之後加）。
+      // v0.3 裝扮系統。slot：hat（頭頂）/ face（臉部，v0.4 加）/ neck（脖子）/ wing（翅膀）。
       // 玩家用飼料幣解鎖；解鎖後永久擁有，可隨時切換。
+      party_hat: { slot:"hat",  art:"assets/images/acc-party-hat.png", label:"派對帽",     icon:"🎉", price:100 },
       headband: { slot:"hat",  art:"assets/images/acc-headband.png", label:"蝴蝶髮帶",   icon:"🩷", price:80  },
       bow:      { slot:"hat",  art:"assets/images/acc-bow.png",      label:"粉紅蝴蝶結", icon:"🎀", price:120 },
       flower:   { slot:"hat",  art:"assets/images/acc-flower.png",   label:"粉色花環",   icon:"🌸", price:200 },
       crown:    { slot:"hat",  art:"assets/images/acc-crown.png",    label:"閃耀皇冠",   icon:"👑", price:500 },
+      sunglasses: { slot:"face", art:"assets/images/acc-sunglasses.png", label:"心形墨鏡", icon:"🕶️", price:180 },
+      scarf:    { slot:"neck", art:"assets/images/acc-scarf.png",    label:"毛茸圍巾",   icon:"🧣", price:150 },
       necklace: { slot:"neck", art:"assets/images/acc-necklace.png", label:"珍珠項鍊",   icon:"📿", price:180 },
       wings:       { slot:"wing", art:"assets/images/acc-wings-angel.png", label:"夢幻翅膀", icon:"🪽", price:350 },
       wings_fairy: { slot:"wing", art:"assets/images/acc-wings-fairy.png", label:"彩虹翅膀", icon:"🌈", price:480 },

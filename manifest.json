@@ -1,0 +1,56 @@
+{
+  "name": "啾啾日常 ChickaDay",
+  "short_name": "啾啾日常",
+  "description": "在分頁旁陪你工作的小雞養成遊戲，5 分鐘照顧一次就能養出獨一無二的牠。",
+  "lang": "zh-TW",
+  "dir": "ltr",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#FFD86B",
+  "background_color": "#FFE6B0",
+  "categories": ["games", "lifestyle", "entertainment"],
+  "icons": [
+    {
+      "src": "assets/images/chick-adult-healthy.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/images/chick-baby.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/svg/chick-adult-healthy.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "圖鑑",
+      "short_name": "圖鑑",
+      "url": "./index.html#dex",
+      "description": "查看所有養過的小雞"
+    },
+    {
+      "name": "裝扮商店",
+      "short_name": "商店",
+      "url": "./index.html#shop",
+      "description": "幫啾啾買新飾品"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "assets/images/chick-adult-divine.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "label": "養成神雞的儀式時刻"
+    }
+  ]
+}

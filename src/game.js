@@ -919,25 +919,39 @@
   }
 
   function openShopMenu() {
-    const items = Object.keys(CFG.accessories);
     const equipped = state.pet.appearance || {};
-    const rows = items.map(id => {
-      const cfg = CFG.accessories[id];
+    // Group by slot so the catalog stays scannable as it grows.
+    const SLOT_LABELS = { hat: "👒 頭飾", neck: "📿 項鍊 / 圍巾", wing: "🪽 翅膀" };
+    const SLOT_ORDER = ["hat", "neck", "wing"];
+    const grouped = {};
+    Object.entries(CFG.accessories).forEach(([id, c]) => {
+      (grouped[c.slot] = grouped[c.slot] || []).push({ id, c });
+    });
+    SLOT_ORDER.forEach(slot => {
+      if (grouped[slot]) grouped[slot].sort((a, b) => (a.c.price || 0) - (b.c.price || 0));
+    });
+    const buildRow = ({ id, c }) => {
       const owned = isAccessoryOwned(id);
-      const isOn = equipped[cfg.slot] === id;
+      const isOn = equipped[c.slot] === id;
       const action = !owned
-        ? `<button class="menu-item" data-buy="${id}" ${state.economy.feedCoin < cfg.price ? "disabled" : ""}
-             style="padding:4px 10px;color:var(--c-red);">${cfg.price} FC</button>`
+        ? `<button class="menu-item" data-buy="${id}" ${state.economy.feedCoin < c.price ? "disabled" : ""}
+             style="padding:4px 10px;color:var(--c-red);">${c.price} FC</button>`
         : `<button class="menu-item" data-equip="${id}" style="padding:4px 10px;${isOn?"background:var(--c-pink);":""}">${isOn ? "✅ 配戴中" : "戴上"}</button>`;
       return `<div class="settings-row">
-        <span><img src="${cfg.art}" width="32" height="32" style="vertical-align:middle;margin-right:6px;">${cfg.icon} ${cfg.label}</span>
+        <span><img src="${c.art}" width="32" height="32" style="vertical-align:middle;margin-right:6px;">${c.icon} ${c.label}</span>
         ${action}
       </div>`;
-    }).join("");
+    };
+    const sections = SLOT_ORDER
+      .filter(slot => grouped[slot] && grouped[slot].length)
+      .map(slot => `
+        <div class="modal-title" style="font-size:13px;margin:10px 0 4px;color:var(--c-pink-deep);">${SLOT_LABELS[slot]}</div>
+        <div class="modal-list">${grouped[slot].map(buildRow).join("")}</div>
+      `).join("");
     showModal({
       title: "🎀 裝扮商店",
-      body: `<div class="modal-list">${rows}</div>
-        <p class="muted center" style="margin-top:8px;">💰 ${state.economy.feedCoin} FC · 戴上後會出現在啾啾頭上</p>`,
+      body: `${sections}
+        <p class="muted center" style="margin-top:8px;">💰 ${state.economy.feedCoin} FC · 戴上後會出現在啾啾身上</p>`,
       buttons: [{ label: "關閉", close: true }],
       onMount: card => {
         card.querySelectorAll("[data-buy]").forEach(b => b.onclick = () => buyAccessory(b.dataset.buy));
@@ -954,6 +968,10 @@
           <button class="menu-item" id="toggle-sound" style="padding:4px 10px;">${state.settings?.soundEnabled === false ? "已關閉" : "已開啟"}</button></div>
         <div class="settings-row"><span>🌀 減少動畫</span>
           <button class="menu-item" id="toggle-motion" style="padding:4px 10px;">${state.settings?.reducedMotion ? "已開啟" : "跟隨系統"}</button></div>
+        ${window.__nourishInstallPrompt ? `
+        <div class="settings-row"><span>📲 裝到主畫面</span>
+          <button class="menu-item" id="act-install" style="padding:4px 10px;color:var(--c-pink-deep);">立即安裝</button></div>
+        ` : ""}
         <hr style="border:0;border-top:1px dashed rgba(0,0,0,0.15);margin:4px 0;">
         <div class="settings-row"><span>連續登入</span><strong>${state.daily.loginStreak || 0} 天</strong></div>
         <div class="settings-row"><span>成長分數</span><strong>${Math.round(state.pet.growthScore)}</strong></div>
@@ -1001,6 +1019,20 @@
           state.settings.reducedMotion = !state.settings.reducedMotion;
           applyReducedMotionPref();
           save(); closeModal(); openSettingsMenu();
+        };
+        const installBtn = card.querySelector("#act-install");
+        if (installBtn) installBtn.onclick = async () => {
+          const prompt = window.__nourishInstallPrompt;
+          if (!prompt) { toast("此瀏覽器不支援", "bad"); return; }
+          prompt.prompt();
+          try {
+            const result = await prompt.userChoice;
+            if (result.outcome === "accepted") {
+              toast("✨ 安裝成功！", "good");
+              window.__nourishInstallPrompt = null;
+              closeModal();
+            }
+          } catch (_) {}
         };
         const giveBtn = card.querySelector("#dbg-give");
         if (giveBtn) giveBtn.onclick = () => { grantCoin(100, "除錯"); save(); render(); };

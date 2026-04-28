@@ -595,9 +595,10 @@ const migrations = {
 
 ### 10.4 App 階段（v1.0）
 
-- [ ] PWA 包裝 → iOS / Android Wrapper（Capacitor 或 Tauri Mobile）
-- [ ] 推播通知（飢餓警告、進化提醒）
-- [ ] 真實時間鎖定（離線計算用 server time，防作弊）
+- [x] **PWA 基本骨架**（manifest + service worker + A2HS） — iter#34，已可安裝至手機主畫面 + 離線啟動
+- [ ] Capacitor / Tauri Mobile 原生包裝（PWA 已先頂著）
+- [ ] 推播通知（飢餓警告、進化提醒）— 需 Web Push API + 用戶授權
+- [ ] 真實時間鎖定（離線計算用 server time，防作弊）— 需 backend
 - [ ] 內購（純裝飾，不影響成長）
 - [ ] 好友系統 + 互訪
 - [ ] 排行榜（連續登入、神雞數量）

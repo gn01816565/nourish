@@ -4,6 +4,140 @@
 
 ---
 
+## 2026-04-28 22:00 · Session A — 商店 slot 分組（Session B 加 wings_fairy 後 7 件雜亂）+ 設定頁 PWA 安裝鈕
+
+**觸發**：cron 第 35 輪
+**為什麼**：Session B 上一輪加 `wings_fairy` 後商店有 7 件配件混在一個列表，雜亂。同時上輪做完 PWA，但玩家可能錯過 Chrome 自動安裝橫幅 — 需要設定頁有「立即安裝」備援入口。
+
+**動作（商店 slot 分組）**：
+- `openShopMenu()` 重寫：依 `slot` 分組（hat / neck / wing），各組以 modal-title 樣式 header 分隔
+- header 用 `--c-pink-deep #FF89A7`（女性向粉紅強調），文字配 emoji：
+  - 👒 頭飾
+  - 📿 項鍊 / 圍巾
+  - 🪽 翅膀
+- 組內依 price 升冪排（玩家自然從便宜入門 → 攻頂）
+- 結果：頭飾 4 件 / 項鍊 1 件 / 翅膀 2 件，視覺結構清楚，未來加更多 slot（v0.4 face / back…）也只要在 SLOT_LABELS / SLOT_ORDER 補資料
+
+**動作（PWA 安裝鈕）**：
+- `index.html` 內嵌 script 加捕捉 `beforeinstallprompt` event：
+  - `e.preventDefault()` 截下原生橫幅
+  - 存到 `window.__nourishInstallPrompt` 全域變數
+  - `appinstalled` 事件觸發時清空
+- 設定頁條件 row：當 `window.__nourishInstallPrompt` 存在 → 顯示「📲 裝到主畫面 → 立即安裝」row
+- 點擊：呼叫 `prompt.prompt()` 喚出原生安裝對話 → `userChoice.outcome === "accepted"` 時 toast「✨ 安裝成功！」+ 關 modal
+- iOS Safari 不支援這 API（需用「分享 → 加到主畫面」原生流程），因此這條 row **只在 Chrome / Edge / Brave 上顯示**
+
+**影響檔案**：
+- `src/game.js`（+~20 行 openShopMenu 重寫 + ~20 行 install button handler）
+- `index.html`（+8 行 beforeinstallprompt + appinstalled listener）
+
+**驗證**：`node --check` ✅
+
+**對玩家體驗的影響**：
+- 商店從「7 條雜亂列表」 → 「3 個分區清楚的目錄」，未來加 v0.4 配件也不會讓 UX 退化
+- Chrome / Edge 玩家錯過自動安裝橫幅後，仍能在設定頁找到「立即安裝」按鈕（推薦給朋友時對方更願意裝）
+- Session B 加的 wings_fairy（480 FC premium）現在會出現在「翅膀」section 第二位，形成 350 FC angel → 480 FC fairy 的升級階梯
+
+**6 件配件分組**（含 wings_fairy）：
+
+| Slot | 件數 | 入門 / 進階 |
+|------|----|-----------|
+| 👒 頭飾 | 4 | 80 → 120 → 200 → 500 |
+| 📿 項鍊 | 1 | 180 |
+| 🪽 翅膀 | 2 | 350 → 480 |
+
+合計：總價 2030 FC，玩家「全套搭配」從第 21 輪 1430 FC 上升到 2030 FC，長尾目標再延長 ~7 天。
+
+**下輪候選**：
+1. 多寵物 v0.4 起步
+2. 推播通知（Notification API + SW registration.showNotification 本機通知）
+3. R-1 step 4 拆 UI primitives（modal / toast / SFX）
+4. 加新事件 SKU 從 session-b-tasks.md §4「派對帽 / 太陽眼鏡」撈一條來實作
+
+---
+
+## 2026-04-28 21:53 · Session A — INTENT: 商店 slot 分組 + 設定頁 PWA 安裝按鈕
+
+(已完成)
+
+---
+
+## 2026-04-28 21:45 · Session A — PWA 基本骨架（manifest + SW），GDD §10.4 第一塊
+
+**觸發**：cron 第 34 輪。Session B 在 21:30 推完 wings PNG ×2 + chick-young 重生 + mood 部分修，視覺資產到位後輪到我把「能裝在手機」打通。
+
+**為什麼**：v0.3 完成度 4/6（剩多寵物 / 雲端存檔），都需要大改 schema 或 backend。**PWA 是 v1.0 通往 App 的最低成本第一步** — 沒有 build step、沒有套件、沒有 backend 也能讓玩家把遊戲「安裝」到手機主畫面 + 離線啟動。
+
+**動作**：
+
+- **新檔 `manifest.json`**（PWA 設定檔）：
+  - name / short_name / description（中文 lang="zh-TW"）
+  - theme_color #FFD86B、background_color #FFE6B0（character-sheet §1.3 色票對齊）
+  - display "standalone"、orientation "portrait"
+  - icons：3 個（chick-adult-healthy.png 主、chick-baby.png 備、SVG 向量），都用既有 PNG/SVG，無新增美術成本
+  - shortcuts：圖鑑 + 商店兩個快捷（手機長按 app icon 會出選單）
+  - screenshots：神雞圖當宣傳預覽
+
+- **新檔 `sw.js`**（Service Worker）：
+  - cache-first + 網路備援 + 機會性 cache fill 策略
+  - APP_SHELL 預快取：index.html / manifest.json / 4 個 .js / style.css
+  - 其他資源（PNG / SVG）走 runtime cache，第一次造訪後就 offline-ready
+  - CACHE_VERSION 字串 bump 時自動 purge 舊 cache（activate event）
+  - skipWaiting + clients.claim：deploy 後不必關 tab 也立即套用新版
+  - 失敗 fallback 回 index.html（最差至少看得到 app shell）
+
+- **`index.html` 更新**：
+  - `<link rel="manifest" href="manifest.json">`
+  - `<link rel="apple-touch-icon">`（iOS 必要）
+  - 3 個 apple-mobile-web-app meta（capable / status-bar-style / title）
+  - 末段加 6 行 `navigator.serviceWorker.register("sw.js")`，silent failure 不擾既有體驗
+
+- **GDD §10.4 更新**：「PWA 包裝」從 [ ] → [x] 完成
+  - 註明「PWA 已先頂著，Capacitor / Tauri 之後再說」 — 現實的階段性決策
+
+**影響檔案**：
+- `manifest.json`（新檔，53 行 JSON）
+- `sw.js`（新檔，56 行）
+- `index.html`（+8 行 head meta + 6 行 script）
+- `docs/gdd.md`（§10.4 標 PWA 完成）
+
+**驗證**：
+- `node --check sw.js` ✅
+- `node -e "JSON.parse(...)"` manifest 合法 JSON ✅
+- HTTP 200：manifest.json + sw.js
+- index.html 仍回 200
+
+**對玩家的影響**：
+- **iOS 玩家**：Safari 開啟 → 分享 → 加到主畫面 → 點 icon 全螢幕啟動，看起來跟 native app 一樣
+- **Android 玩家**：Chrome 會出現「安裝啾啾日常」橫幅，一鍵裝到主畫面
+- **桌機**：Chrome 網址列右側出現「安裝」icon
+- **離線**：第一次訪問後就能離線啟動（state 走 localStorage、UI 走 SW cache）
+- 推播通知（GDD §10.4）需要另外的 Web Push API + 後端，**先跳過**
+
+**對專案定位的影響**：
+- 「ChickaDay 是個網頁遊戲」 → 「ChickaDay 是個可裝在手機的 PWA 遊戲」
+- 對女性向 TA 友好：很多人不想下載 App，PWA 讓「先試玩 → 喜歡再裝」變平滑
+- v1.0 的「真 App」可以延後到第三方平台合作或實際需要原生 API（推播 / AR）時再說
+
+**v0.3 → v1.0 路線圖**：
+- v0.3（裝飾 / 成就 / 分享 / 老年）：4/6 完成
+- v1.0 PWA 第一步：✅ 安裝 + 離線
+- v1.0 剩餘：推播 / 真實時間鎖定 / 內購 / 好友 / 排行榜
+
+**下輪候選**：
+1. 多寵物 v0.4 起步（最後一個 v0.3 web-only 項目）
+2. 推播通知（Notification API + Web Push 局部實作，無 backend 仍可做本機通知）
+3. R-1 step 4 拆 UI primitives
+4. 加 Session B 的 wings_fairy 飾品到「全套搭配」邏輯（dressup_set 是否要改成同時戴 hat + neck + 任一 wing？目前已是任一 wing 即可）
+
+---
+
+## 2026-04-28 21:38 · Session A — INTENT: PWA 起步（manifest + SW + A2HS），GDD §10.4 第一塊
+
+(已完成)
+
+---
+
 ## 2026-04-28 21:30 · Session A — 老年互動 v1（GDD §10.3 標 [ ] → [x]）
 
 **觸發**：cron 第 33 輪

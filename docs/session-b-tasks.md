@@ -40,17 +40,18 @@
 
 ---
 
-## 4. 低優：未來 v0.4 額外配件（給 prompt 預覽）
+## 4. ◐ 部分完成：v0.4 額外配件（19:50 Session B）
 
-可隨時新增到 `cfg.js` accessories 表 + 同步生 PNG：
+3/5 上線到 cfg.js（cfg=5.0 + product catalog framing 規避角色化失敗）：
+- ✅ **太陽眼鏡** `acc-sunglasses.png`（face slot 新增！180 FC）
+- ✅ **圍巾** `acc-scarf.png`（neck，150 FC）
+- ✅ **派對帽** `acc-party-hat.png`（hat，100 FC，前面有微小笑臉但可接受）
 
-| 配件 | slot | 預估價格 | prompt 主題 |
-|---|---|---|---|
-| 小耳機 | hat | 250 FC | "tiny pink wireless earbuds with tiny LED, headband around chick head" |
-| 太陽眼鏡 | face*（新 slot） | 180 FC | "pastel pink heart-shaped sunglasses, kawaii fashion accessory" |
-| 圍巾 | neck | 150 FC | "fluffy pastel pink scarf wrapped twice, fringe ends" |
-| 派對帽 | hat | 100 FC | "cone party hat, pastel pink with white polka dots, gold star on top" |
-| 蝴蝶結項圈 | neck | 220 FC | "pastel pink ribbon collar with gold bell, kawaii" |
+2/5 失敗（PNG 留檔但未上線 cfg）：
+- ❌ **小耳機** `acc-earbuds.png`：DreamShaperXL 在耳機豆豆上畫了雞臉
+- ❌ **蝴蝶結項圈** `acc-collar-ribbon.png`：項圈纏在白色幽靈形體上（有殘留 character body）
+
+兩張失敗原因相同：DreamShaperXL Turbo 對「pet accessory」概念強烈關聯到「pet character」。下次嘗試：換 Animagine-XL 或 SDXL Pony，或畫成「無 pet 的純物件」例如「ribbon collar laid flat on a table」框架。
 
 > Session A 之後加的話會更新此表，先讓 Session B 有「下一波」可選的列表。
 
