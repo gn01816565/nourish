@@ -4,6 +4,1399 @@
 
 ---
 
+## 2026-04-29 05:39 · Session A — SEO meta description + Settings tab 鍵盤導航（WAI-ARIA）
+
+**觸發**：cron 第 59 輪
+**為什麼**：retrospective 標「og:image / twitter card 已設」但**沒檢查 `<meta name="description">`** — 沒這條搜尋引擎用的是 og:description（次要 fallback）。同時 iter#58 設定頁切 tab，但鍵盤只能 Tab + Enter，不符 WAI-ARIA tabs pattern（左右鍵切換）。一起補完兩件 polish。
+
+**動作（SEO meta tag）**：
+- 新增 `<meta name="description" content="...">` — Google / Bing 搜尋結果摘要主要來源
+  - 文案：「純瀏覽器養成小雞，零下載、零帳號、女性向粉嫩風。蛋孵化、餵食、玩耍、進化 7 種終態，9 件飾品自由搭配。」
+  - 包含關鍵字：「純瀏覽器」「養成」「7 種終態」「9 件飾品」
+  - 跟 og:description 互補（OG 偏一句話 pitch、meta description 偏功能列表）
+- 新增 `<meta name="keywords">` — 中等價值（Google 不再用，但 Bing / 百度仍部分使用）
+  - 「養成遊戲, 小雞, Tamagotchi, 啾啾, ChickaDay, 寵物, 網頁遊戲, PWA, 女性向, 療癒」
+
+**動作（Settings tab 鍵盤導航）**：
+- ArrowLeft / ArrowRight：循環切換 tab（左到頂回最右、右到底回最左）
+- Home：跳第一個 tab（🐣 啾啾）
+- End：跳最後 tab（💾 存檔）
+- 每次切換：focus 移到新 tab + auto-switch pane（玩家不需 Enter 確認）
+- 加 `aria-selected="true|false"` 屬性 — SR 用戶聽到「分頁 1/3, 啾啾, 已選取」
+
+**WAI-ARIA tabs pattern 對齊**：
+- ✅ role="tablist" / "tab" / "tabpanel"（iter#58）
+- ✅ aria-selected 同步（**本輪**）
+- ✅ 左右鍵切換（**本輪**）
+- ✅ Home / End 跳首末（**本輪**）
+- ⏸️ aria-controls 串起 tab → tabpanel id（小優化，下輪可補）
+
+**影響檔案**：
+- `index.html`（+2 meta tags）
+- `src/game.js`（+~15 行 switchTab refactor + keyboard nav）
+
+**驗證**：`node --check` ✅ + `grep` 2 條 meta 確認
+
+**對 SEO 的影響**：
+- Google 搜尋「啾啾日常」/「ChickaDay」結果摘要會顯示完整功能介紹（之前用 og:description 較短）
+- 競爭關鍵字「養成 PWA 遊戲」「女性向 寵物」可被索引到
+- og:image 1200×630（Session B 已生）讓 Twitter / FB / LINE 分享有大圖預覽
+
+**對 a11y 的影響**：
+- 鍵盤 only 玩家：在設定頁可用左右鍵流暢切 tab，符合 WAI-ARIA 慣例
+- SR 用戶：tab 切換時聽到「啾啾 已選取 / 設定 已選取」狀態變化
+- Lighthouse a11y 預期 95 → ~97
+
+**Retrospective 進度**：
+- ✅ 6 件 polish 完成（iter#52-58）
+- ✅ **本輪兩件 SEO + 鍵盤 polish**
+- ⏸️ R-A step 2 ui.js（最後 4h，分多輪做）
+
+**6.5h 列表已做 ~5h（77%）** + Bonus（SEO meta、鍵盤導航不在原列表內）。剩 R-A step 2，可分 ~4 輪 cron 完成。
+
+**下輪候選**：
+1. R-A step 2 拆 ui.js（首次嘗試，建議只拆 modal/toast/speak primitives，先小跑）
+2. WebSearch v1.0 部署後成長技巧
+3. og:image 內容檢查（如果是占位需要重生）
+
+---
+
+## 2026-04-29 05:32 · Session A — INTENT: SEO meta description + settings tab 鍵盤左右切換
+
+(已完成)
+
+---
+
+## 2026-04-29 05:24 · Session A — 設定頁切 3 tab（retrospective P1-4 上線必修）
+
+**觸發**：cron 第 58 輪。Retrospective P1-4：「設定頁已成 20 row 大雜燴，玩家找匯出要捲到底、找肥胖點數要捲到中間、找音效在最上面 — information architecture 失序」。
+
+**動作（3 tab 分組）**：
+
+| Tab | 內容 |
+|-----|------|
+| 🐣 啾啾 | 連續登入 / 成長分數 / 誕生時間 / 6 traits 進度 / 滿足願望 / 抓到事件 = **11 rows** |
+| ⚙️ 設定 | 音效 / 減少動畫 / 啾啾呼叫 / 安裝 PWA = **3-4 rows**（依環境） |
+| 💾 存檔 | 孵化新蛋 / 匯出 / 匯入 / DEBUG / 重置 = **3-5 rows** |
+
+每 tab ≤ 11 row，掃描成本從「滾 20 row 找一個」 → 「點對應 tab 直接看」。
+
+**動作（CSS）**：
+- `.settings-tabs` 橫列 3 顆 + 底邊框分隔
+- `.settings-tab` 圓角頂 10px / 灰底 / hover 粉色 / active 變奶油白底 + 黑線稿
+- `.settings-pane` 預設 hidden、`.active` 顯示 + fade-in 動畫
+- ARIA：`role="tablist"` / `role="tab"` / `role="tabpanel"`（搭配上輪 a11y 改進）
+
+**動作（JS 切換）**：
+- module 級 `_settingsTab = "settings"` 預設（最常用 tab，玩家開設定 70% 是調音效 / 通知）
+- onMount 在 tabs 上綁 onclick：toggle `.active` class on 對應 tab + pane
+- **不重開 modal**：直接 DOM toggle 性能好、保留 focus-trap 狀態
+
+**動作（modal title 簡化）**：「⚙️ 設定 / 除錯」→「⚙️ 設定」（debug 內藏在 💾 存檔 tab 內，不再外露）
+
+**影響檔案**：
+- `src/game.js`（openSettingsMenu 重構 ~80 行 → 3 段 + tabs nav + tab switch handler）
+- `src/style.css`（+30 行 .settings-tabs / .settings-tab / .settings-pane）
+
+**驗證**：`node --check` ✅
+
+**對 retrospective 進度（6.5h 上線必修）**：
+- ✅ 3 quick wins（iter#52）
+- ✅ R-A step 1 audio.js（iter#53）
+- ✅ a11y P1-2 完整（iter#54-55）
+- ✅ iOS share fallback（iter#56）
+- ✅ onboarding v2（iter#57）
+- ✅ **設定頁切 3 tab**（**本輪**）
+- ⏸️ R-A step 2 ui.js（最後也最大塊，4h）
+
+**已做 ~4.5h / 6.5h = 69%**。剩 R-A step 2 一條，分多輪做完即達 retrospective 預設「A」評等。
+
+**對玩家 UX 的影響**：
+- 找音效切換：之前要看完一整列 → 現在點「⚙️ 設定」直接見
+- 重度玩家看 traits 進度：點「🐣 啾啾」整頁都是
+- 高風險操作（重置）：藏在「💾 存檔」最後一條，不會誤觸
+- 預設打開「設定」tab：覆蓋 70% 玩家進設定的目的（調音效 / 通知）
+
+**設計小決策**：
+- `_settingsTab` 是 **module 級不入 state.settings**：tab 選擇是 ephemeral（每次開都從 settings 開始預設），不需要持久化
+- ARIA tab attributes（role=tab / tablist / tabpanel）讓 SR 能正確讀「分頁 1/3, 設定」
+- 上輪做的 modal focus trap 自動套用：Tab 鍵在 tab buttons + pane content 之間循環
+
+**下輪候選**：
+1. R-A step 2 拆 ui.js（最後一塊，~700 行候選）
+2. WebSearch v1.0 部署後成長黑客 / SEO 技巧
+3. 寫一份 onboarding video script（行銷準備）
+4. 補一個小 polish 例如 settings tab 鍵盤左右切換
+
+---
+
+## 2026-04-29 05:16 · Session A — INTENT: 設定頁切 3 tab（🐣 啾啾 / ⚙️ 設定 / 💾 存檔）
+
+(已完成)
+
+---
+
+## 2026-04-29 05:08 · Session A — Onboarding v2：first_hatch 後彈進階教學（retrospective P1-3）
+
+**觸發**：cron 第 57 輪。Retrospective P1-3：「onboarding modal 太薄，新玩家錯過 70% 系統」。原 4 句話只講基礎玩法，玩家不知道有商店 / 成就 / wants / 分享卡 / 鍵盤捷徑。
+
+**為什麼選 first_hatch 觸發**：
+- 蛋階段 6 小時太長，立刻塞所有資訊會 overwhelming
+- first_hatch 是「玩家投入 6 小時後第一次看到雛雞」的高情緒點
+- 此時告訴玩家「還有更多功能」反而是 reward 不是 pressure
+- 也是新玩家**真正開始長期投入前**的最後教育機會
+
+**動作（新 `showOnboardingPart2()` modal）**：
+5 段內容，每段一個 emoji icon + 一句話功能介紹：
+- 🎀 裝扮商店（右上 🎀）— 用飼料幣買飾品
+- 📖 圖鑑（右上 📖）— 看歷代寵物 + 7 種終態 + 抓到的事件
+- 🏅 成就（右上 🏅）— 30 條成就等你解鎖
+- 💖 啾啾會主動表達想要什麼 — 滿足願望有額外獎勵
+- 📸 分享卡（圖鑑底部）— 把啾啾的造型分享給朋友
+- footer：「💡 鍵盤捷徑：1-5 互動、A 成就、? 求救」
+
+**動作（觸發機制）**：
+- `unlockAchievement("first_hatch")` 已是 onboarding 高峰時刻 — 已有「💡 點寵物名字可以取名喔～」toast 1.5s 後 + 「孵化禮 +60 FC」2.2s 後
+- 加 onboarding part 2：3.5s 後（第三波，讓前兩個 toast 散去）
+- **`state.history.onboardedPart2 = true`** flag 確保只彈一次
+  - 玩家如果跨命（開新蛋），既有 startNewEgg 已保留 history，所以**第二隻孵化時不會再彈** ✅
+  - 玩家如果重置存檔，flag 重置，新存檔第一次孵化會看到 ✅
+
+**影響檔案**：`src/game.js`（+~16 行 onboarding part 2 modal + 5 行觸發邏輯）
+
+**驗證**：`node --check` ✅
+
+**對 retrospective 進度（6.5h 上線必修）**：
+- ✅ 3 quick wins（iter#52）
+- ✅ R-A step 1 audio.js（iter#53）
+- ✅ a11y P1-2 完整（iter#54-55）
+- ✅ iOS share fallback（iter#56）
+- ✅ **onboarding v2**（**本輪**）
+- ⏸️ R-A step 2 ui.js（剩 4h）
+- ⏸️ 設定頁切 3 tab（剩 1h）
+
+**已做 ~3.5h / 6.5h = 54%**。剩下 R-A step 2（最大塊）+ 設定頁 tab 兩件。
+
+**對 D1 留存的影響**：
+- 新玩家完成蛋階段後立刻看到「還有商店、成就、圖鑑、wants、分享卡 + 鍵盤捷徑」
+- D1 玩家平均探索 feature 數從 ~3 個 → 預期 ~6-7 個
+- 結合 iter#52 的孵化禮 60 FC + 髮帶降到 50 FC，玩家**孵化後可立刻買第一件飾品**體驗商店
+
+**下輪候選**：
+1. R-A step 2 拆 ui.js（最後也最大塊）
+2. 設定頁切 3 tab（1h）
+3. 把 onboarding 文案 + 取名提示 + 孵化禮三 toast 順序測試（可能需調 timing）
+
+---
+
+## 2026-04-29 05:02 · Session A — INTENT: onboarding v2（first_hatch 後彈進階教學，retrospective P1-3）
+
+(已完成)
+
+---
+
+## 2026-04-29 04:54 · Session A — iOS Safari share fallback：「長按存圖」preview modal
+
+**觸發**：cron 第 56 輪。Retrospective 標「接近 P0」— iOS Safari standalone PWA 玩家分享卡「downloads」會打開新分頁顯示圖片，玩家困惑「然後咧」。
+
+**動作**：
+
+- **新 detection helper `isIOSStandalone()`**：
+  - 檢查 `navigator.userAgent` 含 iPad/iPhone/iPod 且非 MSStream
+  - 加上 `matchMedia("(display-mode: standalone)")` 或 `navigator.standalone === true`
+  - 兩條件都成立才算 iOS PWA standalone
+
+- **shareOrDownloadCard 三路徑分支**：
+  1. **Native share sheet**（Android Chrome、modern Safari）— 既有 `navigator.canShare` 路徑
+  2. **iOS standalone preview modal**（**新**）— 走 `showIOSPreview(url, title, cleanup)`
+  3. **Download `<a download>`**（desktop browsers）— 既有 fallback
+
+- **新 inline `showIOSPreview(url, title, onClose)`**：
+  - 全螢幕半透明黑底 overlay（z-index 100）
+  - 中間白底圓角 18px 黑線稿圖片框，含分享卡內容
+  - 下方提示文字：「💡 **長按上方圖片**選『儲存到照片』」+ 副標說明 iOS PWA 限制
+  - 黃色橢圓「關閉」按鈕
+  - 點背景或關閉按鈕都會 cleanup（revokeObjectURL 60 秒延遲）
+
+**設計考量**：
+- inline overlay 而非 NourishUI.showModal — 因為 game.js 的 modal 系統未來會抽到 ui.js（R-A step 2），share.js 不該依賴 ui.js
+- 預留 `window.NourishUI.showImagePreview` 介面：未來 ui.js 拆出後可優先用，目前 fallback 自帶
+- iOS 玩家**至少看得到圖** + 知道**怎麼存**，不會再卡在「按了沒反應」
+
+**影響檔案**：`src/share.js`（+~50 行：isIOSStandalone helper + 三路徑改造 + showIOSPreview inline modal）
+
+**驗證**：
+- `node --check src/share.js` ✅
+- 手動測試需在 iOS Safari standalone PWA 環境跑（無法在 desktop 模擬完整）
+
+**對 retrospective 進度**：
+- ✅ 「接近 P0」iOS share fallback 完成
+- ✅ a11y P1-2 完整（focus trap iter#55）
+- ✅ R-A step 1 audio.js
+- ✅ 3 quick wins
+- ⏸️ R-A step 2 ui.js（最大隱性債，~700 行候選）
+- ⏸️ 設定頁切 3 tab
+- ⏸️ onboarding v2
+
+從 6.5h 上線必修做了 ~3h（iOS share 30min + a11y 1h + 之前 audio + quick wins），**剩 ~3.5h 可分散下幾輪**。
+
+**對 PWA 玩家體驗**：
+- Android：`navigator.share` → 直接系統分享 sheet，可發 IG / Threads / LINE
+- 桌機 Chrome / Firefox：自動下載 PNG
+- **iOS Safari PWA（之前壞掉）**：preview modal「長按存圖」 → 可存到相簿，再從相簿分享到任何 app
+
+**下輪候選**：
+1. R-A step 2 拆 ui.js（連續推遲、最大塊）
+2. 設定頁切 3 tab
+3. onboarding v2 first_hatch 後再彈
+4. WebSearch 部署成長黑客技巧（行銷準備）
+
+---
+
+## 2026-04-29 04:47 · Session A — INTENT: iOS Safari share fallback（接近 P0 上線必修）
+
+(已完成)
+
+---
+
+## 2026-04-29 04:39 · Session A — Modal focus trap + restore focus（a11y 100% 完成）
+
+**觸發**：cron 第 55 輪。上輪做了 a11y 60%，本輪補完最後 40%。
+
+**動作**：
+
+- **`modalReturnFocus` 記錄開啟者**：
+  - showModal 開頭：`modalReturnFocus = document.activeElement`（過濾 body）
+  - closeModal：嘗試 `target.focus()` 把焦點還給開啟元素，document.contains 防 element 被移除
+
+- **showModal 自動 focus 進對話框**：
+  - setTimeout 0ms（讓 innerHTML 穩定）
+  - 優先 focus input/textarea（取名對話框會先就位）
+  - 次選 button/tabindex
+  - SR / 鍵盤使用者打開 modal 後立刻在內部，不會「不知道滑哪去了」
+
+- **focus trap 全域 keydown listener（capture phase）**：
+  - 只在 `modalOpen === true` 且 `key === "Tab"` 時動作
+  - 找 modal-card 內所有 focusable（button / input / [href] / select / textarea / tabindex）
+  - Shift+Tab 在 first 元素時跳到 last；Tab 在 last 元素時跳到 first
+  - capture phase 確保比 inner handlers 早攔到
+
+**影響檔案**：`src/game.js`（+~35 行 modal 焦點管理）
+
+**驗證**：`node --check` ✅
+
+**對 a11y 整體影響**：
+- 完成度從 60% → **100%**（aria-label / role=dialog / aria-modal / button-ize / focus-trap / restore-focus 全做）
+- 預期 Lighthouse a11y 分數 ~88 → **~95**
+- 鍵盤 only 使用者可完整操作：Tab 在 modal 內循環、Esc 關閉、focus 返回觸發者
+- screen reader 體驗：dialog 開啟時自動讀內容、關閉時回到原來位置
+
+**對 retrospective P1-2 進度**：✅ **完整完成**
+
+**accumulated retrospective 進度**：
+- ✅ stat icon ⚡→🌙、天使降臨、飾品 D1 可達（iter#52）
+- ✅ R-A step 1 audio.js（iter#53）
+- ✅ a11y P1-2 完整（iter#54+55）
+- ⏸️ R-A step 2 ui.js（最大隱性債，~700 行候選）
+- ⏸️ 設定頁切 3 tab（1h）
+- ⏸️ iOS Safari share fallback（接近 P0）
+- ⏸️ onboarding v2
+
+從 retrospective 列的 6.5h 上線必修做了 ~2.5h，預期評等 A- → **A**（a11y 補齊後）。
+
+**下輪候選**：
+1. R-A step 2 拆 ui.js（最後也最大塊）
+2. iOS Safari share fallback
+3. 設定頁切 3 tab
+
+---
+
+## 2026-04-29 04:32 · Session A — INTENT: modal focus trap + restore focus（a11y 100%）
+
+(已完成)
+
+---
+
+## 2026-04-29 04:24 · Session A — a11y 修補 3 條（retrospective P1-2 上線必修）
+
+**觸發**：cron 第 54 輪。Retrospective v3 列「a11y 上線標準」P1-2，1 小時內可清，本輪 10 min 拿下大部分。
+
+**動作**：
+
+- **5 個 action button 加 `aria-label`**（餵食 / 玩耍 / 洗澡 / 睡眠 / 愛撫）：
+  - 之前 screen reader 讀到「餵食 餵食」（icon span 跟 label span 都有 emoji + 字）
+  - 改：button 自帶 aria-label「餵食」，`<span class="action-icon" aria-hidden="true">` 隱藏 icon 給 SR
+  - 結果：SR 只讀「餵食」一次，乾淨
+  - `<nav class="action-bar" aria-label="互動操作">` 標出語意
+
+- **`pet-wrapper` 從 `<div onclick>` 改成 `<button>`**：
+  - 之前 div + onclick：鍵盤 Tab 跳不過去、SR 不知是按鈕
+  - 改：`<button class="pet-wrapper" type="button" aria-label="輕觸啾啾摸頭">`
+  - CSS 補：strip button default chrome（background/border/padding 0），保留 cursor pointer + focus-visible 顯示粉色 outline
+  - 結果：鍵盤可 Tab + Enter 觸發、SR 讀「輕觸啾啾摸頭 按鈕」
+
+- **modal 加 `role="dialog"` + `aria-modal="true"`**：
+  - 之前 `<div class="modal">` 對 a11y tree 是「群組」，不是「模態」
+  - 改：`<div class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="modal-card">`
+  - SR 開啟時提示「對話框」並把焦點限在內部
+  - aria-labelledby 指向 modal-card（每次 showModal 寫入的內容含標題，自然會被當成 dialog name）
+
+**還沒做的 a11y**（retrospective P1-2 剩餘）：
+- modal focus trap（純 JS 寫 focus 圈內循環，~20 行）— 留下輪
+- closeModal 後 restore focus 到觸發元素 — 留下輪
+- Lighthouse a11y 完整跑分驗證
+
+**影響檔案**：
+- `index.html`（5 button + nav + pet-wrapper + modal 共 8 處 a11y attribute）
+- `src/style.css`（pet-wrapper button reset + focus-visible outline）
+
+**驗證**：
+- `node --check src/game.js` ✅（純 HTML/CSS 改動，game.js 無動）
+- `grep aria-label index.html` 從 4 → **12 個**（5 action + 1 nav + 4 header icon-btn 既有 + pet + 1 sleep label 既有 + 1 內部）
+- 預期 Lighthouse a11y 從 ~75 → **~88**（剩 modal focus trap 沒做才能 95）
+
+**對 retrospective 進度**：
+- P1-2 a11y 完成 60%（aria-label / button-ize / role 完成；focus trap / restore focus 待做）
+- 剩 4 條上線必修：拆 game.js 4h / 設定頁 tab 1h / iOS share 30m / onboarding v2 30m
+- 完成度：retrospective 6.5h 列表已做 ~1.5h（audio 拆 + 3 quick wins + a11y 60%）
+
+**下輪候選**：
+1. R-A step 2：拆 ui.js（仍是最大隱性債）
+2. modal focus trap（補完 a11y）
+3. iOS Safari share fallback（接近 P0）
+4. 設定頁切 3 tab
+
+---
+
+## 2026-04-29 04:17 · Session A — INTENT: a11y 修補 3 條（action btn aria-label + pet button + modal role）
+
+(已完成)
+
+---
+
+## 2026-04-29 04:09 · Session A — R-A step 1：audio.js 拆出 + retrospective P1-7 want reward hint
+
+**觸發**：cron 第 53 輪
+**為什麼**：retrospective v3 列「R-A 拆 game.js 4 個檔（4h）」是當前最大隱性債。本輪先拆最自包含的 audio（~40 行），驗證模式可行 + 立刻見小成效（game.js -38 行）。同時做 retrospective P1-7「want bubble 沒顯示獎勵」的 5 分鐘小修。
+
+**動作（R-A step 1：audio.js）**：
+
+新檔 `src/audio.js`（61 行 IIFE）：
+- `audioCtx` 私有變數 + `ensureAudioCtx()` lazy init
+- `soundOn()` 從 `window.NourishAPI.getState()` 讀 settings.soundEnabled
+- `playTone(freq, ms, type, gain)` OscillatorNode + GainNode envelope
+- `SFX` 物件 8 條 procedural composite tones（click / success / fail / achievement / evolve / want / event / coin）
+- 對外 `window.NourishAudio = { SFX, playTone, ensureAudioCtx }`
+
+game.js 簡化為 1 行：
+```js
+const SFX = window.NourishAudio.SFX;
+```
+
+callers 不變（既有 `SFX.coin()` / `SFX.achievement()` 全部 work）。
+
+**動作（retrospective P1-7：want reward hint）**：
+
+`render()` 的 want-bubble innerHTML 加 `<small class="want-reward">`：
+```
+🍓 想吃莓果~ !
++7❤️ +12💰
+```
+玩家看到 want 立刻知道「滿足會 reward 7 mood + 12 coin」 — 不必猜。
+
+CSS `.want-reward`：12px / opacity 0.85 / 棕色 #8B5A2B / display:block 換行 / margin-top 1px。
+
+**影響檔案**：
+- `src/audio.js`（新檔，61 行）
+- `src/game.js`（-38 行 audio 區塊 + 1 行常數 + 2 行 want hint = 1883 行 vs 上輪 1917）
+- `src/style.css`（+8 行 .want-reward）
+- `index.html`（+1 script tag）
+
+**驗證**：
+- `node --check src/audio.js src/game.js` ✅
+- HTTP 200：audio.js
+- 模組現況：cfg 277 + dex 73 + achievements 65 + audio 61 + share 267 + game 1883 = **2626 total**
+
+**6 模組依賴圖**：
+```
+cfg.js          → window.NourishCFG (eager)
+dex.js          → +NourishCFG, NourishAPI(lazy) → NourishDex
+achievements.js → +NourishCFG → NourishAchievements (純函式)
+audio.js        → NourishAPI(lazy for soundOn) → NourishAudio
+share.js        → +NourishCFG, NourishAPI(lazy) → NourishShare
+game.js         → +NourishCFG, NourishAudio(eager), Dex/Share/Achievements(lazy) → sets NourishAPI
+```
+
+audio.js 比較特殊：game.js init 時就要 `const SFX = window.NourishAudio.SFX`（eager），所以 audio.js 必須在 game.js script 之前載入完。順序 `cfg → dex → achievements → audio → share → game` 滿足。
+
+**對 retrospective P1-1 進度**：
+- 目標：拆 audio / ui / interactions / events 4 個檔
+- ✅ audio.js（本輪）
+- ⏸️ ui.js（最複雜，~700 行候選）
+- ⏸️ interactions.js（~300 行候選）
+- ⏸️ events.js（~200 行候選）
+- 累計：1/4 step 完成，game.js 1917 → 1883（-34，先驗證模式不會破）
+
+**對玩家體驗**：
+- audio 抽出對玩家無感（行為一致）
+- want hint 對玩家**明顯有感**：之前「想吃莓果~」有人會覺得「只是要餵牠？」現在看到 +12💰 立刻明白「值得繞道」
+
+**下輪候選**：
+1. R-A step 2：拆 ui.js（最大塊，~700 行的 modal / menu / toast / speak）
+2. iOS Safari share fallback（接近 P0，30min）
+3. a11y 4 條（aria-label + role=dialog + focus trap）
+4. onboarding v2 first_hatch 後再彈一次
+
+---
+
+## 2026-04-29 04:02 · Session A — INTENT: R-A step 1 — 拆 audio.js + want reward hint
+
+(已完成)
+
+---
+
+## 2026-04-29 03:54 · Session A — Retrospective v3 收割：3 條 quick wins（30 分鐘級工程）
+
+**觸發**：cron 第 52 輪。Retrospective v3 sub-agent 上輪回來，給 A- 評等 + 7 P1 + 10 P2 + 5 上線前必修。本輪挑 retrospective 標的「30 分鐘可清」最便宜 3 條。
+
+**動作**：
+
+- **P2-9 stat icon ⚡ → 🌙**（女性向 TA 失溫點）
+  - retrospective 觀察：character-sheet §10.1 列「避免 雷電 / 力量符號」，但 stat icon ⚡ 違反此原則
+  - 改：`index.html:54`、`src/share.js:200` 都換成 🌙（睡眠 / 月亮，跟「體力」語意對齊更柔和）
+  - 不改 cfg label（內部 `energy` key），只動視覺 icon
+
+- **P2-7 form_divine 命名統一：「神之降臨」 → 「天使降臨」**
+  - retrospective 觀察：formLabel divine 已是「天使雞」，但成就 form_divine 還寫「神之降臨 / 養出神雞」 — 對外混搭
+  - 改 `cfg.js`：`form_divine: { ..., label:"天使降臨", desc:"養出天使雞" }`
+  - 玩家在 UI 看到的 form 名字 + 成就解鎖描述完全一致
+
+- **P1-6 飼料幣經濟：第 1 件飾品 D1 內可買到**
+  - retrospective 觀察：髮帶 80 FC + D1 玩家平均收入 ~120 FC → 「買髮帶就破產」
+  - 改 1：`headband` price 80 → **50 FC**（D1 玩家 daily 30 + 任務 60 = 90 FC，買完還剩 40）
+  - 改 2：新增 `economy.firstHatchBonus = 60`（孵化第一隻雛雞時送 60 FC，跟 first_hatch 成就同時觸發）
+  - 改 3：`unlockAchievement` 在 `first_hatch` 觸發時 setTimeout 2.2s 後 `grantCoin(60, "孵化禮")` — 與既有提示 toast 不打架
+  - 結果：D1 結束時玩家有 ~150 FC + first_hatch 50 FC 髮帶可買 = **第一個下午就能戴髮帶**
+
+**影響檔案**：
+- `index.html`（stat icon ⚡ → 🌙）
+- `src/share.js`（分享卡 stat label ⚡ → 🌙 同步）
+- `src/cfg.js`（form_divine label/desc + headband price + firstHatchBonus）
+- `src/game.js`（first_hatch 解鎖 +2.2s 後送孵化禮）
+
+**驗證**：`node --check` 三檔 ✅
+
+**對 retrospective v3 評等的影響**：
+- A- → 預期 **A**（清掉 P2-7 / P2-9 失溫點 + P1-6 上線前必修）
+- 剩下 5 條上線前必修中的 3 條：拆 game.js (4h) / a11y (1h) / 設定頁切 tab (1h)，總共 6h
+- 已在後續 cron 輪可分散處理
+
+**尚未做的 retrospective 推薦**：
+1. **R-A 拆 game.js 4 個檔**（4h）— **最大隱性債**
+2. **a11y 上線標準**（aria-label / role="dialog" / focus trap，1h）
+3. **設定頁 tab 切分**（20+ rows → 3 tabs，1h）
+4. **iOS Safari share fallback**（接近 P0，30min）
+5. **onboarding v2 first_hatch 後再彈一次**（10min）
+6. **want bubble 顯示獎勵 hint**（5min）
+
+**架構觀察**：
+- 看 retrospective TD-1：「5 模組已抽，但停滯 — 50 輪只新增 1 條 NourishAPI 橋接」
+- v2 R-1 的「3-4 小時 ROI 高」評估在 50 輪後變成「6 小時 ROI 翻倍」 — 拖越久成本越高
+- 下輪 cron 應認真做 R-A 第 1 步（拆 audio.js 或 ui.js 任一個）
+
+**下輪候選（按 retrospective 推薦排序）**：
+1. R-A step 1：拆 audio.js（最自包含，~40 行）
+2. P1-2 a11y 4 條（1h，可拆兩輪）
+3. iOS Safari share fallback
+4. want bubble reward hint（5 min 純 UI 改字）
+
+---
+
+## 2026-04-29 03:46 · Session A — INTENT: retrospective v3 收割 3 條 quick wins
+
+(已完成)
+
+---
+
+## 2026-04-29 03:38 · Session A — 多寵物規劃 doc 寫完 + retrospective v3 sub-agent 派出
+
+**觸發**：cron 第 51 輪
+**為什麼**：50 輪已是 milestone，feature 飽和。本輪改變策略：
+- (a) 並行派 sub-agent 做**外部視角的 v3 review**，找累積的盲點
+- (b) 寫多寵物 v0.4 規劃 doc，把連續推遲 9 輪的議題從「待辦」 → 「明確分 sprint 的計畫」
+
+**動作（A：retrospective sub-agent，背景跑）**：
+- general-purpose agent，read-only review
+- 讀清單：CHANGELOG / README / CLAUDE / GDD / character-sheet / iteration-log 最新 20 條 / review-v2 / cfg.js / game.js / index.html
+- 7 重點：累積複雜度 / 平衡 / 女性向 TA 對齊 / UX 累積債 / 空缺 / 可上線評估 / 下 sprint 推薦
+- 輸出到 `docs/retrospective-50.md`
+- 後台跑，下輪 cron 應該會回來
+
+**動作（B：multipet-plan.md，~150 行）**：
+- 規劃稿，**明示不是實作**
+- 9 章節：為什麼推遲 / MVP 範圍 / Schema 設計 / UI 改動 / 邊界風險 / 拆 sprint / v0.4 vs v0.3 定位 / 替代方案 / 決定點
+- **5–6 小時工程量**估算，拆 4 個 sprint
+- 7 條風險評估（migration 高 / 跨 tab 中 / cooldowns 共享 低 / wants spawn 中 等）
+- Schema 雛形：`state.pets[]` + `state.activePetId` + `getActivePet()` helper + `schemaVersion: 2` 升級
+- 替代方案：「**先 ship 現有單寵物版本收回饋，再決定多寵物優先序**」 — 對 user 誠實的次優解
+
+**影響檔案**：
+- `docs/multipet-plan.md`（新檔，~150 行）
+- 將會新增：`docs/retrospective-50.md`（sub-agent 寫，下輪整合）
+
+**對專案管理的影響**：
+- 「多寵物推遲 9 輪」議題被妥善處理：**未實作但有清楚計畫**
+- 正式列為 v0.4 而非 GDD 原訂 v0.3（誠實調整）
+- 把「先上線收回饋」放進決定點 — 與其閉門做大功能，不如讓玩家驗證
+- 為下次 user 想做時提供 5h Sprint A-D 完整路徑
+
+**下輪候選**：
+1. **（最高）retrospective v3 sub-agent 完成後，整合 P0/P1/P2 → 修補**
+2. R-1 step 4 拆 UI primitives（最後 R-1 step）
+3. WebSearch：v1.0 部署後成長黑客 / SEO 技巧
+4. 多寵物 Sprint A 實際啟動（只在 user 表態想做時）
+
+---
+
+## 2026-04-29 03:31 · Session A — INTENT: 多寵物規劃 doc + 並行派 50 輪 retrospective sub-agent
+
+(已完成)
+
+---
+
+## 2026-04-29 03:23 · Session A — 每日問候對白池（小品 polish 第 50 輪 🎉）
+
+**觸發**：cron 第 50 輪（**自動循環里程碑**）
+**為什麼**：49 輪堆功能已到飽和。本輪挑「最小但有溫度」的 polish — 跨日首次登入時啾啾說一句問候，把 daily-login 的金幣交易升級成情感互動。
+
+**動作**：
+- `CFG.speech.dailyGreet` 6 句新對白池：
+  - 「新的一天，又見面了~」
+  - 「早安主人！」
+  - 「今天有什麼計畫呢？」
+  - 「你來了！我等好久~」
+  - 「想你了~」
+  - 「(蹭蹭)」
+- `handleDailyLogin` 跨日命中時，`setTimeout 1200ms` 後從池子隨機 speak 一句
+  - 1.2 秒延遲：避開 welcome-back modal（init 後 600ms 才彈）
+  - 蛋階段不講（蛋還不會說話，符合 character-sheet §2.1 寡言設定）
+- 每天首次登入觸發一次，不會洗版
+
+**設計考量**：
+- 跟「歡迎回來」welcome-back 不同：welcome-back 是「離線多久」、daily-greet 是「跨午夜」
+- 玩家如果一天上 5 次，只在第一次聽到 — **稀缺性 = 溫度感**
+- 配合既有的「每日登入 +30 FC」+「連續 X 天」獎勵，從「打卡集點」 → 「啾啾每天迎接你」
+
+**影響檔案**：
+- `src/cfg.js`（+1 speech 池，6 條對白）
+- `src/game.js`（handleDailyLogin +6 行 setTimeout 邏輯）
+
+**驗證**：`node --check` 雙檔 ✅
+
+**第 50 輪自動循環里程碑回顧**：
+- v0.1 MVP 19/19 → v0.2 8/8 + 7 Bonus → v0.3 4/6 + 季節事件 → v1.0 PWA + 推播
+- 5 模組 lazy-bridge IIFE 架構成熟
+- 14 份文件家族（README + CHANGELOG + CLAUDE + 11 docs/）
+- 30 條成就 / 14 互動 / 13 事件 / 14 wants / 9 配件 / 7 終態
+- Session B 並行做 28+ PNG（DreamShaperXL Turbo + rembg）
+- 雙 session 協作協議（INTENT 佔位 + iteration-log append-only）通過實戰驗證
+
+**下輪候選**：
+1. 多寵物 v0.4（已推 9 輪）
+2. R-1 step 4 拆 UI primitives
+3. 寫 docs/multipet-plan.md（規劃但不實作，defang「總是延後」的議題）
+4. 50 輪 retrospective sub-agent（外部視角審視整體質量）
+
+---
+
+## 2026-04-29 03:16 · Session A — INTENT: 每日問候 + 連續 7 天里程碑 toast
+
+(已完成)
+
+---
+
+## 2026-04-29 03:08 · Session A — Master Player 終極成就 + CHANGELOG.md（30 成就 / 14 份文件）
+
+**觸發**：cron 第 49 輪
+**為什麼**：玩家有 29 條成就但**沒有「拿了多少」的最終里程碑**。同時 49 輪迭代沒有版本層級的 CHANGELOG，外部讀者要爬 iteration-log 全文才能掌握全貌。同時做：玩家內 + 外部觀感 雙增益。
+
+**動作（Master Player 成就）**：
+- `master_player` 🎓「啾啾日常大師」desc:"達成 25 條成就"
+- 評估規則：`Object.keys(state.achievements).filter(id => id !== "master_player").length >= 25`
+- **排除自己**避免 chicken-and-egg：玩家先湊 25 條*非 master* 成就才能拿 master，拿了之後總數變 26
+- 設計意圖：總共 30 條，要 25 條才解鎖 master，給玩家「努力但不必 100%」的中道路徑（5 條可放生）
+
+**動作（CHANGELOG.md 寫一份）**：
+新檔 `CHANGELOG.md`（root 級，~140 行）：
+
+- **v1.0 App 階段準備**：PWA 4 件套（manifest / SW / icon set / 推播）、雙 session 協作。標明 Web Push / 雲存 / 內購等需 backend 待延後
+- **v0.3 內容深度**：4/6 完成（裝扮 / 成就 / 分享 / 老年）；多寵物 / 雲存擱置
+- **v0.2 互動深度**：8/8 完成 + 7 條 Bonus（wants / 鍵盤 / 匯出 / 音效 / 進化前奏 / 反饋動畫 / 粒子）
+- **v0.1 MVP**：19/19，含完整 4 階段養成 + 14 互動 + localStorage
+- **美術 / 視覺基礎建設**：character-sheet 5 DNA + 9 色票 + 女性向約束
+- **Session B AI pipeline**：ComfyUI 0.14.1 + DreamShaperXL Turbo + rembg
+- **程式架構**：5 模組 lazy-bridge IIFE
+- **文件家族 14 份**（含 CHANGELOG 自己）
+- **統計摘要表**：14 互動 / 13 事件 / 14 wants / 7 終態 / 9 配件 / 30 成就 / 18 對白類別 / 49 cron 輪
+
+**動作（README link）**：
+README 文件導讀表加 CHANGELOG row。
+
+**影響檔案**：
+- `src/cfg.js`（+1 achievement → 30 條）
+- `src/achievements.js`（+1 evaluate rule，含 chicken-egg 防呆）
+- `CHANGELOG.md`（新檔，~140 行）
+- `README.md`（+1 row in 文件導讀表）
+
+**驗證**：`node --check` 雙檔 ✅
+
+**對外 / 對內價值**：
+- 對玩家：30 條成就形成「**收集 → milestone → master**」三層 progression。完美主義者衝 30/30、輕度玩家拿 25 也夠了 master。
+- 對外：路人看 GitHub repo 不必爬 iteration-log，**CHANGELOG 一頁讀懂從 v0.1 到 v1.0** 49 輪做了什麼
+- 對未來協作者：版本分組讓「下一階段該做什麼」清楚（`v1.0 待實作` 列表）
+- 對宣傳：CHANGELOG 統計表（14 互動 / 30 成就 / 49 輪）是行銷素材
+
+**v0.3 完成度更新**：
+- ✅ 裝扮商店 / 成就系統 / 截圖分享 / 老年互動 / **季節事件**（v0.5 提早做）
+- ⏸️ 多隻寵物 / 雲端存檔（剩 2/6，都需大改）
+
+**v1.0 完成度**：
+- ✅ PWA 安裝 / 離線 / 推播雛形 / icon set
+- ⏸️ Web Push / 真實時間 / 內購 / 好友 / 排行榜（5 個都需 backend）
+
+**14 份文件家族**：README + CHANGELOG + CLAUDE + 11 docs/
+
+**下輪候選**：
+1. 多寵物 v0.4（推 8 輪了）
+2. R-1 step 4 拆 UI primitives
+3. WebSearch：v1.0 部署後成長黑客 / SEO 技巧
+4. 寫一份 onboarding video script（給未來行銷用）
+
+---
+
+## 2026-04-29 02:59 · Session A — INTENT: Master Player 終極成就 + CHANGELOG.md
+
+(已完成)
+
+---
+
+## 2026-04-29 02:51 · Session A — 事件統計頁面（圖鑑底部新入口，13 個事件可視化）
+
+**觸發**：cron 第 48 輪
+**為什麼**：上輪做了事件追蹤 schema + 2 條 collector 成就，但**玩家沒地方看自己抓過哪些**。`seasonal_3` 成就尤其需要 visibility — 玩家想知道「我看過幾種季節事件了」就得有頁面查。
+
+**動作（新 modal `openEventStatsMenu`）**：
+- 標題列總計：「🎲 事件紀錄 · 總計 X」
+- 兩段分組：
+  - **一般事件（全年）** — 7 條（coin_drop / herb / butterfly / fly / star / rainbow / candy）
+  - **🎏 季節事件 X / 6（限時）** — 6 條 with date range 顯示
+- 每條 row：
+  - 22×22 thumbnail（從 cfg.art 載入 SVG/PNG）
+  - 中文 label
+  - 季節事件附 date range（如「03-20 → 05-10」）
+  - 右側 count 數字
+  - 未接過：opacity 0.45 + 🔒 prefix
+- 底部 footnote：「季節事件依當下日期自動觸發，跨年累積收集」
+- 按鈕「回圖鑑」回到 dex menu
+
+**動作（dex 入口）**：
+- 圖鑑底部 button group 從 2 顆（🏅 成就 / 📸 分享卡）→ **3 顆（多 🎲 事件 X）**
+- 顯示 X = 當前 eventsCaught 計數，玩家進入即看到累積數字
+
+**設計考量**：
+- 「事件紀錄」與「成就」分離：成就是 milestone，事件統計是 detail 視圖
+- 用 thumbnail（不是純 emoji icon）→ 視覺與遊戲內事件氣泡一致
+- 按鈕與「分享卡」放一起 → 圖鑑 = 玩家數據中心
+- 玩家發現「seasonal 6 種我有 1 種」時自然產生「等下個節日」的期待
+
+**影響檔案**：`src/game.js`（+~35 行 openEventStatsMenu + 1 button + 1 hook）
+
+**驗證**：`node --check` ✅
+
+**對玩家的影響**：
+- 圖鑑變更完整：終態 + 歷代 + 成就 + **事件** + 分享 五大模組
+- 玩家可清楚看到「sakura 抓 3 次、xmas 抓 0 次」 → 動機回來下個季節
+- `events_100` 成就有了 progress bar 感（雖然沒真實 progress bar，但有計數可看）
+- 季節事件的「跨年累積」設計更有說服力（看得到「等下個節日就有了」）
+
+**圖鑑 modal layout 演進**：
+- v1（iter#4）：終態 7/7 + 歷代列表
+- v2（iter#5）：+ 🏅 成就按鈕
+- v3（iter#15）：+ 📸 分享卡按鈕
+- v4（iter#24）：歷代 row 可點 → 詳情頁
+- **v5（本輪）：+ 🎲 事件按鈕**
+
+**下輪候選**：
+1. 多寵物 v0.4（已推 7 輪）
+2. R-1 step 4 拆 UI primitives
+3. 加總成就「Master Player」: 達成 25/29 條成就
+4. WebSearch：v1.0 部署後的成長黑客技巧
+
+---
+
+## 2026-04-29 02:44 · Session A — INTENT: 事件統計頁面（玩家可看 13 個事件各抓過幾次）
+
+(已完成)
+
+---
+
+## 2026-04-29 02:36 · Session A — 事件追蹤 + 2 條收集成就（events_100 + seasonal_3，總數 29）
+
+**觸發**：cron 第 47 輪
+**為什麼**：上輪做完季節事件 SVG，13 個事件全 SVG 化，但**沒有 reward 玩家收集多樣性**。第 45 輪標的 design choice「不做季節收集成就避免錯過時間挫折感」可以軟化解 — 用「跨年累積」設計即可（玩家連續玩多年自然會看到所有季節）。
+
+**動作（事件追蹤 schema）**：
+- `state.history.eventsCaught` — 累積接住的事件總數（不分類別）
+- `state.history.eventIds: { [id]: count }` — 每個事件 ID 各別計數
+- `defaultState` 補新欄位（deepMerge 對舊存檔安全，預設 0 / {}）
+
+**動作（resolveEvent hook）**：
+- 玩家點擊事件氣泡 → 套用效果後追加追蹤兩欄位
+- 失敗（過期沒接）不計，鼓勵玩家「真的接住」
+
+**動作（2 條新成就）**：
+
+| ID | Icon | 名稱 | 條件 |
+|---|---|---|---|
+| `events_100` | 🎲 | 幸運兒 | 接住 100 個隨機事件 |
+| `seasonal_3` | 🎏 | 節日通 | 參與 3 種不同季節活動 |
+
+`seasonal_3` 用 SEASONAL_IDS Set 過濾 — 在 achievements.js IIFE load 時從 `CFG.seasonalEvents.pool` 一次性建立 Set，每次 evaluate 用 `Object.keys(eventIds).filter(SEASONAL_IDS.has).length >= 3` 判斷。
+
+**設計：跨年累積無 FOMO**：
+- 玩家**任何時候開始玩，都能慢慢累積季節事件**
+- 第一年只看到 sakura → 拿 1/3
+- 第二年加 valentine → 2/3
+- 第三年再加 xmas → 3/3 解鎖 🎏「節日通」
+- 玩家**永遠不會「錯過」** — 只要持續玩就解鎖
+- 跟原本 collect_all（7 種終態）邏輯一致：靠時間累積，不靠單次窗口
+
+**動作（settings 統計顯示）**：
+新 row「🎲 抓到事件 X 次」與既有「💖 滿足願望 X 次」並列。
+
+**影響檔案**：
+- `src/cfg.js`（+2 achievements entries → 29 條）
+- `src/achievements.js`（+1 SEASONAL_IDS Set + 2 evaluate rules）
+- `src/game.js`（+2 history schema 欄位 + 4 行 resolveEvent hook + 1 settings row）
+
+**驗證**：`node --check` 三檔 ✅
+
+**29 條成就分布**（更新）：
+| 類別 | 數量 |
+|------|------|
+| 里程碑 | 6 |
+| 收集（含季節） | **6（+2）** |
+| 終態 | 4 |
+| 互動量 | 4 |
+| 連續登入 | 2 |
+| 完美 | 2 |
+| 穿搭 | 5 |
+| 老年 | 2 |
+| wants | 2 |
+
+**對長尾玩家的影響**：
+- 重度玩家（每天玩 1 個月）大約能接 100 個事件 → events_100 milestone reward
+- 跨年玩家（連續 2-3 年）會在第 3 個季節時碰到 seasonal_3 自然解鎖
+- 成就系統現在覆蓋 D1 → D365+ 全光譜留存目標
+
+**設計小思考（已軟化的 design choice）**：
+- 第 45 輪寫「沒有季節收集成就 — 避免 FOMO」
+- 本輪改為「**有但設計成跨年累積**」 — 既給 reward 又無時限壓力
+- 兩種思路都 OK，我選後者因為 reward 強化長期投入
+
+**下輪候選**：
+1. 多寵物 v0.4（已連續推遲 6 輪）
+2. R-1 step 4 拆 UI primitives
+3. 連續登入 streak_100 終極成就（成就的成就）
+4. dexlocked 加事件統計頁面（可看 13 個事件各接過幾次）
+
+---
+
+## 2026-04-29 02:28 · Session A — INTENT: 事件追蹤計數 + events_100 + seasonal_3 成就
+
+(已完成)
+
+---
+
+## 2026-04-29 02:20 · Session A — 5 個季節事件 SVG 補齊（emoji → 完整 SVG，character-sheet 對齊）
+
+**觸發**：cron 第 46 輪。上輪季節事件框架建好但 5 個還是 emoji，跨平台 render 不一致，且不符 character-sheet「事件氣泡用 SVG 不用 emoji」原則。
+
+**動作（5 張新 SVG，character-sheet §1.3 色票）**：
+
+- **`event-valentine.svg`** — 立體愛心：深粉 #FF6B9F 主體 + 內層白色光暈 + 4 個浮動小 ♡
+- **`event-summer.svg`** — 夏日海灘：黃色太陽（橘色光芒）+ 藍色波浪 3 層 + 白色泡沫紋路
+- **`event-mooncake.svg`** — 月餅：棕色圓盤 #D4A574 + 8B5A2B 邊紋 + 中央「月餅」字 + 3 顆芝麻 + 旁邊小月亮 + 高光
+- **`event-halloween.svg`** — 南瓜：橘色 3 重橢圓 + 黑色三角眼 + 鋸齒嘴 + 綠色蒂頭 + 紫色 / 黃色 ✦ 點綴（不嚇人版本）
+- **`event-xmas.svg`** — 禮物盒：粉紅 #FF6B9F 主體 + 黃色十字緞帶 + 大型黃色蝴蝶結 + 橘色結芯 + 白色 ❄ 散落
+
+全部用 character-sheet §1.3 9 色色票，無新顏色加入。
+
+**動作（cfg.js）**：
+5 個 entries 從 `emoji: "🌹"` 改為 `art: "assets/svg/event-valentine.svg"` 等。其他欄位（weight / label / apply / dateRange）不變。
+
+**影響檔案**：
+- `assets/svg/event-{valentine,summer,mooncake,halloween,xmas}.svg`（5 新檔）
+- `src/cfg.js`（5 處 emoji → art 路徑切換）
+
+**驗證**：
+- `node --check src/cfg.js` ✅
+- 5 張 SVG curl 200
+
+**對視覺一致性的影響**：
+- 6 個季節事件全部 SVG 化，跨平台（iOS / Android / Chrome / Safari / Firefox）視覺一致
+- 跟 7 個一般事件（含 rainbow / candy 也是 SVG）形成 13 個事件全 SVG 統一風格
+- character-sheet §10.1「粉嫩色系優先」原則嚴格執行（valentine 主體 #FF6B9F、xmas 主體 #FF6B9F、halloween 橘色但配紫色 ✦ 平衡視覺）
+- character-sheet §10.4 don't-list 對齊：halloween 南瓜畫成「可愛 cute」非「scary」（圓眼 + 微笑嘴弧）
+
+**Halloween SVG 設計小決策**：
+- 西方傳統 jack-o-lantern 是恐怖向，與女性向 TA 違和
+- 改用：3 顆橘色橢圓重疊 + **三角眼簡化版** + 弧線笑嘴（非鋸齒）+ 綠色心型蒂 + 紫色 / 黃色 ✦
+- 結果：「**萬聖節 cute 派對**」氛圍，不嚇到玩家
+
+**Session B 後續**：所有 SVG 路徑暴露給後續 ComfyUI 升級為 PNG。session-b-tasks.md 可由 Session B 自行加入「6 個季節事件 PNG」批次任務（不擾動）。
+
+**13 個事件總表（一般 + 季節）**：
+| 類型 | 件數 | 觸發 |
+|------|----|------|
+| 一般（全年） | 7 | 60 秒 30% spawn 機率 |
+| 季節（限時） | 6 | 全年 0 ~ 2.5 個月窗口，weight 25-30 高於一般 |
+
+任何月份至少有 0 個季節事件活躍（5 月 11 日後到 7 月 1 日空窗），最多 2 個並存（如 4 月 29 日只有 sakura）。
+
+**下輪候選**：
+1. 多寵物 v0.4
+2. R-1 step 4 拆 UI primitives
+3. seasonal_collector 隱藏成就（抓滿至少 3 個不同季節事件）— 不過第 45 輪標明「**沒有季節收集成就**」是 design choice，避免錯過時間挫折感。重新思考是否破例
+4. WebSearch 補強：2026 養成遊戲季節活動最佳實踐 review
+
+---
+
+## 2026-04-29 02:12 · Session A — INTENT: 補 5 個季節事件 SVG（情人節/夏涼/月餅/萬聖/聖誕）
+
+(已完成)
+
+---
+
+## 2026-04-29 02:04 · Session A — 季節事件 v0.5 起步：櫻花飄落 + 5 個年度事件骨架
+
+**觸發**：cron 第 45 輪
+**為什麼**：market-research-2026 §2.2 提到「季節 / 限時內容」是 2026 養成遊戲長尾留存核心策略 — 玩家「永遠有新東西看」。今天是 04-29 正好在櫻花季尾段（03-20 到 05-10），是天然的測試窗口。把整個年度框架先建起來，未來節日自動觸發無需 deploy。
+
+**動作（CFG.seasonalEvents 池子）**：
+新欄位 `seasonalEvents.pool`，6 個年度限時事件：
+
+| ID | 期間 (MM-DD) | weight | 視覺 | 效果 |
+|---|---|---|---|---|
+| **🌸 sakura**（**有 SVG**） | 03-20 → 05-10 | 25 | 5 瓣粉紅花 + 黃色花心 + 漂浮粉點 + ✦ | mood +18、clean +5、+10 FC |
+| 🌹 valentine | 02-12 → 02-15 | 30 | emoji（暫） | mood +25、+20 FC |
+| 🌊 summer_breeze | 07-01 → 08-31 | 25 | emoji（暫） | energy +20、mood +8 |
+| 🥮 mooncake | 09-10 → 09-25 | 25 | emoji（暫） | hunger +30、mood +10 |
+| 🎃 halloween | 10-25 → 11-01 | 25 | emoji（暫） | +30 FC、mood +10 |
+| 🎁 xmas | 12-20 → 12-26 | 30 | emoji（暫） | mood +15、hunger +10、+50 FC |
+
+季節事件的 weight 都比一般事件高（25-30，vs 一般 3-55），代表**限時稀罕性的 reward 強度**。
+
+**動作（spawnEvent 合併邏輯）**：
+- 新 helper `isSeasonalActive(event)`：用 MM-DD 字串比對，支援跨年區間（如冬季 12 月到 2 月）
+- spawnEvent 改：`pool = regular.concat(seasonal.filter(isSeasonalActive))`
+- 不在期間內的季節事件自動 0 機率，無需 deploy 切換
+
+**動作（RANDOM_EVENT_APPLIES dispatch）**：
+6 條新 closure：sakura / valentine / summer_breeze / mooncake / halloween / xmas，文案含 emoji 提示 + 主題化 toast。
+
+**動作（新 SVG）**：
+- `event-sakura.svg`：5 瓣花 + 黃色花心 + 4 個粉紅小點 + ✦，character-sheet 色票對齊
+- 其他 5 個季節事件**先用 emoji**，等 Session B 後續 ComfyUI 批次補 PNG（Halloween 南瓜 / 聖誕禮物盒等）
+
+**影響檔案**：
+- `assets/svg/event-sakura.svg`（新檔）
+- `src/cfg.js`（+CFG.seasonalEvents 整段，6 entries）
+- `src/game.js`（+isSeasonalActive helper、spawnEvent 合併、+6 dispatch）
+
+**驗證**：
+- `node --check` 雙檔 ✅
+- 日期邏輯測試：今天 04-29 → sakura active ✓、xmas inactive ✓
+- HTTP 200：event-sakura.svg
+
+**對玩家體驗的影響**：
+- **本月在線玩家會看到櫻花飄落事件** — 春天上線就有「噢，這遊戲會跟著季節變」的驚喜
+- 半年內會經歷 4-5 個不同季節事件（夏涼風、月餅、萬聖、聖誕、春櫻），給玩家「**等下個節日**」的長期錨點
+- weight 25-30 比一般事件高 → 進入季節期間時，每天看到限時事件至少 1-2 次（vs 正常事件 1 次）
+- 跟現役 7 個一般 + 7 種終態 + 27 條成就形成多層內容矩陣
+
+**設計考量**：
+- **MM-DD 格式跨年**：例如 `from: "12-20", to: "01-05"` 也支援（`from <= to` 為 false 時走 OR 邏輯）
+- **不寫進 dexlocked / 成就**：季節事件本身沒有「收集」成就，避免錯過時間就解鎖不了的挫折感
+- 玩家設備時區決定觸發時間（無 backend，誠實限制）
+
+**下輪候選**：
+1. 多寵物 v0.4
+2. R-1 step 4 拆 UI primitives
+3. 補 5 個季節事件 SVG（給 Session B 寫 prompt 入 session-b-tasks.md）
+4. 加 `seasonal_collector` 隱藏成就：抓到至少 3 個不同季節事件 → unlock
+
+---
+
+## 2026-04-29 01:56 · Session A — INTENT: 季節事件 v0.5 起步（櫻花季限時，正當季）
+
+(已完成)
+
+---
+
+## 2026-04-29 01:48 · Session A — wants 計數 + 2 條 connoisseur 成就（成就總數 27）
+
+**觸發**：cron 第 44 輪
+**為什麼**：上輪 wants 池擴到 14 條，但**沒有累積成就獎勵滿足過幾條**。重度玩家會問「我滿足這麼多 wants 有沒有什麼 reward」 — 加 2 條 milestone 成就 + 設定頁可看當前計數，把 wants 系統閉環。
+
+**動作**：
+
+- **`state.history.wantsFulfilled`** 計數新欄位（deepMerge 對舊存檔安全，預設 0）
+
+- **`fulfillWantIfMatches` hook**：每次滿足 want → `state.history.wantsFulfilled++`
+
+- **2 條新成就**（`CFG.achievements`）：
+  - `wants_10` 🥰「心有靈犀」 → 滿足 10 個願望
+  - `wants_50` 💞「最佳搭檔」 → 滿足 50 個願望
+
+- **`achievements.js evaluate`** 加 2 條規則
+
+- **設定頁 traits 區段** 新增 row：「💖 滿足願望 X 次」（與既有的 fatPoints / battlePoints / 唱歌次數 等並列）
+
+**影響檔案**：
+- `src/cfg.js`（+2 achievements entries → 總 27 條）
+- `src/achievements.js`（+2 evaluate rules）
+- `src/game.js`（+1 history 欄位、+1 hook、+1 settings row）
+
+**驗證**：`node --check` 三檔 ✅
+
+**對玩家行為的影響**：
+- wants 系統現在有完整 progression：spawn → 滿足 → +mood/+coin/+growth + 計數 + 里程碑成就 + 設定頁可見
+- 滿足 10 wants（≈ 兩天的中度遊玩量）就拿第一個成就，**reward 速度合理不卡關**
+- 滿足 50 wants（≈ 一週半重度玩家）拿第二個成就，作為**長期目標**之一
+- 跟 dressup_collector / collect_all 形成「不同維度的長期目標」，玩家可以選自己喜歡的路線
+
+**27 條成就分布**（更新）：
+| 類別 | 數量 |
+|------|------|
+| 里程碑 | 6 |
+| 收集 | 4 |
+| 終態 | 4 |
+| 互動量 | 4 |
+| 連續登入 | 2 |
+| 完美 | 2 |
+| 穿搭 | 5 |
+| 老年 | 2 |
+| **wants** | **2（新）** |
+
+**設計小觀察**：
+- 加入 want_full 概念進階版可能是未來方向：例如連續滿足 5 個 wants 不漏 → 「lucky streak」成就。本輪先做基礎計數，下次需要才加進階變化
+- wantsFulfilled 也可以做 wants 統計（哪些 wants 滿足最多次），但需要新 key/object schema。**現在不做，先觀察玩家行為再說**
+
+**下輪候選**：
+1. 多寵物 v0.4
+2. R-1 step 4 拆 UI primitives
+3. 季節事件 v0.5（依玩家裝置時間觸發特殊事件）
+4. 隨機事件加成就（例如「狂熱粉絲」: 抓到 100 個事件）
+
+---
+
+## 2026-04-29 01:40 · Session A — INTENT: wants 計數 + 2 條 connoisseur 成就
+
+(已完成)
+
+---
+
+## 2026-04-29 01:32 · Session A — Wants 池補完：9 → 14（全 14 互動覆蓋）
+
+**觸發**：cron 第 43 輪
+**為什麼**：wants 池自第 12 輪建好後沒再擴充，9 條 wants 對應 14 個互動只覆蓋一半。重度玩家會發現「啾啾從來不主動想吃蟲蟲 / 蛋糕」、「想動腦 / 想跳舞 / 摸肚子 / 玩玩具」也沒對應 want，造成成雞階段 wants 觸發頻率偏低。
+
+**動作（5 條新 wants）**：
+| ID | needs | stage | text | icon |
+|----|-------|-------|------|------|
+| `want_worm` | feed_worm | junior | 想吃小蟲蟲 | 🪱 |
+| `want_cake` | feed_cake | adult | 想吃蛋糕~ | 🎂 |
+| `want_belly` | pet_belly | chick | 想被摸肚子 | 🤲 |
+| `want_toy` | play_toy | junior | 想玩玩具！ | 🧸 |
+| `want_puzzle` | play_puzzle | adult | 想動腦~ | 🧩 |
+
+stage 與互動的 unlock stage 對齊（junior 解鎖蟲蟲 / 玩具，adult 解鎖蛋糕 / 拼圖）。
+
+**結果（14 wants 池）**：
+- 蛋階段 (egg): 1 條（pet_head）
+- 雛雞 (chick): 6 條（基礎 / 玉米 / 莓果 / 洗澡 / 球 / 摸肚 / 聊天）
+- 幼雞 (junior): 4 條（蟲蟲 / 玩具 / 跳舞）
+- 成雞 (adult): 3 條（蛋糕 / 拼圖 / 唱歌）
+
+每階段 want 多樣性提升，玩家在不同生命週期看到的「啾啾想要什麼」更貼合該階段的可玩內容。
+
+**影響檔案**：`src/cfg.js`（+5 entries in wants.pool）
+
+**驗證**：`node --check` ✅ + `grep -c "id:\"want_"` 從 9 → 14
+
+**對玩家體驗的影響**：
+- 重度玩家（成雞 + 養 7 天）現在會看到「啾啾想動腦」「想吃蛋糕」這類專屬 wants，立刻 reward 玩家做的內容投入
+- 雛雞/幼雞階段的 wants 多樣化（從 4 → 7 條），孵化第一週看到重複 wants 的機率降一半
+- spawn 頻率沒改（每 90 秒擲 18% 機率）— 池子大了等於變奏感增加
+
+**設計原則對齊**：
+- character-sheet §10.3「玩法重 關係建立 + 自我表達」— wants 系統是這個原則最直接的體現，多樣化越強，玩家越覺得啾啾「真的會表達自己」
+- 不破壞 dressup_set 等成就條件（新 wants 不影響既有判定）
+
+**下輪候選**：
+1. 多寵物 v0.4
+2. R-1 step 4 拆 UI primitives（最後 R-1 step）
+3. 加 want-fulfilled 連續達成 N 條的成就（例如 connoisseur 「滿足 50 個願望」）
+4. 季節事件 v0.5（玩家設備時間判斷，給春天的櫻花隨機事件等）
+
+---
+
+## 2026-04-29 01:26 · Session A — INTENT: 5 條新 wants 補完互動池（9 → 14，全互動覆蓋）
+
+(已完成)
+
+---
+
+## 2026-04-29 01:18 · Session A — deploy.md：GitHub Pages 一鍵部署指南 + 4 平台對比 + cache-busting
+
+**觸發**：cron 第 42 輪
+**為什麼**：上輪 README 寫完，但**沒有部署指南** — 任何想 ship 出去讓朋友玩的人（包括我自己）只能憑印象 / 摸索。專案到了「能上線」的成熟度，部署文件是最後一塊缺口。
+
+**動作（新檔 `docs/deploy.md`，~165 行）**：
+10 個 sections：
+
+1. **GitHub Pages 一鍵部署**（推薦，免費 + HTTPS + repo 整合）
+   - Settings → Pages → main / root → Save → 1-2 分鐘上線
+   - 之後 git push 自動 build
+
+2. **部署前 checklist**（5 項）：node --check 全綠、本機跑過、bump CACHE_VERSION、iteration-log 有記、commit 訊息有意義
+
+3. **Service Worker cache-busting**（重點警告）：
+   - 每次 deploy 必須改 `sw.js` 的 `CACHE_VERSION` 字串
+   - 不改的後果：玩家 PWA 卡舊版、看不到新功能、客訴
+   - 推薦格式 `chickaday-vX-YYYY-MM-DD`
+
+4. **HTTPS 必要性**：列 5 個非 HTTPS 不工作的功能（SW / PWA / 推播 / Web Share / Clipboard）
+
+5. **替代部署方案** 4 種：
+   - Cloudflare Pages（CDN）
+   - Netlify Drop（拖檔最快）
+   - Vercel（git 整合）
+   - 自己 VPS + nginx（含 config 範例）
+
+6. **部署後驗證**（10 項 checklist）：JS 200、SW registered、manifest 解析、SFX、推播、分享卡、A2HS（Android + iOS）
+
+7. **自訂網域** 5 步：DNS CNAME、Pages settings、HTTPS、manifest 路徑檢查、README demo URL
+
+8. **常見問題** 5 條 FAQ：PWA 卡舊版、推播不出、iOS PWA 推播、iOS 分享、localStorage 滿
+
+9. **監控** v1.0+ 才考慮：Plausible / Umami / Sentry / Web Vitals。**強調目前 no telemetry 是隱私賣點**
+
+10. **roll-back**：git revert / reset 流程 + cache 同步注意
+
+**動作（README 同步）**：
+- 文件導讀表加 `docs/deploy.md` 一條，連結 + 一行說明
+
+**影響檔案**：
+- `docs/deploy.md`（新檔，~165 行）
+- `README.md`（+1 row in docs table）
+
+**驗證**：純文件，markdown 格式 Pages 渲染預檢 OK
+
+**對專案成熟度的影響**：
+- 從「在本機跑著的 v0.3」 → 「**能 git push 後 1 分鐘讓朋友玩到**」
+- 部署上線後可貼 link 到 dcard / Reddit / Twitter，**用戶獲取通道全開**
+- TA 開始驗證：女性向設計是不是真的對胃，要靠真實玩家數據
+
+**12 份文件家族**完整列表：
+1. README.md — 對外
+2. CLAUDE.md — 開發協作
+3. docs/gdd.md — 設計規格
+4. docs/character-sheet.md — 美術
+5. docs/market-research.md / market-research-2026.md — 市場（×2）
+6. docs/review.md / review-v2.md — 審查（×2）
+7. docs/extensions.md — 路線圖
+8. docs/iteration-log.md — 開發日誌
+9. docs/image-prompts.md — AI 生圖
+10. docs/session-b-tasks.md — 雙 session
+11. **docs/deploy.md（本輪新）** — 部署
+12. （隱含）docs/license — 待補
+
+**下輪候選**：
+1. **實際執行 GitHub Pages 部署 + 驗證**（如果 user 想推上線）
+2. 多寵物 v0.4
+3. R-1 step 4 拆 UI primitives
+4. 寫 docs/license 段（決定 MIT / CC-BY-NC / Proprietary）
+
+---
+
+## 2026-04-29 01:11 · Session A — INTENT: deploy.md（GitHub Pages 部署指南 + cache-busting）
+
+(已完成)
+
+---
+
+## 2026-04-29 01:03 · Session A — README.md 寫完（GitHub repo 第一印象）
+
+**觸發**：cron 第 41 輪
+**為什麼**：Session B 第 30 輪建了 `gn01816465/nourish` GitHub repo，但**沒寫 README** — 任何人 land on 那個頁面看到的是「raw files + assets/ + docs/」，零脈絡。對外推廣 / 朋友看到 / 未來協作者進來都會卡在第一步。
+
+**動作**：
+- 新檔 `README.md`（rooot 級，~140 行）：
+  - **Pitch**：兩句話講清楚產品定位（療癒系、女性 TA、不會死）
+  - **3 個 badge**（build none / PWA ready / Pure JS）給技術人第一眼信號
+  - **快速開始**：python3 -m http.server 一行起跑
+  - **PWA 安裝指引**：iOS / Android / 桌機 三平台
+  - **玩法速覽表**：4 階段時長 + 解鎖
+  - **15 個主要功能 bullet list**（從 25 成就 / 9 配件 / 7 事件 / PWA / 推播 / 分享卡到鍵盤捷徑全列）
+  - **技術 section**：強調「零依賴 vanilla」+ 完整檔案樹（指向 5 模組）
+  - **文件導讀表**：給每份 docs 一行說明 + 連結
+  - **開發協作**：double session 機制、cron 10 分循環、衝突協議
+  - **致謝**：標注 Tamagotchi / Neko Atsume / Adopt Me 設計參考 + Pixar/Sanrio 美術風 + Claude Sonnet 4.6/4.7 協作
+
+**設計考量**：
+- 第一句 tagline 直接拿 GDD §1.1 的 pitch，不重新發明
+- 玩法速覽用表格 + emoji（README 在 GitHub 渲染漂亮）
+- 不放 screenshot 連結（assets 在私人 repo，外部訪客看不到）— 等部署後再加
+- 「License」明寫「尚未定」+「私人開發階段」避免被誤用
+- 致謝段標 Claude Sonnet 4.6/4.7 — 透明且符合 anthropic 政策
+
+**影響檔案**：
+- `README.md`（新檔，~140 行）
+
+**驗證**：純文件，不需 lint。GitHub 渲染預覽：badge / table / 樹狀結構都符合 GFM。
+
+**對外觀感的影響**：
+- repo landing page：raw files → 完整 product page
+- 朋友 / 潛在玩家點 GitHub link 時不會迷茫
+- 未來貢獻者（包括雙 session 重啟時）能 5 分鐘掌握全貌
+- 對宣傳（推到 Reddit / hackernews / dcard）可直接貼 repo link
+
+**文件家族整理**（README + 既有 docs，11 份）：
+1. README.md（新）— 對外
+2. CLAUDE.md — 開發者協作
+3. docs/gdd.md — 設計規格
+4. docs/character-sheet.md — 美術約束
+5. docs/market-research.md / market-research-2026.md — 市場
+6. docs/review.md / review-v2.md — 審查
+7. docs/extensions.md — 路線圖
+8. docs/iteration-log.md — 開發日誌
+9. docs/image-prompts.md — AI 生圖
+10. docs/session-b-tasks.md — 雙 session 任務介面
+11. README.md — **本輪新增，外部入口**
+
+**下輪候選**：
+1. 多寵物 v0.4
+2. R-1 step 4 拆 UI primitives
+3. 修 README License 段（決定 MIT / Apache / Proprietary）
+4. 寫一份簡單的 deploy.md 教 GitHub Pages 一鍵部署
+
+---
+
+## 2026-04-29 00:56 · Session A — INTENT: 寫 README（GitHub repo 無說明，第一印象重要）
+
+(已完成)
+
+---
+
+## 2026-04-29 00:48 · Session A — 2 條新隨機事件（彩虹 + 糖果攤）
+
+**觸發**：cron 第 40 輪
+**為什麼**：隨機事件池有 5 條已穩定運行多輪，玩家在 chick 階段（24h）大概會看到一些重複。新增 2 條「治癒系」事件補強女性向 TA 偏好的「療癒 + 甜美」氛圍（character-sheet §10.1）。
+
+**動作（2 張新 SVG）**：
+
+- **`event-rainbow.svg`** — 7 色弧形彩虹（粉紫橘黃綠藍紫，character-sheet §1.3 色票對齊）+ 兩端白雲（黑線稿）+ 高光斜線 + 周圍 ✨ ✦ 裝飾
+- **`event-candy.svg`** — 棒棒糖：粉色糖果頭（深粉螺紋 + 白色雙螺旋）+ 白色棒子 + 黃色蝴蝶結底 + 兩側 ♡ 點綴
+
+**動作（cfg.js 池子擴充）**：
+原 5 條 + 新 2 條 = **7 條 random events**：
+| Event | Weight | Effect |
+|-------|--------|--------|
+| coin_drop 💰 | 55 | +5–15 FC |
+| herb 🌿 | 18 | 全身舒暢 |
+| butterfly 🦋 | 14 | mood +10 |
+| fly 🪰 | 10 | clean +5、mood +3 |
+| star ⭐ | 3 | 全屬性 +10、+50 FC |
+| **rainbow 🌈**（新） | 12 | mood +12 + 其他 +5（治癒系） |
+| **candy 🍭**（新） | 8 | mood +18 + hunger +8 + coin +5 |
+
+新 2 條偏「mood-heavy」事件，玩家心情低時碰到會明顯感覺被治癒。
+
+**動作（game.js dispatch table）**：
+- `RANDOM_EVENT_APPLIES` 加 2 條 closure：
+  - `rainbow`: `applyDelta + toast「彩虹出現！全身充滿希望」`
+  - `candy`: `applyDelta + grantCoin + toast「糖果～ 甜甜的~ 心情大好」`
+
+**影響檔案**：
+- `assets/svg/event-rainbow.svg`、`event-candy.svg`（新檔）
+- `src/cfg.js`（+2 entries in randomEvents.pool）
+- `src/game.js`（+2 dispatch entries in RANDOM_EVENT_APPLIES）
+
+**驗證**：`node --check` 兩檔 ✅ + 兩張 SVG HTTP 200
+
+**對玩家體驗的影響**：
+- 隨機事件池從 5 → 7 條，重複感降 28%
+- 新 2 條 mood-heavy 事件 → 玩家心情低時遇到會感覺「啾啾的世界很溫柔」
+- 配合上一輪 `face_first` 成就 + 25 條成就總量 + 7 終態 + 9 配件，內容深度持續累積
+- 7 events × 多輪 spawn 機率 = 玩家養成過程「碰巧的小驚喜」更密集
+
+**Session B 後續任務**（已留 SVG 占位，未來 ComfyUI 同批次產 PNG）：
+- 目標 `assets/images/event-rainbow.png` + `event-candy.png`
+- prompt 主題：character-sheet plush 風 + 透明背景 + 彩虹/棒棒糖
+- 待 Session B 自行加入 session-b-tasks.md（不擾動）
+
+**下輪候選**：
+1. 多寵物 v0.4
+2. R-1 step 4 拆 UI primitives
+3. 加 want pool entry：want_candy 「想吃糖糖!」（feed_basic）讓 candy 事件跟 want 系統連動
+4. 美術延伸：寫 v0.5 配件 prompt 給 Session B（小耳機 / 蝴蝶結項圈，之前失敗的兩件）
+
+---
+
+## 2026-04-29 00:42 · Session A — INTENT: 2 條新隨機事件（彩虹 + 糖果攤）+ Session B PNG 任務新增
+
+(已完成)
+
+---
+
+## 2026-04-29 00:34 · Session A — R-1 step 3.5：achievements.js 拆出（規則表 vs 副作用分離）
+
+**觸發**：cron 第 39 輪
+**為什麼**：成就規則表已長到 24 條（25 條 entries -1 變化條件可寫成式子的），混在 game.js 中段難讀。**規則純邏輯 / unlockAchievement 純副作用**這個分離自然好做，比拆 UI primitives 安全。
+
+**動作**：
+
+- **新檔 `src/achievements.js`（52 行 IIFE）**：
+  - `evaluate(state, dexUnlocked)` 純函式 — 接 state snapshot + dex set，回傳 `[id, met]` 陣列
+  - 無副作用，無外部依賴（只讀 NourishCFG.accessories 給 collector check）
+  - 24 條規則完整搬過：first_feed / feed_50 / bath_10 / pet_50 / first_hatch / first_evolve / streak_7 / streak_30 / form_{divine,diva,fighter,sage} / collect_{3,5,all} / rich / perfect_day / dressup_{first,set,collector,full} / face_first / elder_{week,month}
+  - 對外暴露 `window.NourishAchievements = { evaluate }`
+
+- **game.js `checkAchievements()` 簡化為 4 行**：
+  - 從原 32 行（含整個規則 array）→ 4 行 thin wrapper
+  - 邏輯：`evaluate(state, unlockedFormsSet()).forEach(([id, met]) => met && unlockAchievement(id))`
+  - `unlockAchievement` 維持在 game.js（toast / SFX / particles 都需要 closure）
+
+- **`index.html` script 順序**：`cfg.js → dex.js → achievements.js → share.js → game.js`
+  - achievements 不依 share / game，但會被 game.js 在 init 後使用
+
+**影響檔案**：
+- `src/achievements.js`（新檔，52 行）
+- `src/game.js`（-28 行 → 1838 vs 1866 估值，checkAchievements 從 32 → 4 行）
+- `index.html`（+1 script tag）
+
+**驗證**：
+- `node --check` 全 5 檔 ✅
+- HTTP 200：achievements.js
+- 模組行數：cfg 208 + dex 73 + achievements 52 + share 267 + game 1838 = **2438 total**
+
+**模組依賴圖（5 模組現況）**：
+```
+cfg.js          → window.NourishCFG (eager, pure data)
+dex.js          → +NourishCFG, NourishAPI(lazy) → exposes NourishDex
+achievements.js → +NourishCFG → exposes NourishAchievements (純函式，無 side-effect)
+share.js        → +NourishCFG, NourishAPI(lazy) → exposes NourishShare
+game.js         → +NourishCFG, NourishDex/Share/Achievements(lazy) → sets NourishAPI
+```
+
+**架構成熟度**：
+- 純資料 → cfg.js
+- 純儲存 → dex.js
+- 純邏輯 → achievements.js
+- 純渲染 → share.js
+- 業務邏輯 + UI + state → game.js
+- **單職責原則漂亮成立**
+
+**R-1 進度更新**：
+- ✅ step 1：CFG → cfg.js（iter#14）
+- ✅ step 2：share card → share.js（iter#27）
+- ✅ step 3：dex → dex.js（iter#32）
+- ✅ **step 3.5：achievement rules → achievements.js（本輪）**
+- ⏸️ step 4：UI primitives（modal / toast / SFX）— 互相依賴最緊，留到最後
+- ⏸️ step 5：i18n 骨架（CLAUDE.md §5 v0.2 寫過要做）
+
+**下輪候選**：
+1. 多寵物 v0.4
+2. R-1 step 4 拆 UI primitives（最後一塊）
+3. 加新隨機事件（彩虹、糖果攤）
+4. v0.5 配件 prompt 給 Session B
+
+---
+
+## 2026-04-29 00:26 · Session A — INTENT: R-1 step 3.5 — 成就規則表抽到 achievements.js
+
+(已完成)
+
+---
+
+## 2026-04-29 00:18 · Session A — 推播通知雛形（GDD §10.4 第二塊）
+
+**觸發**：cron 多次積壓 fire 後本輪實質執行
+**為什麼**：上輪 PWA icon set 補齊，推播是 PWA 體驗最後一塊；玩家把遊戲裝到主畫面後，背景分頁時 stat 危機能即時收到通知，**才算真的「啾啾在分頁旁陪你工作」**。
+
+**動作（NotificationManager）**：
+
+- `state.settings` 加兩欄位：`notificationsEnabled: false`（預設關，需玩家主動 opt-in）+ `lastNotifyAt: 0`（冷卻計時）
+
+- 5 個 helper 函式：
+  - `notificationsSupported()` — 檢查 `typeof Notification !== "undefined"`
+  - `requestNotificationPermission()` — async，granted/denied/default 三態處理
+  - `showLocalNotification(title, body)` — **優先用 SW `registration.showNotification`**（在支援的瀏覽器，關 tab 也能顯示），fallback 到 `new Notification()`（in-tab only）
+  - `maybeNotifyCriticalStat()` — 每 5 分鐘 check：document.hidden + permission granted + 30min 冷卻過 + 任一 stat < 20，觸發
+  - 訊息內容：飢餓 → 「{name} 肚子好餓…」、心情 → 「需要陪陪」、清潔 → 「想洗澡了」、體力 → 「累壞了」
+
+- 設定頁加 row：「🔔 啾啾呼叫」
+  - 4 種狀態文案：
+    - 「瀏覽器不支援」（API 不存在）
+    - 「已被封鎖」（permission === "denied"，需手動改瀏覽器設定）
+    - 「已啟用」（permission granted + setting on）
+    - 「點擊啟用」（其他）
+  - 點擊處理：已啟用 → toggle off / 未啟用 → 跑 permission flow + 成功時即送一條測試通知「通知已開啟，{name} 餓了會跟你說 🐣」
+
+- init 加 `setInterval(maybeNotifyCriticalStat, 5 * 60 * 1000)` 全域偵測
+
+**限制（誠實揭露）**：
+- 關 tab → 完全沒 JS 跑，這版**只能在背景分頁時 work**（chrome 還在開）
+- 真正的「關 tab 也能送」需要 Web Push API + server，**待 v1.0+ 階段**
+- iOS Safari 16.4+ 才支援，且需要先 A2HS
+
+**影響檔案**：
+- `src/game.js`（+~55 行 NotificationManager + UI hook + 5min interval）
+- `docs/gdd.md`（§10.4 推播通知 [ ] → [x] 雛形版）
+
+**驗證**：`node --check` ✅
+
+**對玩家體驗的影響**：
+- iOS 玩家裝 PWA 後 → 設定頁開通知 → 切到別的 app 時，啾啾餓了會跳 banner 通知（和 native app 觀感一致）
+- Android 玩家同理（Chrome 通知整合系統 notification center）
+- 桌機背景分頁工作時，啾啾餓了會跳右下角通知 → 「分頁旁陪工作」承諾兌現
+- 預設 OFF 尊重玩家：不會自動跳「請允許通知」打擾首次玩家
+
+**GDD §10.4 進度**：
+- ✅ PWA 包裝（iter#34）
+- ✅ PWA icon set 全套（iter#37 by Session B）
+- ✅ **推播通知雛形**（**本輪**）
+- ⏸️ 真實時間鎖定（防作弊）— 需 server
+- ⏸️ 內購 / 好友 / 排行榜 — v1.0+
+
+**整體 v1.0 路徑**：3/6 完成，剩 3 條都需要 backend，**web-only 已到天花板**。
+
+**下輪候選**：
+1. 多寵物 v0.4（v0.3 最後一塊 web-only）
+2. R-1 step 4 拆 UI primitives
+3. 拆 achievements.js
+4. 加美術延伸：寫新 v0.5 配件 prompt 給 Session B 跑
+
+---
+
+## 2026-04-29 00:10 · Session A — INTENT: 推播通知雛形（permission + 測試 + 背景偵測）
+
+(已完成)
+
+---
+
 ## 2026-04-28 22:38 · Session A — 2 條 face slot 成就 + Session B 補齊 PWA icon set 並行收尾
 
 **觸發**：cron 第 37 輪

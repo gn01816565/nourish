@@ -59,7 +59,7 @@
       collect_3:      { icon:"📖", label:"圖鑑學徒",   desc:"收集 3 種終態" },
       collect_5:      { icon:"📚", label:"圖鑑專家",   desc:"收集 5 種終態" },
       collect_all:    { icon:"🏆", label:"圖鑑大師",   desc:"收集全部 7 種終態" },
-      form_divine:    { icon:"✨", label:"神之降臨",   desc:"養出神雞" },
+      form_divine:    { icon:"✨", label:"天使降臨",   desc:"養出天使雞" },
       form_diva:      { icon:"🎤", label:"超新星",     desc:"養出歌姬雞" },
       form_fighter:   { icon:"💪", label:"元氣之星",   desc:"養出元氣雞" },
       form_sage:      { icon:"🧠", label:"智者",       desc:"養出智慧雞" },
@@ -73,6 +73,11 @@
       elder_month:    { icon:"💖", label:"終生伴侶",   desc:"成雞陪伴 30 天" },
       face_first:     { icon:"🕶️", label:"Cool Cat",   desc:"購入第一件臉部飾品" },
       dressup_full:   { icon:"💯", label:"全副武裝",   desc:"同時配戴頭飾、臉部、項鍊、翅膀 4 種 slot" },
+      wants_10:       { icon:"🥰", label:"心有靈犀",   desc:"滿足 10 個願望" },
+      wants_50:       { icon:"💞", label:"最佳搭檔",   desc:"滿足 50 個願望" },
+      events_100:     { icon:"🎲", label:"幸運兒",     desc:"接住 100 個隨機事件" },
+      seasonal_3:     { icon:"🎏", label:"節日通",     desc:"參與 3 種不同季節活動" },
+      master_player:  { icon:"🎓", label:"啾啾日常大師", desc:"達成 25 條成就" },
     },
     wants: {
       lifetimeMs: 5 * 60 * 1000,
@@ -83,14 +88,74 @@
         { id:"want_basic",  needs:"feed_basic", stage:"chick",  text:"想吃飯…",   icon:"🥣" },
         { id:"want_corn",   needs:"feed_corn",  stage:"chick",  text:"想吃玉米~", icon:"🌽" },
         { id:"want_berry",  needs:"feed_berry", stage:"chick",  text:"想吃莓果~", icon:"🍓" },
+        { id:"want_worm",   needs:"feed_worm",  stage:"junior", text:"想吃小蟲蟲", icon:"🪱" },
+        { id:"want_cake",   needs:"feed_cake",  stage:"adult",  text:"想吃蛋糕~", icon:"🎂" },
         { id:"want_bath",   needs:"bath",       stage:"chick",  text:"想洗澡…",   icon:"🛁" },
         { id:"want_pat",    needs:"pet_head",   stage:"egg",    text:"想被摸頭~", icon:"✋" },
+        { id:"want_belly",  needs:"pet_belly",  stage:"chick",  text:"想被摸肚子", icon:"🤲" },
         { id:"want_play",   needs:"play_ball",  stage:"chick",  text:"想玩球！",  icon:"⚽" },
-        { id:"want_punch",  needs:"play_punch", stage:"junior", text:"想跳一下！",icon:"💃" },
+        { id:"want_toy",    needs:"play_toy",   stage:"junior", text:"想玩玩具！", icon:"🧸" },
+        { id:"want_punch",  needs:"play_punch", stage:"junior", text:"想跳一下！", icon:"💃" },
+        { id:"want_puzzle", needs:"play_puzzle",stage:"adult",  text:"想動腦~",   icon:"🧩" },
         { id:"want_sing",   needs:"play_sing",  stage:"adult",  text:"想唱歌！",  icon:"🎤" },
         { id:"want_talk",   needs:"talk",       stage:"chick",  text:"想聊天~",   icon:"💬" },
       ],
       reward: { mood: 7, coin: 12, growth: 8 },
+    },
+    // Seasonal pool — events that only spawn within a date range. Checked
+    // alongside the regular pool by maybeSpawnEvent. dateRange is inclusive,
+    // year-agnostic (MM-DD), supports wrapping (e.g. winter spans Dec-Feb).
+    seasonalEvents: {
+      pool: [
+        {
+          id:"sakura",
+          art:"assets/svg/event-sakura.svg",
+          weight:25, // higher than regular events; seasonal is a treat
+          label:"櫻花飄落",
+          apply:"sakura",
+          dateRange: { from: "03-20", to: "05-10" },
+        },
+        {
+          id:"valentine",
+          art:"assets/svg/event-valentine.svg",
+          weight:30,
+          label:"情人節愛心",
+          apply:"valentine",
+          dateRange: { from: "02-12", to: "02-15" },
+        },
+        {
+          id:"summer_breeze",
+          art:"assets/svg/event-summer.svg",
+          weight:25,
+          label:"夏日涼風",
+          apply:"summer_breeze",
+          dateRange: { from: "07-01", to: "08-31" },
+        },
+        {
+          id:"mooncake",
+          art:"assets/svg/event-mooncake.svg",
+          weight:25,
+          label:"月餅",
+          apply:"mooncake",
+          dateRange: { from: "09-10", to: "09-25" },
+        },
+        {
+          id:"halloween",
+          art:"assets/svg/event-halloween.svg",
+          weight:25,
+          label:"萬聖節糖果",
+          apply:"halloween",
+          dateRange: { from: "10-25", to: "11-01" },
+        },
+        {
+          id:"xmas",
+          art:"assets/svg/event-xmas.svg",
+          weight:30,
+          label:"聖誕禮物",
+          apply:"xmas",
+          dateRange: { from: "12-20", to: "12-26" },
+        },
+      ],
     },
     randomEvents: {
       // pool[].apply 是 string id；game.js 的 RANDOM_EVENT_APPLIES dispatch 表會查到實作
@@ -103,9 +168,11 @@
         { id:"butterfly", art:"assets/images/event-butterfly.png", weight:14, label:"蝴蝶飛過",   apply:"butterfly" },
         { id:"fly",       art:"assets/images/event-fly.png",       weight:10, label:"趕走果蠅",   apply:"fly"       },
         { id:"star",      art:"assets/images/event-star.png",      weight:3,  label:"神秘流星",   apply:"star"      },
+        { id:"rainbow",   art:"assets/svg/event-rainbow.svg",       weight:12, label:"彩虹出現",   apply:"rainbow"   },
+        { id:"candy",     art:"assets/svg/event-candy.svg",         weight:8,  label:"糖果",       apply:"candy"     },
       ],
     },
-    economy: { dailyLogin: 30, evolveReward: 100, streak7: 50, streak30: 200 },
+    economy: { dailyLogin: 30, evolveReward: 100, streak7: 50, streak30: 200, firstHatchBonus: 60 },
     welcomeBack: [
       { maxMs: 30*60*1000,            text: null /* silent */ },
       { maxMs: 3 *3600*1000,          text: "歡迎回來！咕咕～" },
@@ -147,6 +214,8 @@
       wantNag:     ["主人有看到我的願望嗎？", "拜託啦~", "求求你嘛", "(用期待的眼神看著主人)"],
       rich:        ["錢好像變多了~", "覺得我們可以買點什麼了！"],
       quirk:       ["(發呆)", "(整理羽毛)", "(看天空)", "(踱步)", "♪"],
+      // Spoken once when handleDailyLogin detects a fresh calendar day.
+      dailyGreet:  ["新的一天，又見面了~", "早安主人！", "今天有什麼計畫呢？", "你來了！我等好久~", "想你了~", "(蹭蹭)"],
 
       // Post-action contextual replies — pet responds specifically to what just
       // happened, instead of a generic "好開心~". Speech reaches before toast.
@@ -169,7 +238,7 @@
       // v0.3 裝扮系統。slot：hat（頭頂）/ face（臉部，v0.4 加）/ neck（脖子）/ wing（翅膀）。
       // 玩家用飼料幣解鎖；解鎖後永久擁有，可隨時切換。
       party_hat: { slot:"hat",  art:"assets/images/acc-party-hat.png", label:"派對帽",     icon:"🎉", price:100 },
-      headband: { slot:"hat",  art:"assets/images/acc-headband.png", label:"蝴蝶髮帶",   icon:"🩷", price:80  },
+      headband: { slot:"hat",  art:"assets/images/acc-headband.png", label:"蝴蝶髮帶",   icon:"🩷", price:50  },
       bow:      { slot:"hat",  art:"assets/images/acc-bow.png",      label:"粉紅蝴蝶結", icon:"🎀", price:120 },
       flower:   { slot:"hat",  art:"assets/images/acc-flower.png",   label:"粉色花環",   icon:"🌸", price:200 },
       crown:    { slot:"hat",  art:"assets/images/acc-crown.png",    label:"閃耀皇冠",   icon:"👑", price:500 },
@@ -200,6 +269,18 @@
       sad: "assets/images/mood-sad.png",
       sleeping: "assets/images/mood-sleeping.png",
       dirty: "assets/images/mood-dirty.png",
+    },
+    backgrounds: {
+      // Stage-based defaults (current logic in game.js:bgKey).
+      coop:   { src:"assets/images/bg-coop.png",   stages:["egg","chick"],            label:"雞舍" },
+      grass:  { src:"assets/images/bg-grass.png",  stages:["junior","adult"],         label:"草地" },
+      // Time-of-day overlays (apply when stage is junior/adult and hour matches).
+      // game.js can pick by hour: 5-9 grass / 10-15 grass / 16-18 sunset / 19-4 night.
+      sunset: { src:"assets/images/bg-sunset.png", stages:["junior","adult"], hours:[16,17,18],     label:"夕陽" },
+      night:  { src:"assets/images/bg-night.png",  stages:["junior","adult"], hours:[19,20,21,22,23,0,1,2,3,4], label:"月夜" },
+      // Special weather / season variants (manual trigger or random event).
+      rainy:  { src:"assets/images/bg-rainy.png",  stages:["junior","adult"], weather:"rain",  label:"彩虹雨" },
+      snow:   { src:"assets/images/bg-snow.png",   stages:["junior","adult"], season:"winter", label:"雪天" },
     },
   };
 

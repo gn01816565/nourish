@@ -597,7 +597,7 @@ const migrations = {
 
 - [x] **PWA 基本骨架**（manifest + service worker + A2HS） — iter#34，已可安裝至手機主畫面 + 離線啟動
 - [ ] Capacitor / Tauri Mobile 原生包裝（PWA 已先頂著）
-- [ ] 推播通知（飢餓警告、進化提醒）— 需 Web Push API + 用戶授權
+- [x] **本機通知雛形**（in-tab + SW.showNotification） — iter#38，背景分頁時飢餓 / 心情 / 清潔 / 體力 < 20 觸發；30 min 冷卻；玩家在設定頁可一鍵啟用 / 關閉。**真正的 Web Push（關 tab 也能送）需 server，待 v1.0+**
 - [ ] 真實時間鎖定（離線計算用 server time，防作弊）— 需 backend
 - [ ] 內購（純裝飾，不影響成長）
 - [ ] 好友系統 + 互訪

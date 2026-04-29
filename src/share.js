@@ -197,7 +197,7 @@
         { k: "hunger", l: "🍗 飢餓" },
         { k: "mood",   l: "💖 心情" },
         { k: "clean",  l: "🛁 清潔" },
-        { k: "energy", l: "⚡ 體力" },
+        { k: "energy", l: "🌙 體力" },
       ];
       const baseY = 800;
       labels.forEach((s, i) => {
@@ -236,6 +236,19 @@
     );
   }
 
+  // iOS Safari (especially in standalone PWA mode) ignores `<a download>` — the
+  // image just opens in a new tab and the player is stranded. Detect and route
+  // those users to a "preview + long-press to save" modal instead.
+  function isIOSStandalone() {
+    const ua = navigator.userAgent || "";
+    const isiOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+    if (!isiOS) return false;
+    // navigator.standalone is iOS-specific; matchMedia covers other PWAs too.
+    const standalone = (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches)
+                    || window.navigator.standalone === true;
+    return standalone;
+  }
+
   async function shareOrDownloadCard(past) {
     const A = api();
     try {
@@ -247,20 +260,66 @@
         : `chickaday-${name || "chick"}.png`;
       const file = new File([blob], filename, { type: "image/png" });
       const shareText = past ? `紀念我養過的 ${name || "啾啾"} 💕` : "看我養的小雞~";
+
+      // Path 1: native share sheet (Android Chrome, modern Safari)
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({ files: [file], title: "啾啾日常", text: shareText });
         A.toast("分享完成！", "good");
-      } else {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url; a.download = filename; a.click();
-        setTimeout(() => URL.revokeObjectURL(url), 1000);
-        A.toast(past ? "✨ 紀念卡已下載" : "📸 卡片已下載", "good");
+        return;
       }
+
+      // Path 2: iOS Safari standalone PWA — "long press to save" preview modal
+      // (download attribute is a no-op, native share unavailable)
+      if (isIOSStandalone()) {
+        const url = URL.createObjectURL(blob);
+        const cleanup = () => setTimeout(() => URL.revokeObjectURL(url), 60 * 1000);
+        if (window.NourishUI && window.NourishUI.showImagePreview) {
+          window.NourishUI.showImagePreview(url, past ? "紀念卡" : "分享卡", cleanup);
+        } else {
+          // Fallback: build inline modal here (UI module not yet split)
+          showIOSPreview(url, past ? "✨ 紀念卡" : "📸 分享卡", cleanup);
+        }
+        return;
+      }
+
+      // Path 3: download fallback (desktop browsers)
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = filename; a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      A.toast(past ? "✨ 紀念卡已下載" : "📸 卡片已下載", "good");
     } catch (e) {
       console.warn("share card failed", e);
       A.toast("⚠️ 分享卡產生失敗", "bad");
     }
+  }
+
+  // Inline iOS preview modal — renders image full-bleed with hint to long-press.
+  // Lives here (not in game.js) so share.js stays self-contained.
+  function showIOSPreview(url, title, onClose) {
+    const overlay = document.createElement("div");
+    overlay.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.6);"
+      + "z-index:100;display:flex;flex-direction:column;align-items:center;"
+      + "justify-content:center;padding:20px;";
+    overlay.innerHTML = `
+      <div style="color:white;font-weight:700;margin-bottom:12px;font-size:16px;">${title}</div>
+      <img src="${url}" style="max-width:90%;max-height:70vh;border-radius:18px;
+        border:3px solid #2C2C2C;background:white;" alt="分享卡">
+      <p style="color:white;margin-top:14px;font-size:13px;line-height:1.6;text-align:center;">
+        💡 <strong>長按上方圖片</strong>選「儲存到照片」<br>
+        <small style="opacity:0.8;">(iOS PWA 限制無法直接下載)</small>
+      </p>
+      <button id="ios-preview-close" style="margin-top:12px;padding:8px 22px;
+        background:#FFD86B;border:2px solid #2C2C2C;border-radius:999px;
+        font-weight:700;cursor:pointer;font-family:inherit;">關閉</button>
+    `;
+    overlay.addEventListener("click", e => {
+      if (e.target === overlay || e.target.id === "ios-preview-close") {
+        overlay.remove();
+        if (onClose) onClose();
+      }
+    });
+    document.body.appendChild(overlay);
   }
 
   window.NourishShare = { generateShareCard, shareOrDownloadCard };

@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#FFD86B">
+  <meta name="description" content="啾啾日常 ChickaDay — 純瀏覽器養成小雞，零下載、零帳號、女性向粉嫩風。蛋孵化、餵食、玩耍、進化 7 種終態，9 件飾品自由搭配。">
+  <meta name="keywords" content="養成遊戲,小雞,Tamagotchi,啾啾,ChickaDay,寵物,網頁遊戲,PWA,女性向,療癒">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="啾啾日常">
@@ -62,7 +64,7 @@
         <span class="stat-value" id="val-clean">--</span>
       </div>
       <div class="stat" data-stat="energy">
-        <span class="stat-icon">⚡</span>
+        <span class="stat-icon">🌙</span>
         <span class="stat-label">體力</span>
         <div class="bar"><div class="bar-fill" id="bar-energy"></div></div>
         <span class="stat-value" id="val-energy">--</span>
@@ -75,7 +77,7 @@
     <section class="stage" id="stage">
       <div class="stage-bg" id="stage-bg"></div>
       <div class="pet-shadow"></div>
-      <div class="pet-wrapper" id="pet-wrapper">
+      <button class="pet-wrapper" id="pet-wrapper" type="button" aria-label="輕觸啾啾摸頭">
         <img class="accessory wing" id="acc-wing" src="" alt="" hidden>
         <img class="pet" id="pet-img" src="assets/svg/egg.svg" alt="寵物">
         <img class="accessory face" id="acc-face" src="" alt="" hidden>
@@ -84,7 +86,7 @@
         <img class="mood-icon" id="mood-icon" src="" alt="" hidden>
         <div class="speech-bubble" id="speech-bubble" hidden></div>
         <div class="want-bubble" id="want-bubble" hidden></div>
-      </div>
+      </button>
       <div class="stage-info">
         <span id="stage-name">蛋</span>
         <span class="stage-sep">·</span>
@@ -93,26 +95,26 @@
       <div class="stage-hint" id="stage-hint" hidden></div>
     </section>
 
-    <nav class="action-bar">
-      <button class="action-btn" id="btn-feed">
-        <span class="action-icon">🍗</span>
+    <nav class="action-bar" aria-label="互動操作">
+      <button class="action-btn" id="btn-feed" aria-label="餵食">
+        <span class="action-icon" aria-hidden="true">🍗</span>
         <span class="action-label">餵食</span>
       </button>
-      <button class="action-btn" id="btn-play">
-        <span class="action-icon">🎮</span>
+      <button class="action-btn" id="btn-play" aria-label="玩耍">
+        <span class="action-icon" aria-hidden="true">🎮</span>
         <span class="action-label">玩耍</span>
       </button>
-      <button class="action-btn" id="btn-bath">
-        <span class="action-icon">🛁</span>
+      <button class="action-btn" id="btn-bath" aria-label="洗澡">
+        <span class="action-icon" aria-hidden="true">🛁</span>
         <span class="action-label">洗澡</span>
         <span class="cd" id="cd-bath" hidden></span>
       </button>
-      <button class="action-btn" id="btn-sleep">
-        <span class="action-icon">😴</span>
+      <button class="action-btn" id="btn-sleep" aria-label="睡眠">
+        <span class="action-icon" aria-hidden="true">😴</span>
         <span class="action-label" id="sleep-label">睡眠</span>
       </button>
-      <button class="action-btn" id="btn-pet">
-        <span class="action-icon">💝</span>
+      <button class="action-btn" id="btn-pet" aria-label="愛撫">
+        <span class="action-icon" aria-hidden="true">💝</span>
         <span class="action-label">愛撫</span>
       </button>
     </nav>
@@ -123,7 +125,7 @@
     </footer>
   </div>
 
-  <div class="modal" id="modal" hidden>
+  <div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="modal-card">
     <div class="modal-bg" data-close></div>
     <div class="modal-card" id="modal-card"></div>
   </div>
@@ -132,6 +134,8 @@
 
   <script src="src/cfg.js"></script>
   <script src="src/dex.js"></script>
+  <script src="src/achievements.js"></script>
+  <script src="src/audio.js"></script>
   <script src="src/share.js"></script>
   <script src="src/game.js"></script>
   <script>

@@ -22,6 +22,15 @@
     butterfly: s => { applyDelta(s.pet.stats, { mood:+10 }); toast("🦋 蝴蝶讓啾啾很開心", "good"); },
     fly:       s => { applyDelta(s.pet.stats, { clean:+5, mood:+3 }); toast("趕走果蠅！清潔 +5", "good"); },
     star:      s => { applyDelta(s.pet.stats, { hunger:+10, mood:+10, clean:+10, energy:+10 }); grantCoin(50, "流星祝福"); toast("⭐ 流星許願！全屬性 +10", "gold"); },
+    rainbow:   s => { applyDelta(s.pet.stats, { mood:+12, hunger:+5, clean:+5, energy:+5 }); toast("🌈 彩虹出現！全身充滿希望", "good"); },
+    candy:     s => { applyDelta(s.pet.stats, { mood:+18, hunger:+8 }); grantCoin(5, "糖果"); toast("🍭 甜甜的~ 心情大好", "good"); },
+    // Seasonal apply functions — treats with thematic flavor messages.
+    sakura:        s => { applyDelta(s.pet.stats, { mood:+18, clean:+5 }); grantCoin(10, "賞櫻"); toast("🌸 花瓣飄到啾啾頭上~", "good"); },
+    valentine:     s => { applyDelta(s.pet.stats, { mood:+25 }); grantCoin(20, "情人節"); toast("🌹 啾啾收到一束愛心！", "gold"); },
+    summer_breeze: s => { applyDelta(s.pet.stats, { energy:+20, mood:+8 }); toast("🌊 夏日涼風~ 好舒服", "good"); },
+    mooncake:      s => { applyDelta(s.pet.stats, { hunger:+30, mood:+10 }); toast("🥮 月餅好甜~", "good"); },
+    halloween:     s => { grantCoin(30, "搗蛋"); applyDelta(s.pet.stats, { mood:+10 }); toast("🎃 不給糖就搗蛋！", "gold"); },
+    xmas:          s => { applyDelta(s.pet.stats, { mood:+15, hunger:+10 }); grantCoin(50, "聖誕禮物"); toast("🎁 聖誕快樂！", "gold"); },
   };
 
   // ============ State ============
@@ -60,9 +69,9 @@
           pet_count:  { current: 0, target: 4, claimed: false },
         },
       },
-      history: { totalSessions: 0, feedCount: 0, bathCount: 0, petCount: 0, playCount: 0 },
+      history: { totalSessions: 0, feedCount: 0, bathCount: 0, petCount: 0, playCount: 0, wantsFulfilled: 0, eventsCaught: 0, eventIds: {} },
       achievements: {},
-      settings: { soundEnabled: true, reducedMotion: false },
+      settings: { soundEnabled: true, reducedMotion: false, notificationsEnabled: false, lastNotifyAt: 0 },
     };
   };
 
@@ -407,6 +416,14 @@
     grantCoin(CFG.economy.dailyLogin, "每日登入");
     if (state.daily.loginStreak === 7)  grantCoin(CFG.economy.streak7,  "連續 7 天！");
     if (state.daily.loginStreak === 30) grantCoin(CFG.economy.streak30, "連續 30 天！！");
+    // Greeting after a small delay so it doesn't collide with the welcome-back
+    // modal which itself runs ~600ms after init.
+    if (state.pet.stage !== "egg") {
+      setTimeout(() => {
+        const lines = CFG.speech.dailyGreet || [];
+        if (lines.length) speak(rand0(lines));
+      }, 1200);
+    }
     checkAchievements();
   }
 
@@ -441,43 +458,26 @@
     // P1-4 part 2: nudge the player toward the naming UI on first hatch.
     if (id === "first_hatch" && !state.pet.nameSet) {
       setTimeout(() => toast("💡 點寵物名字可以取名喔～", "good"), 1500);
+      // retrospective P1-6: hatch bonus so D1 players can buy first accessory
+      // (headband 50 FC) — onboarding ends with "this chick is mine" feeling.
+      const bonus = CFG.economy?.firstHatchBonus || 0;
+      if (bonus > 0) setTimeout(() => grantCoin(bonus, "孵化禮"), 2200);
+      // retrospective P1-3: onboarding v2 — first_hatch is the natural moment to
+      // reveal the v0.2 / v0.3 features the initial 4-bullet modal didn't cover.
+      // Show only once per save (history flag) so returning players aren't re-pestered.
+      if (!state.history) state.history = {};
+      if (!state.history.onboardedPart2) {
+        state.history.onboardedPart2 = true;
+        setTimeout(() => showOnboardingPart2(), 3500);
+      }
     }
     return true;
   }
 
   function checkAchievements() {
-    const h = state.history || {};
-    const dexUnlocked = unlockedFormsSet();
-    const checks = [
-      ["first_feed",    (h.feedCount || 0) >= 1],
-      ["feed_50",       (h.feedCount || 0) >= 50],
-      ["bath_10",       (h.bathCount || 0) >= 10],
-      ["pet_50",        (h.petCount  || 0) >= 50],
-      ["first_hatch",   state.pet.stage !== "egg"],
-      ["first_evolve",  state.pet.stage === "adult"],
-      ["streak_7",      (state.daily?.loginStreak || 0) >= 7],
-      ["streak_30",     (state.daily?.loginStreak || 0) >= 30],
-      ["form_divine",   dexUnlocked.has("divine")],
-      ["form_diva",     dexUnlocked.has("diva")],
-      ["form_fighter",  dexUnlocked.has("fighter")],
-      ["form_sage",     dexUnlocked.has("sage")],
-      ["collect_3",     dexUnlocked.size >= 3],
-      ["collect_5",     dexUnlocked.size >= 5],
-      ["collect_all",   dexUnlocked.size >= 7],
-      ["rich",          (state.economy?.totalEarned || 0) >= 500],
-      ["perfect_day",   (state.pet.traits?.perfectStreakMinutes || 0) >= 30],
-      ["dressup_first", Object.keys(state.pet.ownedAccessories || {}).length >= 1],
-      ["dressup_set",   !!(state.pet.appearance?.hat && state.pet.appearance?.neck && state.pet.appearance?.wing)],
-      ["dressup_collector", Object.keys(state.pet.ownedAccessories || {}).length >= Object.keys(CFG.accessories).length],
-      ["face_first", Object.entries(state.pet.ownedAccessories || {})
-                       .some(([id]) => CFG.accessories[id]?.slot === "face")],
-      ["dressup_full", !!(state.pet.appearance?.hat && state.pet.appearance?.face
-                          && state.pet.appearance?.neck && state.pet.appearance?.wing)],
-      ["elder_week",    state.pet.stage === "adult"
-                          && (Date.now() - state.pet.stageStartedAt) >= 7  * 86400000],
-      ["elder_month",   state.pet.stage === "adult"
-                          && (Date.now() - state.pet.stageStartedAt) >= 30 * 86400000],
-    ];
+    // Rule table moved to src/achievements.js (pure logic). Side-effects (toast,
+    // SFX, particles) still happen here via unlockAchievement.
+    const checks = window.NourishAchievements.evaluate(state, unlockedFormsSet());
     for (const [id, met] of checks) if (met) unlockAchievement(id);
   }
 
@@ -659,10 +659,13 @@
     document.getElementById("stage").classList.toggle("sleeping", state.pet.isSleeping);
     $("sleep-label").textContent = state.pet.isSleeping ? "起床" : "睡眠";
 
-    // wants bubble
+    // wants bubble — show reward hint inline so players know it's worth detouring
+    // (retrospective P1-7: was non-obvious that satisfying a want gives +12 FC).
     const wantEl = $("want-bubble");
     if (state.pet.want && !state.pet.isSleeping) {
-      wantEl.innerHTML = `${state.pet.want.icon} ${state.pet.want.text}<span class="want-mark">!</span>`;
+      const r = CFG.wants.reward;
+      wantEl.innerHTML = `${state.pet.want.icon} ${state.pet.want.text}<span class="want-mark">!</span>`
+        + `<small class="want-reward"> +${r.mood}❤️ +${r.coin}💰</small>`;
       wantEl.hidden = false;
     } else {
       wantEl.hidden = true;
@@ -824,48 +827,61 @@
     });
   }
 
-  // ============ Audio (Web Audio API, procedural — no assets) ============
-  // Synthesised tones via OscillatorNode + GainNode envelopes. AudioContext is
-  // created lazily on first user gesture so autoplay policies don't shut us out.
-  let audioCtx = null;
-  function ensureAudioCtx() {
-    if (audioCtx) return audioCtx;
+  // ============ Notifications (best-effort, in-tab + SW-backed) ============
+  // Goal: alert player when their pet's stats drop critically while they're
+  // not looking. Uses Notification API + service worker. Two limits:
+  //  (1) closed tab → no JS runs; only SW with periodic sync (low support) or
+  //      Web Push (needs server) could fire, neither is available here.
+  //  (2) backgrounded tab → setInterval is throttled but still runs ≥ 1/min.
+  // So this implementation reliably notifies during backgrounded sessions and
+  // is a stub for true push when a server arrives.
+  const NOTIFY_COOLDOWN_MS = 30 * 60 * 1000; // 30 min between alerts
+  function notificationsSupported() { return typeof Notification !== "undefined"; }
+  async function requestNotificationPermission() {
+    if (!notificationsSupported()) return "unsupported";
+    if (Notification.permission === "granted") return "granted";
+    if (Notification.permission === "denied")  return "denied";
+    try { return await Notification.requestPermission(); }
+    catch (_) { return "denied"; }
+  }
+  async function showLocalNotification(title, body) {
+    if (!notificationsSupported() || Notification.permission !== "granted") return false;
+    const opts = {
+      body,
+      icon: "assets/icons/icon-192.png",
+      badge: "assets/icons/icon-72.png",
+      tag: "chickaday-stat",
+      silent: false,
+    };
     try {
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    } catch (_) { audioCtx = null; }
-    return audioCtx;
+      // Prefer SW so notifications survive tab close on supported browsers.
+      const reg = await (navigator.serviceWorker?.ready);
+      if (reg && reg.showNotification) { reg.showNotification(title, opts); return true; }
+    } catch (_) {}
+    try { new Notification(title, opts); return true; } catch (_) { return false; }
   }
-  function soundOn() {
-    return state && state.settings && state.settings.soundEnabled !== false;
+  function maybeNotifyCriticalStat() {
+    if (!state.settings?.notificationsEnabled) return;
+    if (!notificationsSupported() || Notification.permission !== "granted") return;
+    if (!document.hidden) return; // user is looking, don't bug them
+    if (Date.now() - (state.settings.lastNotifyAt || 0) < NOTIFY_COOLDOWN_MS) return;
+    const s = state.pet.stats;
+    const name = state.pet.name || "啾啾";
+    let body = null;
+    if (s.hunger < CFG.thresholds.low) body = `${name} 肚子好餓…`;
+    else if (s.mood < CFG.thresholds.low) body = `${name} 心情很差，需要陪陪`;
+    else if (s.clean < CFG.thresholds.low) body = `${name} 想洗澡了`;
+    else if (s.energy < CFG.thresholds.low && !state.pet.isSleeping) body = `${name} 累壞了`;
+    if (!body) return;
+    showLocalNotification("啾啾日常", body);
+    state.settings.lastNotifyAt = Date.now();
+    save();
   }
-  function playTone(freq, ms, type = "sine", gain = 0.12) {
-    if (!soundOn()) return;
-    const ctx = ensureAudioCtx();
-    if (!ctx) return;
-    const osc = ctx.createOscillator();
-    const g = ctx.createGain();
-    osc.type = type;
-    osc.frequency.value = freq;
-    g.gain.value = 0;
-    osc.connect(g).connect(ctx.destination);
-    const now = ctx.currentTime;
-    g.gain.linearRampToValueAtTime(gain, now + 0.02);
-    g.gain.exponentialRampToValueAtTime(0.0001, now + ms / 1000);
-    osc.start(now);
-    osc.stop(now + ms / 1000 + 0.05);
-  }
-  // Composite SFX = chained playTone calls with delays. Tuned so achievement
-  // and evolve land louder than routine clicks.
-  const SFX = {
-    click:       () => playTone(660, 60, "square", 0.08),
-    success:     () => { playTone(660, 80, "sine", 0.1); setTimeout(() => playTone(880, 100, "sine", 0.1), 60); },
-    fail:        () => { playTone(220, 100, "sawtooth", 0.08); setTimeout(() => playTone(180, 120, "sawtooth", 0.08), 80); },
-    achievement: () => { [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => playTone(f, 110, "triangle", 0.12), i * 100)); },
-    evolve:      () => { [523, 659, 784, 1047, 1319].forEach((f, i) => setTimeout(() => playTone(f, 140, "triangle", 0.14), i * 90)); },
-    want:        () => { playTone(523, 90, "sine", 0.1); setTimeout(() => playTone(784, 90, "sine", 0.1), 90); },
-    event:       () => playTone(932, 80, "sine", 0.1),
-    coin:        () => { playTone(988, 60, "square", 0.08); setTimeout(() => playTone(1319, 80, "square", 0.08), 50); },
-  };
+
+  // ============ Audio ============
+  // Implementation moved to src/audio.js. This shorthand keeps existing
+  // SFX.coin() / SFX.success() calls in this file working unchanged.
+  const SFX = window.NourishAudio.SFX;
 
   // ============ Save export / import ============
   // Bundle save + dex into a single base64 string the player can paste into a
@@ -964,19 +980,13 @@
     });
   }
 
+  let _settingsTab = "settings";  // remembered between re-opens; defaults to most-used tab
   function openSettingsMenu() {
     const t = state.pet.traits;
-    const html = `
+    const tabClass = (key) => _settingsTab === key ? " active" : "";
+    // Section: 🐣 啾啾 — pet stats, traits progression, lifetime counters
+    const sectionPet = `
       <div class="modal-list">
-        <div class="settings-row"><span>🔊 音效</span>
-          <button class="menu-item" id="toggle-sound" style="padding:4px 10px;">${state.settings?.soundEnabled === false ? "已關閉" : "已開啟"}</button></div>
-        <div class="settings-row"><span>🌀 減少動畫</span>
-          <button class="menu-item" id="toggle-motion" style="padding:4px 10px;">${state.settings?.reducedMotion ? "已開啟" : "跟隨系統"}</button></div>
-        ${window.__nourishInstallPrompt ? `
-        <div class="settings-row"><span>📲 裝到主畫面</span>
-          <button class="menu-item" id="act-install" style="padding:4px 10px;color:var(--c-pink-deep);">立即安裝</button></div>
-        ` : ""}
-        <hr style="border:0;border-top:1px dashed rgba(0,0,0,0.15);margin:4px 0;">
         <div class="settings-row"><span>連續登入</span><strong>${state.daily.loginStreak || 0} 天</strong></div>
         <div class="settings-row"><span>成長分數</span><strong>${Math.round(state.pet.growthScore)}</strong></div>
         <div class="settings-row"><span>誕生時間</span><strong>${new Date(state.pet.bornAt).toLocaleString()}</strong></div>
@@ -986,30 +996,87 @@
         <div class="settings-row"><span>🎤 唱歌次數</span><strong>${t.singCount}/20 → 歌姬雞</strong></div>
         <div class="settings-row"><span>😢 低落分鐘</span><strong>${Math.round(t.lowMoodMinutes)}/720 → 醜雞</strong></div>
         <div class="settings-row"><span>✨ 幸福連續</span><strong>${Math.round(t.perfectStreakMinutes)}/1440 → 神雞</strong></div>
-        <hr style="border:0;border-top:1px dashed rgba(0,0,0,0.15);margin:4px 0;">
+        <div class="settings-row"><span>💖 滿足願望</span><strong>${state.history?.wantsFulfilled || 0} 次</strong></div>
+        <div class="settings-row"><span>🎲 抓到事件</span><strong>${state.history?.eventsCaught || 0} 次</strong></div>
+      </div>`;
+    // Section: ⚙️ 設定 — preferences (sound / motion / notify / install)
+    const sectionPrefs = `
+      <div class="modal-list">
+        <div class="settings-row"><span>🔊 音效</span>
+          <button class="menu-item" id="toggle-sound" style="padding:4px 10px;">${state.settings?.soundEnabled === false ? "已關閉" : "已開啟"}</button></div>
+        <div class="settings-row"><span>🌀 減少動畫</span>
+          <button class="menu-item" id="toggle-motion" style="padding:4px 10px;">${state.settings?.reducedMotion ? "已開啟" : "跟隨系統"}</button></div>
+        <div class="settings-row"><span>🔔 啾啾呼叫</span>
+          <button class="menu-item" id="toggle-notify" style="padding:4px 10px;">${
+            !notificationsSupported() ? "瀏覽器不支援" :
+            (typeof Notification !== "undefined" && Notification.permission === "denied") ? "已被封鎖" :
+            (state.settings?.notificationsEnabled && Notification.permission === "granted") ? "已啟用" :
+            "點擊啟用"
+          }</button></div>
+        ${window.__nourishInstallPrompt ? `
+        <div class="settings-row"><span>📲 裝到主畫面</span>
+          <button class="menu-item" id="act-install" style="padding:4px 10px;color:var(--c-pink-deep);">立即安裝</button></div>
+        ` : ""}
+      </div>`;
+    // Section: 💾 存檔 — save management + dangerous ops
+    const sectionSave = `
+      <div class="modal-list">
+        ${state.pet.finalForm ? `
+        <div class="settings-row"><span>🥚 孵化新蛋</span>
+          <button class="menu-item" id="act-newegg" style="padding:4px 10px;color:var(--c-orange);">開始</button></div>
+        ` : ""}
+        <div class="settings-row"><span>📤 匯出存檔</span>
+          <button class="menu-item" id="act-export" style="padding:4px 10px;">複製到剪貼簿</button></div>
+        <div class="settings-row"><span>📥 匯入存檔</span>
+          <button class="menu-item" id="act-import" style="padding:4px 10px;">貼上字串</button></div>
         ${DEBUG ? `
         <div class="settings-row"><span>給 100 飼料幣（除錯）</span>
           <button class="menu-item" id="dbg-give" style="padding:4px 10px;">+100</button></div>
         <div class="settings-row"><span>跳到下一階段（除錯）</span>
           <button class="menu-item" id="dbg-evolve" style="padding:4px 10px;">⏭️</button></div>
         ` : ""}
-        ${state.pet.finalForm ? `
-        <div class="settings-row"><span>🥚 孵化新蛋</span>
-          <button class="menu-item" id="act-newegg" style="padding:4px 10px;color:var(--c-orange);">開始</button></div>
-        ` : ""}
-        <hr style="border:0;border-top:1px dashed rgba(0,0,0,0.15);margin:4px 0;">
-        <div class="settings-row"><span>📤 匯出存檔</span>
-          <button class="menu-item" id="act-export" style="padding:4px 10px;">複製到剪貼簿</button></div>
-        <div class="settings-row"><span>📥 匯入存檔</span>
-          <button class="menu-item" id="act-import" style="padding:4px 10px;">貼上字串</button></div>
         <div class="settings-row"><span>重置存檔（清除本機資料）</span>
           <button class="menu-item" id="dbg-reset" style="padding:4px 10px;color:var(--c-red);">重置</button></div>
       </div>`;
+    const html = `
+      <nav class="settings-tabs" role="tablist" aria-label="設定分頁">
+        <button class="settings-tab${tabClass("pet")}" data-tab="pet" role="tab">🐣 啾啾</button>
+        <button class="settings-tab${tabClass("settings")}" data-tab="settings" role="tab">⚙️ 設定</button>
+        <button class="settings-tab${tabClass("save")}" data-tab="save" role="tab">💾 存檔</button>
+      </nav>
+      <div class="settings-pane${tabClass("pet")}" data-tab="pet" role="tabpanel">${sectionPet}</div>
+      <div class="settings-pane${tabClass("settings")}" data-tab="settings" role="tabpanel">${sectionPrefs}</div>
+      <div class="settings-pane${tabClass("save")}" data-tab="save" role="tabpanel">${sectionSave}</div>`;
     showModal({
-      title: "⚙️ 設定 / 除錯",
+      title: "⚙️ 設定",
       body: html,
       buttons: [{ label: "關閉", close: true }],
       onMount: card => {
+        // Tab switching: hide all panes, show clicked one. Persist choice.
+        const tabBtns = card.querySelectorAll(".settings-tab");
+        const switchTab = (target) => {
+          _settingsTab = target;
+          tabBtns.forEach(b => {
+            b.classList.toggle("active", b.dataset.tab === target);
+            b.setAttribute("aria-selected", b.dataset.tab === target ? "true" : "false");
+          });
+          card.querySelectorAll(".settings-pane").forEach(p => p.classList.toggle("active", p.dataset.tab === target));
+        };
+        tabBtns.forEach((btn, idx) => {
+          btn.onclick = () => switchTab(btn.dataset.tab);
+          // a11y: ArrowLeft/Right cycle between tabs (WAI-ARIA tabs pattern)
+          btn.onkeydown = (e) => {
+            if (e.key !== "ArrowLeft" && e.key !== "ArrowRight" && e.key !== "Home" && e.key !== "End") return;
+            e.preventDefault();
+            let nextIdx = idx;
+            if (e.key === "ArrowLeft")  nextIdx = (idx - 1 + tabBtns.length) % tabBtns.length;
+            if (e.key === "ArrowRight") nextIdx = (idx + 1) % tabBtns.length;
+            if (e.key === "Home")       nextIdx = 0;
+            if (e.key === "End")        nextIdx = tabBtns.length - 1;
+            tabBtns[nextIdx].focus();
+            switchTab(tabBtns[nextIdx].dataset.tab);
+          };
+        });
         const soundBtn = card.querySelector("#toggle-sound");
         if (soundBtn) soundBtn.onclick = () => {
           if (!state.settings) state.settings = {};
@@ -1023,6 +1090,25 @@
           state.settings.reducedMotion = !state.settings.reducedMotion;
           applyReducedMotionPref();
           save(); closeModal(); openSettingsMenu();
+        };
+        const notifyBtn = card.querySelector("#toggle-notify");
+        if (notifyBtn) notifyBtn.onclick = async () => {
+          if (!state.settings) state.settings = {};
+          if (!notificationsSupported()) { toast("瀏覽器不支援", "bad"); return; }
+          if (state.settings.notificationsEnabled && Notification.permission === "granted") {
+            // Toggle off
+            state.settings.notificationsEnabled = false;
+            save(); closeModal(); openSettingsMenu();
+            return;
+          }
+          const result = await requestNotificationPermission();
+          if (result === "granted") {
+            state.settings.notificationsEnabled = true;
+            await showLocalNotification("啾啾日常", `通知已開啟，${state.pet.name || "啾啾"} 餓了會跟你說 🐣`);
+            save(); closeModal(); openSettingsMenu();
+          } else {
+            toast(result === "denied" ? "已被封鎖，需在瀏覽器設定改" : "未授權", "bad");
+          }
         };
         const installBtn = card.querySelector("#act-install");
         if (installBtn) installBtn.onclick = async () => {
@@ -1148,6 +1234,7 @@
         <div class="modal-list">${pastHTML}</div>
         <div style="margin-top:14px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
           <button class="modal-close" id="goto-ach">🏅 成就 ${achCount}/${achTotal}</button>
+          <button class="modal-close" id="goto-events">🎲 事件 ${state.history?.eventsCaught || 0}</button>
           <button class="modal-close" id="goto-share">📸 分享卡</button>
         </div>
       `,
@@ -1155,6 +1242,8 @@
       onMount: card => {
         const b = card.querySelector("#goto-ach");
         if (b) b.onclick = () => { closeModal(); openAchievementsMenu(); };
+        const ev = card.querySelector("#goto-events");
+        if (ev) ev.onclick = () => { closeModal(); openEventStatsMenu(); };
         const s = card.querySelector("#goto-share");
         if (s) s.onclick = () => { closeModal(); shareOrDownloadCard(); };
         // Each past-pet row opens a detail modal — clicking remembers the pet.
@@ -1168,6 +1257,43 @@
           row.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); } };
         });
       },
+    });
+  }
+
+  function openEventStatsMenu() {
+    const eventIds = (state.history && state.history.eventIds) || {};
+    const total = state.history?.eventsCaught || 0;
+    const renderRow = (e, isSeasonal) => {
+      const count = eventIds[e.id] || 0;
+      const seen = count > 0;
+      const dr = isSeasonal && e.dateRange ? `${e.dateRange.from} → ${e.dateRange.to}` : "";
+      // Tiny inline thumbnail if SVG/PNG path is present.
+      const thumb = e.art
+        ? `<img src="${e.art}" width="22" height="22" style="vertical-align:middle;margin-right:6px;">`
+        : "";
+      return `<div class="settings-row" style="${seen ? "" : "opacity:0.45"}">
+        <span>${thumb}${seen ? "" : "🔒 "}${e.label}${dr ? ` <small class="muted">${dr}</small>` : ""}</span>
+        <strong>${count}</strong>
+      </div>`;
+    };
+    const regularHTML = CFG.randomEvents.pool.map(e => renderRow(e, false)).join("");
+    const seasonal = CFG.seasonalEvents?.pool || [];
+    const seasonalHTML = seasonal.map(e => renderRow(e, true)).join("");
+    const seasonalSeen = seasonal.filter(e => (eventIds[e.id] || 0) > 0).length;
+    showModal({
+      title: `🎲 事件紀錄 · 總計 ${total}`,
+      body: `
+        <div class="modal-title" style="font-size:13px;margin:6px 0 4px;">一般事件（全年）</div>
+        <div class="modal-list">${regularHTML}</div>
+        <div class="modal-title" style="font-size:13px;margin:14px 0 4px;color:var(--c-pink-deep);">
+          🎏 季節事件 ${seasonalSeen} / ${seasonal.length}（限時）
+        </div>
+        <div class="modal-list">${seasonalHTML}</div>
+        <p class="muted center" style="margin-top:8px;line-height:1.5;">
+          季節事件依當下日期自動觸發，跨年累積收集。
+        </p>
+      `,
+      buttons: [{ label: "回圖鑑", close: false, action: () => { closeModal(); openDexMenu(); } }],
     });
   }
 
@@ -1257,9 +1383,13 @@
   // ============ Modal ============
   let modalOpen = false;
   let modalButtons = [];
+  let modalReturnFocus = null;  // a11y: element to restore focus to on close
   function showModal({ title, body, buttons = [], onMount }) {
     const card = $("modal-card");
     modalButtons = buttons;
+    // Remember whoever opened the modal so we can hand focus back on close.
+    modalReturnFocus = (document.activeElement && document.activeElement !== document.body)
+      ? document.activeElement : null;
     card.innerHTML = `
       <div class="modal-title">${title}</div>
       ${body}
@@ -1281,11 +1411,47 @@
     });
     // backdrop click closes
     document.querySelector(".modal-bg").onclick = closeModal;
+    // Move focus into the dialog so screen-reader / keyboard users land inside.
+    // Prefer first input (rename dialog), else first button.
+    setTimeout(() => {
+      const focusTarget = card.querySelector("input, textarea")
+        || card.querySelector("button, [tabindex]:not([tabindex='-1'])");
+      if (focusTarget) focusTarget.focus();
+    }, 0);
   }
   function closeModal() {
     $("modal").hidden = true;
     modalOpen = false;
+    // Return focus to whatever opened the modal (or do nothing if it's gone).
+    const target = modalReturnFocus;
+    modalReturnFocus = null;
+    if (target && document.contains(target)) {
+      try { target.focus(); } catch (_) {}
+    }
   }
+
+  // Tab inside an open modal should cycle within its focusable elements,
+  // not escape into the page underneath. Cheap focus trap — runs at capture
+  // phase so it wins over any inner handlers.
+  document.addEventListener("keydown", e => {
+    if (!modalOpen || e.key !== "Tab") return;
+    const card = $("modal-card");
+    if (!card) return;
+    const focusables = card.querySelectorAll(
+      "button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])"
+    );
+    if (focusables.length === 0) return;
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    const active = document.activeElement;
+    if (e.shiftKey && active === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && active === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  }, true);
 
   // ============ Toast ============
   function toast(msg, kind = "") {
@@ -1473,6 +1639,8 @@
     state.pet.growthScore += r.growth;
     state.pet.want = null;
     state.pet.wantCooldownUntil = Date.now() + CFG.wants.cooldownMs;
+    if (!state.history) state.history = {};
+    state.history.wantsFulfilled = (state.history.wantsFulfilled || 0) + 1;
     toast(`💖 滿足了 ${w.icon} ${w.text} 的願望！`, "gold");
     speak("謝謝主人！");
   }
@@ -1499,8 +1667,21 @@
     spawnEvent();
   }
 
+  function isSeasonalActive(event) {
+    if (!event.dateRange) return true;
+    const now = new Date();
+    const md = String(now.getMonth() + 1).padStart(2, "0") + "-" +
+               String(now.getDate()).padStart(2, "0");
+    const { from, to } = event.dateRange;
+    // Wrapping ranges (e.g. winter Dec-Feb): "12-20" → "02-10"
+    return from <= to ? (md >= from && md <= to) : (md >= from || md <= to);
+  }
+
   function spawnEvent() {
-    const pool = CFG.randomEvents.pool;
+    // Merge regular events with currently-active seasonal events. Seasonal
+    // entries get higher weights in cfg so they feel like a treat.
+    const seasonal = (CFG.seasonalEvents?.pool || []).filter(isSeasonalActive);
+    const pool = CFG.randomEvents.pool.concat(seasonal);
     const total = pool.reduce((s, e) => s + e.weight, 0);
     let r = Math.random() * total;
     let pick = pool[0];
@@ -1545,6 +1726,11 @@
     if (fn) fn(state);
     if (def.id === "coin_drop") SFX.coin(); else SFX.event();
     state.pet.growthScore += 3;
+    // Track caught events (ID → count) for collector achievements + dex stats.
+    if (!state.history) state.history = {};
+    state.history.eventsCaught = (state.history.eventsCaught || 0) + 1;
+    state.history.eventIds = state.history.eventIds || {};
+    state.history.eventIds[def.id] = (state.history.eventIds[def.id] || 0) + 1;
     if (def.id === "star") unlockAchievement("star_caught");
     save();
     render();
@@ -1663,6 +1849,7 @@
     autoSaveTimer = setInterval(save, CFG.save.autosaveMs);
     eventTimer = setInterval(maybeSpawnEvent, CFG.randomEvents.spawnIntervalMs);
     wantsTimer = setInterval(() => { expireWantIfStale(); maybeSpawnWant(); }, CFG.wants.spawnIntervalMs);
+    setInterval(maybeNotifyCriticalStat, 5 * 60 * 1000); // throttled in-tab notify check
     startIdleSpeech();
 
     // visibility — when hidden, freeze online tick and let offline reconcile
@@ -1765,6 +1952,24 @@
         <div class="settings-row"><span><kbd>?</kbd> 顯示這份提示</span><span></span></div>
       </div>`,
       buttons: [{ label: "好的", close: true }],
+    });
+  }
+
+  // Second-stage onboarding fires after the egg hatches — that's the natural
+  // moment to reveal accessories / dex / wants / share without overwhelming the
+  // first-launch screen.
+  function showOnboardingPart2() {
+    showModal({
+      title: "🎉 恭喜孵化！還有更多功能～",
+      body: `<div style="line-height:1.8;font-size:13px;">
+        <p>🎀 <strong>裝扮商店</strong>（右上 🎀） — 用飼料幣買髮帶 / 蝴蝶結 / 翅膀</p>
+        <p>📖 <strong>圖鑑</strong>（右上 📖） — 看歷代寵物 + 7 種終態 + 抓到的事件</p>
+        <p>🏅 <strong>成就</strong>（右上 🏅） — 30 條成就等你解鎖</p>
+        <p>💖 <strong>啾啾會主動表達想要什麼</strong> — 滿足願望有額外獎勵</p>
+        <p>📸 <strong>分享卡</strong>（圖鑑底部） — 把啾啾的造型分享給朋友</p>
+      </div>
+      <p class="muted center" style="margin-top:8px;">💡 鍵盤捷徑：1-5 互動、A 成就、? 求救</p>`,
+      buttons: [{ label: "好的！", close: true }],
     });
   }
 
