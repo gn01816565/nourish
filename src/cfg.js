@@ -109,7 +109,7 @@
       pool: [
         {
           id:"sakura",
-          art:"assets/svg/event-sakura.svg",
+          art:"assets/images/event-sakura.png",
           weight:25, // higher than regular events; seasonal is a treat
           label:"櫻花飄落",
           apply:"sakura",
@@ -117,7 +117,7 @@
         },
         {
           id:"valentine",
-          art:"assets/svg/event-valentine.svg",
+          art:"assets/images/event-valentine.png",
           weight:30,
           label:"情人節愛心",
           apply:"valentine",
@@ -125,7 +125,7 @@
         },
         {
           id:"summer_breeze",
-          art:"assets/svg/event-summer.svg",
+          art:"assets/images/event-summer.png",
           weight:25,
           label:"夏日涼風",
           apply:"summer_breeze",
@@ -133,7 +133,7 @@
         },
         {
           id:"mooncake",
-          art:"assets/svg/event-mooncake.svg",
+          art:"assets/images/event-mooncake.png",
           weight:25,
           label:"月餅",
           apply:"mooncake",
@@ -141,7 +141,7 @@
         },
         {
           id:"halloween",
-          art:"assets/svg/event-halloween.svg",
+          art:"assets/images/event-halloween.png",
           weight:25,
           label:"萬聖節糖果",
           apply:"halloween",
@@ -149,7 +149,7 @@
         },
         {
           id:"xmas",
-          art:"assets/svg/event-xmas.svg",
+          art:"assets/images/event-xmas.png",
           weight:30,
           label:"聖誕禮物",
           apply:"xmas",
@@ -168,8 +168,8 @@
         { id:"butterfly", art:"assets/images/event-butterfly.png", weight:14, label:"蝴蝶飛過",   apply:"butterfly" },
         { id:"fly",       art:"assets/images/event-fly.png",       weight:10, label:"趕走果蠅",   apply:"fly"       },
         { id:"star",      art:"assets/images/event-star.png",      weight:3,  label:"神秘流星",   apply:"star"      },
-        { id:"rainbow",   art:"assets/svg/event-rainbow.svg",       weight:12, label:"彩虹出現",   apply:"rainbow"   },
-        { id:"candy",     art:"assets/svg/event-candy.svg",         weight:8,  label:"糖果",       apply:"candy"     },
+        { id:"rainbow",   art:"assets/images/event-rainbow.png",     weight:12, label:"彩虹出現",   apply:"rainbow"   },
+        { id:"candy",     art:"assets/images/event-candy.png",       weight:8,  label:"糖果",       apply:"candy"     },
       ],
     },
     economy: { dailyLogin: 30, evolveReward: 100, streak7: 50, streak30: 200, firstHatchBonus: 60 },

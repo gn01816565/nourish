@@ -1453,24 +1453,11 @@
     }
   }, true);
 
-  // ============ Toast ============
-  function toast(msg, kind = "") {
-    const el = document.createElement("div");
-    el.className = "toast " + kind;
-    el.textContent = msg;
-    $("toast-container").appendChild(el);
-    setTimeout(() => el.remove(), 2200);
-  }
-
-  // ============ Speech ============
-  let speakTimer = null;
-  function speak(text) {
-    const bubble = $("speech-bubble");
-    bubble.textContent = text;
-    bubble.hidden = false;
-    clearTimeout(speakTimer);
-    speakTimer = setTimeout(() => { bubble.hidden = true; }, 2000);
-  }
+  // ============ Toast / Speech ============
+  // Implementations moved to src/ui.js — these wrappers keep all in-file callers
+  // (60+ sites) working untouched.
+  const toast = (msg, kind) => window.NourishUI.toast(msg, kind);
+  const speak = (text) => window.NourishUI.speak(text);
   function pickHappy() { return rand0(CFG.speech.happy); }
   function rand0(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 

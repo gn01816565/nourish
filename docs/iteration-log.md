@@ -4,6 +4,96 @@
 
 ---
 
+## 2026-04-29 05:54 · Session A — R-A step 2 第一片：ui.js 拆出（toast + speak + showImagePreview）
+
+**觸發**：cron 第 60 輪。Retrospective 標 R-A step 2 拆 ui.js 是「最後也最大塊」 4h 工程量。本輪先取最自包含的 toast/speak primitives + 從 share.js 把 showIOSPreview 移過來，驗證模式可行 + 給未來 modal/menu extract 鋪路。
+
+**動作（新檔 `src/ui.js`，67 行 IIFE）**：
+
+- **`toast(msg, kind)`**：原 game.js 6 行函式整體搬過來，不依任何閉包 state（只用 DOM lookup）
+- **`speak(text)`**：speechBubble 顯示 + 2 秒自動隱藏，私有 `speakTimer` 在模組級
+- **`showImagePreview(url, title, onClose)`**：從 share.js 的 inline showIOSPreview 升格為 ui.js 公共 API
+  - 同樣的「全螢幕半透明黑底 + 圖片 + 長按存圖 hint + 黃色關閉鈕」設計
+  - 改放在 ui.js 後 share.js 就能用 `window.NourishUI.showImagePreview()` 而非 fallback
+
+- **對外 `window.NourishUI = { toast, speak, showImagePreview }`**
+
+**動作（game.js 簡化）**：
+- 移除既有 `function toast()` `function speak()` 共 14 行
+- 替換成 2 行 thin wrapper：
+  ```js
+  const toast = (msg, kind) => window.NourishUI.toast(msg, kind);
+  const speak = (text) => window.NourishUI.speak(text);
+  ```
+- 60+ 個既有 callers（toast 散在 grantCoin / unlockAchievement / fulfillWantIfMatches / RANDOM_EVENT_APPLIES 等等）**完全不動** ✅
+
+**動作（share.js 自動受惠）**：
+- share.js 內既有 fallback：
+  ```js
+  if (window.NourishUI && window.NourishUI.showImagePreview) {
+    window.NourishUI.showImagePreview(...);
+  } else {
+    showIOSPreview(...);  // inline fallback
+  }
+  ```
+- 之前 share.js 載入時 NourishUI 不存在走 fallback，本輪 ui.js 加進 script tag 後**自動走主路徑**
+- inline fallback 暫保留（防其他 caller），下輪可清理
+
+**動作（index.html 載入順序）**：
+```
+cfg.js → ui.js → dex.js → achievements.js → audio.js → share.js → game.js
+```
+ui.js 在 dex / achievements / audio / share 之前，因為這些可能透過 `window.NourishAPI.toast` 間接用 ui.js（雖然目前實際 toast 還是走 NourishAPI bridge，但未來可以直接拿 NourishUI 替代）。
+
+**影響檔案**：
+- `src/ui.js`（新檔，67 行）
+- `src/game.js`（-12 行：toast/speak 函式 → 2 行 wrapper）
+- `index.html`（+1 script tag）
+
+**驗證**：
+- `node --check src/ui.js src/game.js` ✅
+- HTTP 200：ui.js
+- 7 模組現況：cfg 289 + ui 67 + dex 73 + achievements 65 + audio 61 + share 326 + game 1981 = **2862 total**
+
+**7 模組依賴圖**（更新）：
+```
+cfg.js          → window.NourishCFG (eager)
+ui.js           → 無依賴 → window.NourishUI = { toast, speak, showImagePreview }
+dex.js          → +NourishCFG, NourishAPI(lazy) → NourishDex
+achievements.js → +NourishCFG → NourishAchievements
+audio.js        → NourishAPI(lazy) → NourishAudio
+share.js        → +NourishCFG, NourishAPI(lazy), NourishUI(lazy for image preview) → NourishShare
+game.js         → +NourishCFG, NourishUI(eager), NourishAudio(eager), 其他(lazy) → sets NourishAPI
+```
+
+**R-A step 2 進度**：
+- ✅ step 2-A：toast / speak / showImagePreview（**本輪**）
+- ⏸️ step 2-B：showModal / closeModal + focus trap + modalReturnFocus（中等耦合，~50 行候選）
+- ⏸️ step 2-C：openFeedMenu / openPlayMenu / openPetMenu / openShopMenu / openSettingsMenu / openDexMenu / openEventStatsMenu / openPetDetail / openNameDialog / openHelpDialog / showOnboarding / showOnboardingPart2 / showWelcomeBack（最大塊，~700 行）
+- ⏸️ step 2-D：清理 share.js 的 inline showIOSPreview fallback
+
+**對玩家無感** — 本次純內部重構，行為一致。
+
+**對 retrospective P1-1（game.js 撞牆）進度**：
+- v2 P2-1 預警時：1272 行
+- iter#56：1838 行（+50%）
+- iter#60 本輪：1981 行（不減反增 — 因為 onboarding v2 / settings tabs / a11y / iOS share 等都在 game.js 加新東西）
+- 但**抽出 audio + ui 共 128 行**，沒抽 game.js 還會更大
+- **下輪繼續 step 2-B 拆 modal**，game.js 預期降到 ~1900
+
+**下輪候選**：
+1. R-A step 2-B：拆 modal helpers（showModal/closeModal/focus trap/escapeHtml）
+2. WebSearch v1.0 部署技巧
+3. og:image 內容檢查（如需要重生交給 Session B）
+
+---
+
+## 2026-04-29 05:47 · Session A — INTENT: R-A step 2 第一片 — 拆 ui.js（toast + speak）
+
+(已完成)
+
+---
+
 ## 2026-04-29 05:39 · Session A — SEO meta description + Settings tab 鍵盤導航（WAI-ARIA）
 
 **觸發**：cron 第 59 輪
