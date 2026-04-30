@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <!-- dark academia 2nd: quill pen + ink pot + parchment.
+       Dark academia palette softened with cottagecore cream + pink per CLAUDE.md TA. -->
+  <!-- Soft pink shadow under scene -->
+  <ellipse cx="50" cy="86" rx="34" ry="3.5" fill="#FFC8D6" opacity="0.55"/>
+  <!-- Parchment scroll partially unfurled (cream with rolled edges) -->
+  <path d="M 16 60 Q 16 56 20 56 L 80 56 Q 84 56 84 60 L 84 80 Q 84 84 80 84 L 20 84 Q 16 84 16 80 Z"
+        fill="#FFE8C8" stroke="#8B5A2B" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Parchment text lines (handwritten flow) -->
+  <line x1="22" y1="64" x2="56" y2="63" stroke="#8B2030" stroke-width="0.9" stroke-linecap="round" opacity="0.7"/>
+  <line x1="22" y1="68" x2="64" y2="67" stroke="#8B2030" stroke-width="0.9" stroke-linecap="round" opacity="0.7"/>
+  <line x1="22" y1="72" x2="60" y2="71" stroke="#8B2030" stroke-width="0.9" stroke-linecap="round" opacity="0.7"/>
+  <line x1="22" y1="76" x2="50" y2="75" stroke="#8B2030" stroke-width="0.9" stroke-linecap="round" opacity="0.7"/>
+  <line x1="22" y1="80" x2="42" y2="79" stroke="#8B2030" stroke-width="0.9" stroke-linecap="round" opacity="0.7"/>
+  <!-- Parchment rolled-edge highlights (subtle bands) -->
+  <line x1="20" y1="58" x2="20" y2="82" stroke="#FFD86B" stroke-width="0.8" opacity="0.5"/>
+  <line x1="80" y1="58" x2="80" y2="82" stroke="#FFD86B" stroke-width="0.8" opacity="0.5"/>
+  <!-- Ink pot on right side of scene (deep burgundy bottle) -->
+  <rect x="62" y="38" width="14" height="18" rx="2" fill="#8B2030" stroke="#5C1A1F" stroke-width="1.5"/>
+  <!-- Ink pot opening (dark) -->
+  <ellipse cx="69" cy="38" rx="6" ry="2" fill="#2C2C2C" stroke="#5C1A1F" stroke-width="1.2"/>
+  <!-- Ink pot label sticker (cream) -->
+  <rect x="63" y="44" width="12" height="6" fill="#FFE8C8" stroke="#5C1A1F" stroke-width="0.6"/>
+  <!-- Quill pen — feather body diagonally crossing scene from top-right to bottom-left
+       (tip touches parchment to suggest "writing in progress") -->
+  <!-- Feather shaft (rachis) -->
+  <line x1="84" y1="14" x2="44" y2="62" stroke="#8B5A2B" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- Feather barbs (deep wine + cream alternating, ~10 short strokes along shaft) -->
+  <g stroke-linecap="round">
+    <line x1="80" y1="18" x2="86" y2="14" stroke="#B23A48" stroke-width="1.5"/>
+    <line x1="76" y1="22" x2="84" y2="18" stroke="#B23A48" stroke-width="1.5"/>
+    <line x1="72" y1="26" x2="82" y2="22" stroke="#FFE8C8" stroke-width="1.5"/>
+    <line x1="68" y1="30" x2="80" y2="26" stroke="#B23A48" stroke-width="1.5"/>
+    <line x1="64" y1="34" x2="78" y2="30" stroke="#FFE8C8" stroke-width="1.5"/>
+    <line x1="60" y1="38" x2="76" y2="34" stroke="#B23A48" stroke-width="1.5"/>
+    <line x1="56" y1="42" x2="74" y2="38" stroke="#FFE8C8" stroke-width="1.5"/>
+    <line x1="52" y1="46" x2="72" y2="42" stroke="#B23A48" stroke-width="1.5"/>
+    <line x1="48" y1="50" x2="70" y2="46" stroke="#FFE8C8" stroke-width="1.5"/>
+  </g>
+  <!-- Ink drop near quill tip on parchment -->
+  <circle cx="44" cy="62" r="1.5" fill="#2C2C2C"/>
+  <!-- Tiny ink splash dot beside drop -->
+  <circle cx="48" cy="60" r="0.8" fill="#8B2030"/>
+  <!-- Sparkle accents — scholarly charm -->
+  <text x="14" y="22" font-size="9" fill="#FFD86B">✦</text>
+</svg>

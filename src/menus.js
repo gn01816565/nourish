@@ -56,6 +56,7 @@
       healthy: "🐤", fatty: "🥯", ugly: "😆",
       fighter: "💪", sage: "🧠", diva: "🎤",
       divine: "✨", gourmet: "🍰", explorer: "🗺️", warmheart: "🤍",
+      drifter: "🪢", curator: "🪶",
     };
     const formStripHTML = fullPastForBond.length === 0 ? "" : `
       <p class="muted center" style="margin:0 0 8px;font-size:12px;line-height:1.6;">

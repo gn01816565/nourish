@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <!-- dark academia 3rd item: round-frame scholarly reading glasses.
+       Distinct from sage's half-moon glasses (glasses_thin) — full circles + thicker frame.
+       Soft warm palette per CLAUDE.md TA — avoid pure black cold frames. -->
+  <!-- Bridge between lenses -->
+  <path d="M 42 50 Q 50 47 58 50" fill="none" stroke="#8B5A2B" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- Left lens (full circle) -->
+  <circle cx="32" cy="52" r="14"
+          fill="#FFFFFF" fill-opacity="0.25"
+          stroke="#8B5A2B" stroke-width="3"/>
+  <!-- Right lens (full circle, mirror) -->
+  <circle cx="68" cy="52" r="14"
+          fill="#FFFFFF" fill-opacity="0.25"
+          stroke="#8B5A2B" stroke-width="3"/>
+  <!-- Inner frame ring (slightly thinner, deep wine — dark academia color accent) -->
+  <circle cx="32" cy="52" r="11" fill="none" stroke="#8B2030" stroke-width="1" opacity="0.55"/>
+  <circle cx="68" cy="52" r="11" fill="none" stroke="#8B2030" stroke-width="1" opacity="0.55"/>
+  <!-- Lens highlights (glass shine) -->
+  <ellipse cx="26" cy="46" rx="3" ry="5" fill="#FFFFFF" opacity="0.6"/>
+  <ellipse cx="62" cy="46" rx="3" ry="5" fill="#FFFFFF" opacity="0.6"/>
+  <!-- Smaller secondary highlight -->
+  <ellipse cx="36" cy="58" rx="1.5" ry="2.5" fill="#FFFFFF" opacity="0.4"/>
+  <ellipse cx="72" cy="58" rx="1.5" ry="2.5" fill="#FFFFFF" opacity="0.4"/>
+  <!-- Temple arms extending past lens edges -->
+  <path d="M 18 52 Q 12 50 8 46" fill="none" stroke="#8B5A2B" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M 82 52 Q 88 50 92 46" fill="none" stroke="#8B5A2B" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- Tiny gold rivets where temple meets frame (scholarly metal detail) -->
+  <circle cx="18" cy="52" r="1.4" fill="#FFD86B" stroke="#8B5A2B" stroke-width="0.7"/>
+  <circle cx="82" cy="52" r="1.4" fill="#FFD86B" stroke="#8B5A2B" stroke-width="0.7"/>
+  <!-- Tiny ✦ next to right lens for scholar charm -->
+  <text x="80" y="28" font-size="9" fill="#FFD86B">✦</text>
+</svg>

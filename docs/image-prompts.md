@@ -113,6 +113,22 @@ sides. Sparkles ✦ and stars around. Serene smile, eyes gently closed or radian
 white feather highlights. Background remains transparent except for the soft glow.
 ```
 
+## 8.8 漂泊者雞（chick-adult-drifter.png）  *iter#216 v0.5 第 11 個進化分支 — 待生圖補上，目前 cfg.petArt 暫指 healthy 占位*
+```
+[全域風格]
+Subject: a wanderer / boho-traveler chicken. Soft yellow body in standard chick-adult
+proportions. Wearing a warm cream / oatmeal woven shawl draped over the shoulders, with
+fringe tassels hanging down. Multiple tiny trinkets attached / dangling: a small pendant,
+a fringe ribbon, a feather charm, a tiny pressed flower — suggesting a collector's
+accumulated style. One wing holding up a small carved walking stick or twig. Soft, slightly
+weathered expression — wise eyes (^_^), hint of pink blush from sun-kissed travels. Small
+✦ sparkle nearby suggesting "where to next?" feel. Background transparent. Mood:
+cottagecore-boho / wanderer / handmade-collector aesthetic, soft pastel palette, never
+sharp / aggressive lines. Avoid generic "explorer" overlap (no compass / map — those are
+explorer's anchor) — focus on accumulated keepsakes vs adventure tools.
+```
+**為什麼這個設計**：呼應 drifter 解鎖路徑（cross-life ownedAccessories ≥ 8 種） — woven shawl + multiple dangling trinkets 直接視覺化「跨命累積收藏家」narrative；跟 explorer 的「冒險裝備」（背包 + 地圖 + 指南針）區隔，drifter 是「收藏 + 旅人」風格而非「探險 + 任務」風格；加 walking stick 強化 wanderer 詩意但避免冒險刻板。**解鎖條件**：state.pet.ownedAccessories Object.keys length >= 8（跨命累積購買 8 種以上配件後，下次 evolve 解鎖；典型 D14+ 玩家自然達標路徑 — 配件 21 件中 8 件 ≈ 38%）。
+
 ## 8.7 暖心雞（chick-adult-warmheart.png）  *iter#196 v0.4 第 10 個進化分支 — 待生圖補上，目前 cfg.petArt 暫指 healthy 占位*
 ```
 [全域風格]

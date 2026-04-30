@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <!-- y2k seasonal: handheld retro game console — Game Boy / Tamagotchi-shaped silhouette.
+       Pink y2k palette + chromatic accents per CLAUDE.md TA — avoid harsh dark / 過冷. -->
+  <!-- Soft pink shadow under console -->
+  <ellipse cx="50" cy="86" rx="22" ry="3" fill="#FFC8D6" opacity="0.5"/>
+  <!-- Console body — rounded rectangle, pastel pink frame with rust pink edge -->
+  <rect x="22" y="14" width="56" height="66" rx="8" fill="#FF89A7" stroke="#B23A48" stroke-width="2"/>
+  <!-- Inner panel (cream face) -->
+  <rect x="26" y="18" width="48" height="58" rx="5" fill="#FFE8C8" stroke="#B23A48" stroke-width="1.2"/>
+  <!-- Pixel screen at top — soft cyan glow with chromatic ghost (y2k glitch flavor) -->
+  <rect x="32" y="24" width="36" height="22" rx="2" fill="#9D7BD8" stroke="#5C3A1B" stroke-width="1.2"/>
+  <!-- Chromatic aberration ghosts on screen -->
+  <rect x="33" y="25" width="36" height="22" rx="2" fill="#6BCBFF" opacity="0.4"/>
+  <rect x="31" y="23" width="36" height="22" rx="2" fill="#FFB7B7" opacity="0.45"/>
+  <!-- Pixel heart on screen -->
+  <path d="M 50 32 L 53 30 L 55 32 L 55 34 L 53 36 L 50 39 L 47 36 L 45 34 L 45 32 L 47 30 Z"
+        fill="#FFB7B7"/>
+  <!-- Pixel screen frame inner shadow stripe -->
+  <line x1="32" y1="46" x2="68" y2="46" stroke="#5C3A1B" stroke-width="0.6" opacity="0.5"/>
+  <!-- D-pad (cross shape) on bottom-left -->
+  <g fill="#B23A48" stroke="#8B2030" stroke-width="1">
+    <rect x="32" y="58" width="6" height="14"/>
+    <rect x="28" y="62" width="14" height="6"/>
+  </g>
+  <!-- Action buttons (A + B) on bottom-right -->
+  <circle cx="58" cy="62" r="3" fill="#FFD86B" stroke="#8B5A2B" stroke-width="1"/>
+  <circle cx="66" cy="68" r="3" fill="#FF89A7" stroke="#B23A48" stroke-width="1"/>
+  <!-- Tiny "GAME" label below screen -->
+  <line x1="34" y1="50" x2="40" y2="50" stroke="#B23A48" stroke-width="1.5" opacity="0.7"/>
+  <line x1="42" y1="50" x2="46" y2="50" stroke="#B23A48" stroke-width="1.5" opacity="0.7"/>
+  <!-- Power LED dot -->
+  <circle cx="32" cy="20" r="0.9" fill="#FFD86B"/>
+  <!-- Sparkle accents — y2k digital -->
+  <text x="14" y="22" font-size="10" fill="#FFD86B">✦</text>
+  <text x="84" y="22" font-size="9" fill="#6BCBFF">✦</text>
+  <rect x="86" y="50" width="2" height="2" fill="#FFD86B"/>
+  <rect x="14" y="62" width="2" height="2" fill="#6BCBFF"/>
+</svg>

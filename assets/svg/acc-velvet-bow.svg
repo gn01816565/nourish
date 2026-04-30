@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <!-- v0.5 dark academia 軸第一件：天鵝絨蝴蝶結 — 暗紅天鵝絨 + 金線 + cream lace trim.
+       Dark academia palette 軟化（不純黑 / 深紫 / 純棕），加奶油白 + 粉色軟化避過冷 per CLAUDE.md TA. -->
+  <!-- Bow center knot (deep burgundy) -->
+  <ellipse cx="50" cy="50" rx="6" ry="9" fill="#8B2030" stroke="#5C1A1F" stroke-width="2"/>
+  <!-- Bow left loop (velvet body + lace trim) -->
+  <path d="M 14 38 Q 4 50 14 62 Q 28 60 44 50 Q 28 40 14 38 Z"
+        fill="#B23A48" stroke="#5C1A1F" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Bow right loop (mirror) -->
+  <path d="M 86 38 Q 96 50 86 62 Q 72 60 56 50 Q 72 40 86 38 Z"
+        fill="#B23A48" stroke="#5C1A1F" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Inner highlight on left loop (velvet sheen) -->
+  <path d="M 18 44 Q 14 50 18 56 Q 28 53 36 50 Q 28 47 18 44 Z"
+        fill="#8B2030" opacity="0.7"/>
+  <!-- Inner highlight on right loop -->
+  <path d="M 82 44 Q 86 50 82 56 Q 72 53 64 50 Q 72 47 82 44 Z"
+        fill="#8B2030" opacity="0.7"/>
+  <!-- Cream lace trim along loop edges (3 small dots per side suggesting scallop) -->
+  <circle cx="10" cy="50" r="1.5" fill="#FFE8C8" stroke="#8B5A2B" stroke-width="0.6"/>
+  <circle cx="14" cy="42" r="1.2" fill="#FFE8C8" stroke="#8B5A2B" stroke-width="0.6"/>
+  <circle cx="14" cy="58" r="1.2" fill="#FFE8C8" stroke="#8B5A2B" stroke-width="0.6"/>
+  <circle cx="90" cy="50" r="1.5" fill="#FFE8C8" stroke="#8B5A2B" stroke-width="0.6"/>
+  <circle cx="86" cy="42" r="1.2" fill="#FFE8C8" stroke="#8B5A2B" stroke-width="0.6"/>
+  <circle cx="86" cy="58" r="1.2" fill="#FFE8C8" stroke="#8B5A2B" stroke-width="0.6"/>
+  <!-- Gold thread cross-stitch on center knot (scholarly detail) -->
+  <line x1="46" y1="46" x2="54" y2="54" stroke="#FFD86B" stroke-width="1" opacity="0.85"/>
+  <line x1="54" y1="46" x2="46" y2="54" stroke="#FFD86B" stroke-width="1" opacity="0.85"/>
+  <!-- Two ribbon tails dangling from center -->
+  <path d="M 46 56 Q 42 70 38 82" fill="none" stroke="#B23A48" stroke-width="3" stroke-linecap="round"/>
+  <path d="M 54 56 Q 58 70 62 82" fill="none" stroke="#B23A48" stroke-width="3" stroke-linecap="round"/>
+  <!-- Tail tip notches (dark academia ribbon style) -->
+  <path d="M 36 80 L 38 84 L 40 80" fill="#B23A48" stroke="#5C1A1F" stroke-width="1" stroke-linejoin="round"/>
+  <path d="M 60 80 L 62 84 L 64 80" fill="#B23A48" stroke="#5C1A1F" stroke-width="1" stroke-linejoin="round"/>
+  <!-- Tiny gold sparkle for charm -->
+  <text x="78" y="22" font-size="9" fill="#FFD86B">✦</text>
+</svg>

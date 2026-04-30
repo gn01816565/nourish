@@ -54,6 +54,13 @@
     else if (tr.feedCount >= 60) form = "gourmet";
     else if (tr.eventsCaught >= 25) form = "explorer";
     else if (tr.petCount >= 50) form = "warmheart";
+    // iter#216 drifter: derived from cross-life ownedAccessories diversity (NOT per-pet trait counter).
+    // Reads ownedAccessories Object.keys count at evolve time — meta-progression award.
+    else if (Object.keys(state.pet.ownedAccessories || {}).length >= 8) form = "drifter";
+    // iter#234 curator: minimalist 派生 form 第二例 — 跟 drifter 對稱反向「克制收藏家」.
+    // Triggers when ownedAccessories ≤ 3 (低收藏 narrative「不堆量」) AND perfectStreakMinutes ≥ 60 (高品質照顧).
+    // Placed AFTER drifter so high-collectors get drifter, restraint-collectors get curator.
+    else if (Object.keys(state.pet.ownedAccessories || {}).length <= 3 && tr.perfectStreakMinutes >= 60) form = "curator";
     else if (tr.fatPoints >= 10) form = "fatty";
     else if (tr.lowMoodMinutes >= 720) form = "ugly";
     state.pet.finalForm = form;

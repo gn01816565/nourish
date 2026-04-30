@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <!-- v0.6 minimalist 軸第一件：細鏈頸鏈 — 單一小圓墜飾，極簡 scandinavian 風格.
+       Cool grey + cream + thin metallic lines, softened with subtle pink accent
+       for cottagecore TA per CLAUDE.md §1 — minimalist 不全冷，留 1-2 個粉色點. -->
+  <!-- Necklace chain — V-shape silhouette with thin gold line + small chain links -->
+  <path d="M 20 36 Q 50 64 80 36" fill="none" stroke="#FFD86B" stroke-width="1.4" stroke-linecap="round"/>
+  <!-- Subtle inner shadow stroke for depth -->
+  <path d="M 22 38 Q 50 62 78 38" fill="none" stroke="#8B5A2B" stroke-width="0.5" stroke-linecap="round" opacity="0.6"/>
+  <!-- 7 tiny chain link circles along the V (visualizing chain segments) -->
+  <circle cx="28" cy="42" r="0.9" fill="#FFD86B" stroke="#8B5A2B" stroke-width="0.4"/>
+  <circle cx="36" cy="48" r="0.9" fill="#FFD86B" stroke="#8B5A2B" stroke-width="0.4"/>
+  <circle cx="44" cy="54" r="0.9" fill="#FFD86B" stroke="#8B5A2B" stroke-width="0.4"/>
+  <circle cx="50" cy="58" r="1.0" fill="#FFD86B" stroke="#8B5A2B" stroke-width="0.4"/>
+  <circle cx="56" cy="54" r="0.9" fill="#FFD86B" stroke="#8B5A2B" stroke-width="0.4"/>
+  <circle cx="64" cy="48" r="0.9" fill="#FFD86B" stroke="#8B5A2B" stroke-width="0.4"/>
+  <circle cx="72" cy="42" r="0.9" fill="#FFD86B" stroke="#8B5A2B" stroke-width="0.4"/>
+  <!-- Single small pendant at the V apex (a clean circle) -->
+  <circle cx="50" cy="60" r="3.5" fill="#FFE8C8" stroke="#8B5A2B" stroke-width="1.2"/>
+  <!-- Inner pearl-like dot in pendant -->
+  <circle cx="48.5" cy="58.5" r="1" fill="#FFFFFF" opacity="0.85"/>
+  <!-- Two tiny clasp ends at the necklace tips (where it would attach behind neck) -->
+  <circle cx="20" cy="36" r="1.2" fill="#FFD86B" stroke="#8B5A2B" stroke-width="0.5"/>
+  <circle cx="80" cy="36" r="1.2" fill="#FFD86B" stroke="#8B5A2B" stroke-width="0.5"/>
+  <!-- Single soft pink cottagecore TA accent (don't go fully cool) -->
+  <text x="14" y="22" font-size="8" fill="#FFB7B7">·</text>
+  <text x="84" y="22" font-size="8" fill="#FFB7B7">·</text>
+  <!-- Tiny ✦ for sparkle (single, not multiple — minimalist) -->
+  <text x="50" y="80" font-size="8" fill="#FFD86B" text-anchor="middle">✦</text>
+</svg>

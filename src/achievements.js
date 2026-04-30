@@ -17,6 +17,39 @@
   // achievement. Built once at load time from cfg's seasonal pool.
   const SEASONAL_IDS = new Set((CFG.seasonalEvents?.pool || []).map(e => e.id));
 
+  // iter#222 — Cross-axis mixing achievements.
+  // Maps each accessory ID to its aesthetic axis (per GDD §5.5). Hardcoded here
+  // to avoid invasive schema migration on cfg.accessories; new accessories
+  // should be added to this map when shipped (axis_mixer + rainbow_collector
+  // achievements depend on it). v0.6 candidate: migrate to cfg.accessories.axis
+  // field for canonical reference.
+  const ACCESSORY_AXIS = {
+    party_hat: "vitality", headband: "cottagecore", bow: "cottagecore",
+    flower: "cottagecore", crown: "cottagecore", pin_butterfly: "cottagecore",
+    star_clip: "y2k", chef_hat: "coquette", strawberry_clip: "coquette",
+    sunglasses: "cleangirl", blush: "cleangirl",
+    glasses_thin: "sage", round_glasses: "dark_academia",
+    necklace: "cottagecore", scarf: "cottagecore", lace_collar: "cottagecore",
+    ribbon_tie: "balletcore", cd_pendant: "y2k",
+    wings: "fairycore", wings_fairy: "fairycore",
+    fringe_ribbon: "boho", straw_hat: "boho",
+    velvet_bow: "dark_academia",
+    minimal_chain: "minimalist", minimal_pin: "minimalist",
+    decora_clips: "kawaii_decora", plush_bow: "kawaii_decora",
+  };
+  function appearanceAxes(appearance) {
+    return new Set(["hat","face","neck","wing"]
+      .map(s => appearance && appearance[s])
+      .filter(Boolean)
+      .map(id => ACCESSORY_AXIS[id])
+      .filter(Boolean));
+  }
+  function ownedAxes(ownedAcc) {
+    return new Set(Object.keys(ownedAcc || {})
+      .map(id => ACCESSORY_AXIS[id])
+      .filter(Boolean));
+  }
+
   function evaluate(state, dexUnlocked) {
     const h = state.history || {};
     const ownedAcc = state.pet.ownedAccessories || {};
@@ -40,9 +73,11 @@
       ["form_gourmet",  dexUnlocked.has("gourmet")],
       ["form_explorer", dexUnlocked.has("explorer")],
       ["form_warmheart",dexUnlocked.has("warmheart")],
+      ["form_drifter",  dexUnlocked.has("drifter")],
+      ["form_curator",  dexUnlocked.has("curator")],
       ["collect_3",     dexUnlocked.size >= 3],
       ["collect_5",     dexUnlocked.size >= 5],
-      ["collect_all",   dexUnlocked.size >= 10],
+      ["collect_all",   dexUnlocked.size >= 12],
       ["rich",          (state.economy?.totalEarned || 0) >= 500],
       ["perfect_day",   (state.pet.traits?.perfectStreakMinutes || 0) >= 30],
       ["dressup_first", Object.keys(ownedAcc).length >= 1],
@@ -56,6 +91,9 @@
       ["wants_50",      (h.wantsFulfilled || 0) >= 50],
       ["events_100",    (h.eventsCaught || 0) >= 100],
       ["seasonal_3",    Object.keys(h.eventIds || {}).filter(id => SEASONAL_IDS.has(id)).length >= 3],
+      // iter#222 cross-axis mixing achievements (per GDD §5.5 跨軸 mixing-mode)
+      ["axis_mixer",    appearanceAxes(appearance).size >= 2],
+      ["rainbow_collector", ownedAxes(ownedAcc).size >= 4],
       // Excludes itself from the count to avoid the awkward "25 → unlock master,
       // which makes 26, but master required 25" pre-state (we want the player
       // to have 25 *non-master* achievements first).

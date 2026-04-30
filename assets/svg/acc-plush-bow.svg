@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <!-- v0.6 kawaii-decora 軸第三件（達 GDD §5.5「軸 ≥ 3 件」成形門檻）：蓬蓬蝴蝶結 — triple-layer pastel rainbow bow + pearl center + 多 ribbon tails + 多 ✦.
+       Neck slot — 跟 decora_clips (hat slot, iter#229) 互補設計可同時佩戴 = 完整 kawaii-decora look.
+       跟 bow / velvet_bow / ribbon_tie 既有 bow accessory 區隔：本件 triple-layer 多色堆疊 vs 單色精緻. -->
+  <!-- Subtle cream backing for depth -->
+  <ellipse cx="50" cy="52" rx="34" ry="14" fill="#FFE8C8" opacity="0.32"/>
+  <!-- Layer 1 (bottom) — lavender bow base (largest) -->
+  <path d="M 18 52 Q 12 44 18 38 Q 28 42 50 50 Q 28 58 18 62 Q 12 60 18 52 Z" fill="#D6C8FF" stroke="#8B5A2B" stroke-width="1.1"/>
+  <path d="M 82 52 Q 88 44 82 38 Q 72 42 50 50 Q 72 58 82 62 Q 88 60 82 52 Z" fill="#D6C8FF" stroke="#8B5A2B" stroke-width="1.1"/>
+  <!-- Layer 2 (middle) — mint bow (smaller) -->
+  <path d="M 24 52 Q 20 46 24 42 Q 32 44 50 50 Q 32 56 24 60 Q 20 58 24 52 Z" fill="#6BCB77" fill-opacity="0.7" stroke="#8B5A2B" stroke-width="1"/>
+  <path d="M 76 52 Q 80 46 76 42 Q 68 44 50 50 Q 68 56 76 60 Q 80 58 76 52 Z" fill="#6BCB77" fill-opacity="0.7" stroke="#8B5A2B" stroke-width="1"/>
+  <!-- Layer 3 (top) — pink bow (smallest, most prominent) -->
+  <path d="M 30 52 Q 28 48 30 44 Q 36 46 50 50 Q 36 54 30 56 Q 28 56 30 52 Z" fill="#FFB7B7" stroke="#FF89A7" stroke-width="1.1"/>
+  <path d="M 70 52 Q 72 48 70 44 Q 64 46 50 50 Q 64 54 70 56 Q 72 56 70 52 Z" fill="#FFB7B7" stroke="#FF89A7" stroke-width="1.1"/>
+  <!-- Center knot (cream + pearl) -->
+  <rect x="46" y="46" width="8" height="8" rx="1.5" fill="#FFE8C8" stroke="#8B5A2B" stroke-width="1"/>
+  <!-- Pearl center -->
+  <circle cx="50" cy="50" r="2" fill="#FFFFFF" stroke="#8B5A2B" stroke-width="0.6"/>
+  <circle cx="49.4" cy="49.4" r="0.7" fill="#FFE8C8" opacity="0.85"/>
+  <!-- Ribbon tails dangling (multiple — kawaii narrative) -->
+  <path d="M 44 56 Q 38 64 36 72 L 40 73 Q 42 64 48 58 Z" fill="#FFB7B7" stroke="#FF89A7" stroke-width="0.7"/>
+  <path d="M 56 56 Q 62 64 64 72 L 60 73 Q 58 64 52 58 Z" fill="#FFB7B7" stroke="#FF89A7" stroke-width="0.7"/>
+  <path d="M 48 56 Q 46 66 48 76 L 52 76 Q 54 66 52 56 Z" fill="#D6C8FF" stroke="#8B5A2B" stroke-width="0.7" opacity="0.8"/>
+  <!-- Tiny extra deco dots scattered (堆量 narrative) -->
+  <circle cx="22" cy="36" r="0.8" fill="#FFD86B"/>
+  <circle cx="78" cy="36" r="0.8" fill="#6BCBFF"/>
+  <circle cx="22" cy="68" r="0.8" fill="#FF89A7"/>
+  <circle cx="78" cy="68" r="0.8" fill="#6BCB77"/>
+  <!-- Soft pink corner accent dot (SOP consistency) -->
+  <circle cx="14" cy="20" r="1.6" fill="#FFB7B7" opacity="0.85"/>
+  <!-- Multiple ✦ sparkles (kawaii-decora narrative = 堆量) -->
+  <text x="84" y="22" font-size="7" fill="#FFD86B">✦</text>
+  <text x="14" y="84" font-size="6" fill="#FFB7B7">✦</text>
+  <text x="86" y="84" font-size="7" fill="#D6C8FF">✦</text>
+</svg>

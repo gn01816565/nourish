@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <!-- v0.6 kawaii-decora 軸第一件：多髮夾堆疊組 (decora_clips).
+       Harajuku Decora street fashion No.1 motif — 「many-clips 堆疊」narrative.
+       跟 strawberry_clip / star_clip 「1 motif」narrative 對立 — 本件 5+ motifs 並列堆疊.
+       軸 narrative 是「過度可愛 / 堆量」 — 對 18-35 女性 TA 直接高吸引力，無需強 TA 軟化（軸即 TA-friendly）.
+       但仍保留 1 corner soft pink dot 維持配件 SVG SOP 一致性 + 1 ✦ sparkle 跟其他軸對齊. -->
+  <!-- Subtle cream backing for depth -->
+  <rect x="14" y="40" width="72" height="22" rx="11" fill="#FFE8C8" opacity="0.35"/>
+  <!-- Hair strand suggestion (single curve under clips, soft brown) -->
+  <path d="M 14 56 Q 50 60 86 56" fill="none" stroke="#8B5A2B" stroke-width="1.6" stroke-linecap="round" opacity="0.7"/>
+  <!-- Clip 1: Pink star (left-most) -->
+  <g transform="translate(22 50)">
+    <rect x="-5" y="-1.6" width="10" height="3" rx="1.4" fill="#FFB7B7" stroke="#8B5A2B" stroke-width="0.6"/>
+    <text x="0" y="-2.6" font-size="8" fill="#FFD86B" text-anchor="middle">★</text>
+  </g>
+  <!-- Clip 2: Mint cherry -->
+  <g transform="translate(34 50)">
+    <rect x="-5" y="-1.6" width="10" height="3" rx="1.4" fill="#6BCB77" fill-opacity="0.55" stroke="#8B5A2B" stroke-width="0.6"/>
+    <circle cx="-1.5" cy="-3.5" r="2" fill="#B23A48" stroke="#8B2030" stroke-width="0.5"/>
+    <circle cx="1.5" cy="-3.5" r="2" fill="#B23A48" stroke="#8B2030" stroke-width="0.5"/>
+    <line x1="-1.5" y1="-5.2" x2="0" y2="-7.5" stroke="#3E8C4A" stroke-width="0.7"/>
+    <line x1="1.5" y1="-5.2" x2="0" y2="-7.5" stroke="#3E8C4A" stroke-width="0.7"/>
+  </g>
+  <!-- Clip 3: Yellow heart (center) -->
+  <g transform="translate(46 50)">
+    <rect x="-5" y="-1.6" width="10" height="3" rx="1.4" fill="#FFD86B" stroke="#8B5A2B" stroke-width="0.6"/>
+    <text x="0" y="-2.6" font-size="8" fill="#FFB7B7" text-anchor="middle">♥</text>
+  </g>
+  <!-- Clip 4: Lavender bow -->
+  <g transform="translate(58 50)">
+    <rect x="-5" y="-1.6" width="10" height="3" rx="1.4" fill="#D6C8FF" stroke="#8B5A2B" stroke-width="0.6"/>
+    <path d="M -2.5 -3 Q -3.5 -5 -2 -5.5 Q 0 -4 0 -3 Q 0 -4 2 -5.5 Q 3.5 -5 2.5 -3 Z" fill="#FFB7B7" stroke="#FF89A7" stroke-width="0.5"/>
+    <circle cx="0" cy="-3.2" r="0.6" fill="#FF89A7"/>
+  </g>
+  <!-- Clip 5: Cyan candy (right-most) -->
+  <g transform="translate(70 50)">
+    <rect x="-5" y="-1.6" width="10" height="3" rx="1.4" fill="#6BCBFF" fill-opacity="0.55" stroke="#8B5A2B" stroke-width="0.6"/>
+    <circle cx="0" cy="-3.5" r="1.8" fill="#FF89A7" stroke="#B23A48" stroke-width="0.5"/>
+    <path d="M -3 -3.5 Q -1.5 -2 -2 -3.5 Q -1.5 -5 -3 -3.5 Z" fill="#FF89A7" stroke="#B23A48" stroke-width="0.4"/>
+    <path d="M 3 -3.5 Q 1.5 -2 2 -3.5 Q 1.5 -5 3 -3.5 Z" fill="#FF89A7" stroke="#B23A48" stroke-width="0.4"/>
+  </g>
+  <!-- Tiny extra decora dots between clips (堆量 narrative reinforcement — many tiny accents) -->
+  <circle cx="28" cy="46" r="0.7" fill="#FFB7B7"/>
+  <circle cx="40" cy="46" r="0.7" fill="#FFD86B"/>
+  <circle cx="52" cy="46" r="0.7" fill="#6BCB77"/>
+  <circle cx="64" cy="46" r="0.7" fill="#D6C8FF"/>
+  <circle cx="76" cy="46" r="0.7" fill="#6BCBFF"/>
+  <!-- Small ribbon tail flourish under clips (left + right) — kawaii ribbons -->
+  <path d="M 18 60 Q 16 64 18 66" fill="none" stroke="#FFB7B7" stroke-width="1.2" stroke-linecap="round"/>
+  <path d="M 82 60 Q 84 64 82 66" fill="none" stroke="#FFB7B7" stroke-width="1.2" stroke-linecap="round"/>
+  <!-- Soft pink corner accent dot (SOP consistency with other 軸 SVGs) -->
+  <circle cx="14" cy="20" r="1.6" fill="#FFB7B7" opacity="0.85"/>
+  <!-- Multiple ✦ sparkles (kawaii-decora narrative = 堆量, 跟 minimalism 「only 1」narrative 對立) -->
+  <text x="84" y="22" font-size="7" fill="#FFD86B">✦</text>
+  <text x="14" y="80" font-size="6" fill="#FFB7B7">✦</text>
+  <text x="84" y="80" font-size="7" fill="#6BCBFF">✦</text>
+</svg>

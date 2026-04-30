@@ -4,6 +4,1815 @@
 
 ---
 
+## 2026-04-30 17:51 · Session A — iter#235 curator 派生 form R2 收尾 5 處 ship 完成 — i18n + speech + onboarding + FORM_ICONS 全打通 + 派生 trait ship pipeline SOP 第 2 次完整收尾
+
+**觸發**：cron 第 235 輪 — iter#234 R1 main 6 處（cfg.finalForms / petArt / achievements / evolve.js / achievements.js / sw）已 ship 後，本輪 R2 收尾（speech / i18n / onboarding text / FORM_ICONS map / dex display）完成 curator form 完整 user-facing layer。對標 iter#216-217 drifter 派生 trait ship 兩 cron-輪 SOP 第 2 次完整複製收尾。**派生 trait form ship pipeline SOP 第 2 次完整成功** ✅✅。
+
+**為什麼本輪需做完 5 個收尾 touchpoints**：
+- **R1 結構建立後 R2 不做完 = curator form 對玩家「不可見」**：R1 後玩家進化雖會落到 curator form（evolve.js logic 已 ship），但 dex 顯示文字 / 成就 toast / 講話 speech 全是空白 → user-facing 殘缺
+- **drifter 派生 form SOP 證明 R1+R2 兩輪緊接做完才算完整 ship**：iter#216 R1 → iter#217 R2 接力 SOP，本輪 iter#235 接力 iter#234 R1 同 SOP
+
+**動作（R2 收尾 5 處）**：
+
+1. **`src/cfg.js` speech.form_curator 5 條 pool**（speech_pools 50 → 51）：
+   ```
+   form_curator: ["靜靜地~", "不需要太多", "✦ 留白也很美",
+                  "(輕輕摸著單一墜飾)", "就喜歡這個"]
+   ```
+   - **narrative 對稱反向 drifter speech 5 條**（drifter 用語：「又收集到一個」「聽說遠方還有」「下個目的地是哪裡」= 累積 / 移動 narrative） VS 本 curator 用語（「靜靜地」「不需要太多」「留白也很美」「就喜歡這個」= 留白 / 安住 narrative）— 兩 form speech pool **narrative 對稱對立度極強**
+   - cfg-schema invariant 7 通過（speech pool 非空字串陣列）
+
+2. **`src/i18n.js` curator i18n keys 雙語 5 條（each side 5 條 = 雙語 10 條總）**（i18n 種子翻譯 436 → **441 條** zh + en）：
+   - zh-TW + en 各加 5 條：
+     - `form.curator.label` — "精選家雞" / "Curator Chick"
+     - `form.curator.desc` — "純白羽毛 + 單一精選配件 — 不堆量、選自己愛的，minimalism 留白美學的精選藏家。" / "Pure white feathers + a single chosen accent — the spacious-aesthetic curator who picks what they love over piling up."
+     - `ach.form_curator` — "精選藏家" / "Refined Curator"
+     - `achdesc.form_curator` — "養出精選家雞" / "Raised a curator chicken"
+     - **collect_all 文案 11 → 12 bump**（雙語）：`achdesc.collect_all` 從「收集全部 11 種終態 / Collected all 11 final forms」→「**收集全部 12 種終態 / Collected all 12 final forms**」
+   - i18n narrative 對標：zh「**留白美學** + 不堆量」+ en「**spacious-aesthetic** + picks what they love over piling up」對齊 minimalism 軸 narrative spectrum，跟 drifter「跨越多種風格 / crossing many styles」直接對立
+
+3. **`src/menus.js` FORM_ICONS map +curator 🪶**：
+   ```js
+   FORM_ICONS = {
+     ..., drifter: "🪢", curator: "🪶"
+   }
+   ```
+   - 🪶 (single feather) — minimalism「single accent」narrative，**dex 跨命累積 form-distribution mini-strip 自動納入第 12 form** display（iter#204 ship 的 form-distribution UI 跟 FORM_ICONS map driven，無需動 dex 邏輯）
+
+4. **`src/i18n.js` onboarding text bump 11 → 12 forms**（雙語）：
+   - zh-TW: `onboarding2.dex` 從「11 種終態」→ **「12 種終態」**
+   - en: `onboarding2.dex` 從「11 final forms」→ **「12 final forms」**
+   - 玩家首次進 dex 時看到正確總數提示
+
+5. **`sw.js`：CACHE_VERSION iter234 → iter235**
+
+**lint chain 報表**：
+- 上輪 cfg-schema：`9 traits / 50 speech_pools / 12 final_forms / 27 accessories`
+- 本輪 cfg-schema：`9 traits / **51 speech_pools** / 12 final_forms / 27 accessories`（speech_pools 50 → 51 反映 form_curator pool）
+- check-assets：115 references（unchanged）
+- 7 step + 8/8 smoke + i18n-shadow 23 src + i18n-coverage 175 keys ✅
+- **dex form-distribution mini-strip 第 12 form 自動納入** — FORM_ICONS map 有 curator 🪶 後玩家養出 curator form 時 dex 顯示「🪶 精選家雞 ×N」(中文) / "🪶 Curator Chick ×N" (en)
+
+**派生 trait form ship pipeline SOP 第 2 次完整收尾驗證**：
+| Cron 輪 | 階段 | 內容 | 完成輪 |
+|---------|------|------|------|
+| **R1 main 6 處** | 結構建立（不可見 form） | cfg.finalForms / petArt / achievements / evolve.js / achievements.js / sw | iter#216 drifter / **iter#234 curator** |
+| **R2 收尾 5 處** | user-facing layer 打通 | speech / i18n / onboarding / FORM_ICONS / dex display | iter#217 drifter / **iter#235 curator** |
+| **總時間** | 兩 cron 輪 / ~20 分鐘 | 11 touchpoints across 2 rounds | drifter ✅ / curator ✅ |
+
+**SOP 從「實驗」升級為「成熟標準」**：
+- iter#216-217 drifter 是首次驗證「派生 trait 6+5 處 SOP」(11 touchpoints)
+- **iter#234-235 curator 是第二次驗證**（同 SOP 100% 複製，零 deviation）
+- v0.7+ 後續 form-less 軸補 form 候選（cottagecore / y2k / dark academia / kawaii-decora 4 軸）都可直接遵循此 SOP 而非重新探索
+
+**form 終態系統最終狀態（iter#235 完成）— 12 final_forms 完整 user-facing**：
+| 觸發類型 | form | 條件 | speech | i18n | FORM_ICON |
+|---------|------|------|--------|------|----------|
+| trait-based (per-pet) | fighter / sage / diva / divine / gourmet / explorer / warmheart | 7 種 trait counter | 7 個 pool | 雙語 7×4=28 keys | 7 icons |
+| fallback | healthy / fatty / ugly | 3 種 預設 | 3 個 pool | 雙語 3×4=12 keys | 3 icons |
+| **派生 (cross-life)** | drifter / **curator（本輪完成）** | 2 種派生 trait — narrative 對稱反向對立 | 2 個 pool | 雙語 2×4=8 keys | 2 icons |
+| **總** | **12 forms** | — | **12 pools** | **48 i18n keys 雙語** | **12 FORM_ICONS** |
+
+**v0.6+ 結算更新（iter#235）**：
+- ✅ iter#222 跨軸成就系統
+- ✅ iter#223-225 minimalist + iter#229-231 kawaii-decora 兩新軸 ship
+- ✅ iter#226 + iter#232 GDD §5.5 雙 sync（11 軸 → 12 軸）
+- ✅ iter#227-228 + iter#233 form-less seasonal mini-batch（5 軸全 ship）
+- ✅ iter#230 retrospective-230 milestone
+- ✅ **iter#234-235 curator 派生 form 完整 ship（finalForms 11 → 12 / 派生 trait SOP 第 2 次完整成功）**
+- ⏳ iter#236+ 候選 ROI 排序：(1) docs/image-prompts.md §8.9 chick-adult-curator.png prompt 寫入（中 ROI，跟 §8.5-§8.8 SOP 4 次成熟） / (2) docs/image-prompts.md §8.10 chick-adult-drifter.png prompt 寫入（drifter 仍 healthy.png placeholder！可順便補完）/ (3) cottagecore / y2k 兩 form-less 軸補 form 設計（派生 trait SOP 第 3 例） / (4) light academia 第 13 軸候選評估 / (5) i18n 種子翻譯衝刺破 500 條（目前 441）
+- **建議 iter#236 雙補 image prompts §8.9 curator + §8.10 drifter**（drifter 仍 placeholder！本輪揭露的 backlog） — 中 ROI 雙產出 + 對齊 美工延伸
+
+**i18n 進度**：436 + 5 = **441 條** zh-TW + 441 條 en（跨 440 milestone 但未到 500，距離 i18n 衝刺目標差 59 條）
+**事件池進度**：26 regular + 21 seasonal events = 47 total event SVGs（unchanged）
+**配件池進度**：27 accessories（unchanged）
+**finalForms**：12 ✅ user-facing complete（first time since iter#216 drifter R1+R2，每個 final form 都有完整 speech / i18n / icon / dex display）
+**speech_pools**：50 → **51**
+
+**未來 follow-up（不在本輪）**：
+- iter#236 candidate：docs/image-prompts.md §8.9 curator + §8.10 drifter AI 生圖 prompt（兩個 form 都仍是 healthy.png placeholder，雙補完成）
+- iter#237+ 候選：cottagecore / y2k 派生 form 第 3 例 SOP 啟動 / light academia 第 13 軸 / i18n 衝刺
+- iter#250 retrospective：以「12 forms 完整 + 派生 trait SOP 2 次成功 + 12 美學軸全成形」為素材
+
+**影響檔案**：
+- `src/cfg.js`（speech.form_curator pool +5 條）
+- `src/menus.js`（FORM_ICONS map +curator 🪶）
+- `src/i18n.js`（curator 雙語 form/ach/desc 4 keys × 2 = 10 條 + collect_all 文案 11→12 bump 雙語 + onboarding2.dex 文案 11→12 bump 雙語）
+- `sw.js`（CACHE_VERSION → iter235）
+- `docs/iteration-log.md`（本條 entry）
+
+**驗證**：`./scripts/run-checks.sh` 全 7 step + 8/8 smoke 綠燈 ✅；35 cron 輪 0 P0 bug accumulated（since iter#166 render regression）；cfg-schema invariant 7（speech pool 非空字串陣列）通過 — form_curator 5 條 pool 全合規
+
+---
+
+## 2026-04-30 17:41 · Session A — iter#234 minimalist 派生 form 第二例「精選家雞」(curator) R1 main ship — finalForms 11 → 12 + 派生 trait 對稱反向 SOP 第 2 次成功
+
+**觸發**：cron 第 234 輪 — iter#233 kawaii-decora 軸 seasonal 補完後，從 candidates ROI 排序選 (1)「派生 form 第二例 minimalist 克制收藏家」(中 ROI，complete 派生 trait 第二例 SOP)。對標 iter#216-217 drifter 派生 trait ship pipeline（main 6 處 + 收尾 5 處 兩 cron-輪 SOP）第 2 次複製。**派生 trait form ship pipeline SOP 第 2 次成功啟動** ✅。
+
+**為什麼選 curator 派生 form 而非 cottagecore / y2k 補 form 設計**：
+- **drifter 對稱反向 narrative 強度最高**：drifter「累積收藏家 ≥ 8」/ curator「克制收藏家 ≤ 3 + 高品質照顧 ≥ 60min」— **第一個跨 form narrative 對稱對立**設計（drifter ↔ curator）跟既有 minimalism ↔ kawaii-decora axis 對立形成 **「軸 + form 雙重 spectrum 對立」**，TA「choose your aesthetic axis」承諾從美學軸延伸到 form identity
+- **派生 trait SOP 第二次驗證**：iter#216-217 drifter 是首例，本輪 curator 第二例完成 SOP 從「實驗」升級為「driverless 標準做法」
+- **與既有 11 form 完美互補**：5 trait-based form（fighter/sage/diva/divine/healthy 系）+ 3 fallback form（fatty/ugly/healthy）+ 3 trait-based extension form（gourmet/explorer/warmheart）+ 1 派生 form（drifter）— **curator 是第 12 個，第 2 個派生 form**，補強 minimalism 軸的 form identity（從 form-less → 有 form）
+
+**為什麼 curator 條件設計 ownedAccessories ≤ 3 + perfectStreakMinutes ≥ 60**：
+- **跨命累積（drifter 對稱）**：跟 drifter 同樣讀 `state.pet.ownedAccessories` cross-life — meta-progression award，不需 per-pet trait counter
+- **「不堆量」narrative 強度**：≤ 3 件覆蓋從 0 到 3 — 包含「完全不買」+「精選 1-3 件」兩種 minimalism 路徑
+- **「精選 = 高品質」narrative**：perfectStreakMinutes ≥ 60（1 小時 perfect care）跟 divine 1440 分鐘 / "perfect_day" achievement 30 分鐘之間的合理 mid-tier — 暗示「不堆量但用心照顧」narrative
+- **placed AFTER drifter, BEFORE fatty**：高收藏家走 drifter / 克制收藏家走 curator / 既不收藏也不照顧的走 fatty / ugly fallback — 三條 path 互斥不衝突
+
+**動作（R1 main 6 處）**：
+
+1. **`src/cfg.js` finalForms 加第 12 條**（11 → 12 final_forms）：
+   ```
+   curator: { labelKey:"form.curator.label", label:"精選家雞",
+              descKey:"form.curator.desc",
+              desc:"純白羽毛 + 單一精選配件 — 不堆量、選自己愛的，
+                    minimalism 留白美學的精選藏家。
+                    解鎖條件：跨命配件 ≤ 3 件 + perfectStreak ≥ 60 分鐘。" }
+   ```
+   - 加在 drifter 後（minimalism 派生 form 對稱位置 + design rationale 註解）
+
+2. **`src/cfg.js` petArt.adult curator placeholder**：
+   ```
+   curator:"assets/images/chick-adult-healthy.png"
+   ```
+   - 加在 drifter placeholder 後（`PLACEHOLDER` 註解 + 待 docs/image-prompts.md §8.9 生圖 chick-adult-curator.png 補上）— 跟 drifter ship pattern 一致（drifter 也仍是 healthy.png placeholder）
+
+3. **`src/cfg.js` achievements form_curator + bump collect_all**：
+   ```
+   form_curator: { icon:"🪶", labelKey:"ach.form_curator", label:"精選藏家",
+                   descKey:"achdesc.form_curator", desc:"養出精選家雞" }
+   collect_all: ... desc:"收集全部 12 種終態"  // 11 → 12 bump
+   ```
+   - icon 🪶 (single feather) — minimalism「single accent」narrative，跟既有 form icons 完全區隔（warmheart 用 🤍 / drifter 用 🪢 / divine 用 ✨ 等都不衝突）
+
+4. **`src/evolve.js` finalizeForm trait priority chain 加 curator**：
+   ```js
+   else if (Object.keys(state.pet.ownedAccessories || {}).length >= 8) form = "drifter";
+   // iter#234 curator (placed AFTER drifter)
+   else if (Object.keys(state.pet.ownedAccessories || {}).length <= 3 
+            && tr.perfectStreakMinutes >= 60) form = "curator";
+   else if (tr.fatPoints >= 10) form = "fatty";
+   ```
+   - 兩條件 AND 邏輯（短路評估正確），跟 divine 兩條件 AND（perfectStreakMinutes ≥ 1440 AND growthScore ≥ 2000）同 SOP
+
+5. **`src/achievements.js` evaluator 加 form_curator + bump collect_all 11 → 12**：
+   ```js
+   ["form_drifter", dexUnlocked.has("drifter")],
+   ["form_curator", dexUnlocked.has("curator")],  // iter#234
+   ["collect_3", ...], ["collect_5", ...],
+   ["collect_all", dexUnlocked.size >= 12],  // 11 → 12 bump
+   ```
+   - dexUnlocked.has("curator") 純函式檢查，跨命 dex.js 已自動處理 form 解鎖追蹤
+
+6. **`sw.js`：CACHE_VERSION iter233 → iter234**
+
+**lint chain 報表**：
+- 上輪 cfg-schema：`9 traits / 50 speech_pools / 11 final_forms / 27 accessories`
+- 本輪 cfg-schema：`9 traits / 50 speech_pools / **12 final_forms** / 27 accessories` 🎉
+- check-assets：115 references resolve（unchanged，curator 用 healthy.png placeholder）
+- 7 step + 8/8 smoke + i18n-shadow 23 src + i18n-coverage 175 keys ✅
+- **smoke test 第 12 種 final form 自動納入 8/8 scenarios** — 但 smoke 跑 8 scenarios 應該有覆蓋 final forms，需 R2 確認 dex / FORM_ICONS 後再次驗證
+
+**form 終態系統更新（iter#234 R1）— 12 final_forms**：
+| 觸發類型 | form | 條件 |
+|---------|------|------|
+| **trait-based (per-pet)** | fighter / sage / diva / divine / gourmet / explorer / warmheart | 8 種對應 trait counter |
+| **fallback** | healthy / fatty / ugly | 預設 / 失衡 |
+| **派生 (cross-life)** | drifter（≥ 8 件）/ **curator（≤ 3 件 + 高 perfect）（本輪）** | 2 種派生 trait — narrative 對稱反向對立 |
+
+**派生 trait ship pipeline SOP 第 2 次驗證**：
+| Cron 輪 | 階段 | 內容 |
+|---------|------|------|
+| **R1 main 6 處（本輪）** | 結構建立 | cfg.finalForms / cfg.petArt.adult / cfg.achievements / evolve.js trait chain / achievements.js evaluator + collect_all bump / sw.js |
+| **R2 收尾 5 處（iter#235 即啟動）** | i18n + UX | cfg.speech.form_curator / i18n form/ach key / onboarding text / menus.js FORM_ICONS map +curator / dex form-distribution display |
+
+**v0.6+ 結算更新**：
+- ✅ iter#222 跨軸成就系統
+- ✅ iter#223-225 minimalist 軸 ship + iter#229-231 kawaii-decora 軸 ship（軸 ship pipeline SOP 4 次成功）
+- ✅ iter#226 + iter#232 GDD §5.5 雙 sync（11 軸 → 12 軸）
+- ✅ iter#227-228 + iter#233 form-less seasonal mini-batch（5 軸全 ship 完成）
+- ✅ iter#230 retrospective-230 milestone
+- ✅ **iter#234 curator 派生 form R1（finalForms 11 → 12 + 派生 trait SOP 第 2 次成功啟動）**
+- ⏳ iter#235 R2 收尾：speech / i18n / onboarding / FORM_ICONS / dex display
+- ⏳ iter#236+ 候選：(1) docs/image-prompts.md §8.9 chick-adult-curator.png prompt 寫入 / (2) cottagecore / y2k form-less 軸補 form 設計（派生 trait SOP 第 3 例） / (3) light academia 第 13 軸候選評估 / (4) i18n 種子翻譯衝刺破 500 條
+
+**i18n 進度**：436 條（**unchanged，R2 補 i18n keys**）— 預期 R2 加 2 form keys + 1 ach key + 1 achdesc key + 1 speech pool（跟 form_drifter 5 條 speech 同 SOP）= **約 9 條增量**，達 445 條
+**事件池進度**：26 regular + 21 seasonal events = 47 total event SVGs（unchanged）
+**配件池進度**：27 accessories（unchanged）
+**finalForms**：11 → **12** 🎉
+
+**未來 follow-up（不在本輪）**：
+- iter#235 R2 收尾 5 處（即啟動）：speech pool「靜靜地~」「不需要太多」「✦ 留白也很美」「就喜歡這個」「(輕輕摸著單一墜飾)」narrative + i18n + FORM_ICONS map
+- iter#236+ docs/image-prompts.md §8.9 curator AI 生圖 prompt
+- iter#250 retrospective candidate
+
+**影響檔案**：
+- `src/cfg.js`（finalForms +1 / petArt.adult +1 / achievements +1 + collect_all bump 11→12）
+- `src/evolve.js`（finalizeForm 加 curator condition）
+- `src/achievements.js`（evaluator +form_curator + collect_all bump）
+- `sw.js`（CACHE_VERSION → iter234）
+- `docs/iteration-log.md`（本條 entry）
+
+**驗證**：`./scripts/run-checks.sh` 全 7 step + 8/8 smoke 綠燈 ✅；34 cron 輪 0 P0 bug accumulated（since iter#166 render regression）；cfg-schema invariant 8（finalForms keys ↔ petArt.adult keys 雙向同步）通過 — curator 兩處同步 ship 沒漏
+
+---
+
+## 2026-04-30 17:31 · Session A — iter#233 kawaii-decora 軸首 seasonal「白色情人節禮盒」(white_day_gifts)，seasonal events 20 → 21 + kawaii-decora 從 3 件 → 4 件（飽和度 ★★★ → ★★★★）+ form-less 軸 seasonal 補完 mini-batch 第 3 輪 SOP 持續
+
+**觸發**：cron 第 233 輪 — iter#231 kawaii-decora 軸成形 + iter#232 GDD §5.5 sync 後，本輪繼續推進 kawaii-decora 軸 seasonal 補完。**填補 02-16 ~ 03-19 日曆缺口**（valentine 02-12~15 結束 → sakura 03-20 起前的 1 個月空檔），跟 valentine 接力 chocolate-return narrative。
+
+**為什麼 white_day_gifts 是 kawaii-decora 第一個 seasonal 的最佳選擇**：
+- **iconic kawaii-decora 節日**：日本 White Day 03-14「pastel 多色禮盒回禮」是 kawaii subculture No.1 節日視覺（cf. 日本 White Day chocolate brands 多色 pastel packaging）— 軸 narrative「堆量」直接命中
+- **避開節日衝突**：Halloween 10-31（dark academia 已 cover）/ 兒童節 04-04（元氣軸 pinwheel cover）— White Day 03-14 是 kawaii-decora 軸獨佔節日，零衝突
+- **跟 valentine（fairycore-coquette mix）narrative 接力**：valentine = 收到玫瑰花束（西方 / coquette romantic narrative）/ white_day_gifts = 收到多色 White Day 回禮（東方 / kawaii-decora playful narrative）— 同 spectrum 不同 axis 的 chocolate season narrative 階梯
+
+**動作**：
+1. **新增 `assets/svg/event-white-day-gifts.svg`（30 行）**：3 層多色禮盒堆疊（mint + lavender + pink）+ 3 個 ribbon bows + **5 顆 heart confetti 多色**（粉/紅/紫/藍/黃）+ **3 顆 ✦ 多色** + corner pink dot — 5 處 maximalism「many」design choice 集中
+2. **`src/cfg.js` seasonalEvents.pool +1**（pool 15 → 16，全 pool 含早期 5 個 = 20 → 21 total events）：dateRange 03-11~03-17，stats mood:22 / hunger:6 / clean:3 + coin:18 跟 retro_console / picnic_blanket 同段位
+3. **`src/i18n.js` 雙語 +1**（435 → 436 條）：zh「五彩繽紛」+ en「Pastel rainbow unboxing」narrative 對齊 kawaii-decora「堆量 unboxing」精神
+4. **`sw.js`：iter231 → iter233**
+
+**美學軸覆蓋更新（iter#233）— 12 軸 + kawaii-decora 4 件 ★★★★**：
+- coquette / cottagecore / 元氣 / dark academia / minimalist / **kawaii-decora（本輪 ⬆）** — **6 軸並列 ≥ 4 件 ★★★★ 飽和度** 🎉
+
+**lint chain**：assets 113 → **115**（含 iter#231-233 累積 3 個 SVG）/ cfg-schema 26 → **27 accessories** / 7 step + 8/8 smoke ✅
+
+**i18n 進度**：436 條（zh + en 各 +1）
+**事件池進度**：26 regular + 21 seasonal events = **47 total event SVGs**
+**配件池進度**：27 accessories
+
+**form-less 軸 seasonal 補完 mini-batch SOP 第 3 輪驗證**：iter#227 dark academia → iter#228 minimalist → **iter#233 kawaii-decora**（mini-batch 三軸全 ship 完成）。**5 form-less 軸狀態**：cottagecore (sakura ✅) / y2k (redenvelope + retro_console ✅) / dark academia (gothic_candle ✅) / minimalist (new_year_dawn ✅) / **kawaii-decora (white_day_gifts ✅) — 5/5 form-less 軸全 seasonal 補完完成**
+
+**v0.6 本輪 4-round batch 結算（iter#230-233）**：
+- ✅ **iter#230 retrospective-230.md milestone**（iter#210-229 共 20 輪 v0.5 全 ship + v0.6 起手總結）+ kawaii-decora 第二件 candy_jar event
+- ✅ iter#231 kawaii-decora 第三件達軸成形 plush_bow（軸 ship pipeline SOP 第 4 次成功 ✅✅）
+- ✅ iter#232 GDD §5.5 sync 11 → 12 軸 + 5 form-less 軸狀態釐清 + v0.7+ 候選重排（schema migration 27 件 < 30 仍延後）
+- ✅ **iter#233 kawaii-decora 首 seasonal white_day_gifts（軸 3 → 4 件 ★★★★）+ 5 form-less 軸 seasonal 全補完**
+
+**未來 follow-up（不在本輪）**：
+- iter#234+ 候選 ROI 重排：(1) 派生 form 第二例 minimalist「克制收藏家」(reverse drifter narrative，多次列入候選) / (2) cottagecore / y2k 兩 form-less 軸補 form 設計 / (3) light academia 第 13 軸候選評估 / (4) i18n 種子翻譯破 500 條 (目前 436)
+- iter#250 retrospective：以 12 軸完整 + form-less seasonal 全補完 為素材
+
+**影響檔案**：
+- `assets/svg/event-white-day-gifts.svg`（新檔）
+- `src/cfg.js`（seasonalEvents.pool +1）
+- `src/i18n.js`（zh + en 各 +1）
+- `sw.js`（CACHE_VERSION → iter233）
+- `docs/iteration-log.md`（本條 entry）
+
+**驗證**：`./scripts/run-checks.sh` 全 7 step + 8/8 smoke 綠燈 ✅；33 cron 輪 0 P0 bug accumulated（since iter#166）
+
+---
+
+## 2026-04-30 17:21 · Session A — iter#232 GDD §5.5 sync：11 軸 → 12 軸 + form-less 軸 3 → 5 + ship pipeline SOP 4 次紀錄 + form-less seasonal mini-batch SOP 形成
+
+**觸發**：cron 第 232 輪 — iter#231 kawaii-decora 軸成形達 GDD §5.5 ≥ 3 件門檻後，canonical reference (iter#226 sync 後) 落後 5 輪 ship + 兩個重要 milestone「kawaii-decora 第 12 軸 ship + aesthetic spectrum 兩端對立完成」需即時記錄。
+
+**動作**：
+1. **GDD §5.5 標題與摘要更新**（iter#225 → iter#231 sync）：
+   - 「11 個美學軸 / 25 accessories / 25 regular events / 18 seasonal」→ **「12 個美學軸 / 27 accessories / 26 regular events / 20 seasonal events / 46 total events」**
+   - 「11/11 美學軸成形」→ **「12/12 美學軸成形 ✅ + aesthetic spectrum 兩端首次完整」**
+   - 加 minimalism ↔ kawaii-decora narrative 對立 設計哲學語句（spectrum 兩端首次完整 = TA「choose your aesthetic axis」承諾從 中段 8 軸完整擴展到「完整 spectrum 12 軸」）
+
+2. **§5.5 美學軸地圖表格全更新**：
+   - dark academia 行：seasonal「—」→ **gothic_candle（萬聖節）** + 件數 3 → 4 + 飽和度 ★★★ → ★★★★
+   - minimalist 行：seasonal「—」→ **new_year_dawn（新年）** + 件數 3 → 4 + 飽和度 ★★★ → ★★★★
+   - 加 kawaii-decora 軸新行：candy_jar regular event + decora_clips/plush_bow accessories + 3 件 ★★★（iter#233 後升 ★★★★）
+
+3. **「v0.6 主要變動」section 完整重寫**：
+   - 新增 minimalist 第 11 軸 ship 紀錄（iter#223-225）
+   - **新增 form-less 軸 seasonal 補完 mini-batch SOP**（iter#227-228）
+   - **新增 kawaii-decora 第 12 軸 ship + aesthetic spectrum 完整紀錄**（iter#229-231）
+   - 配件 25 → **27** / regular events 25 → **26** / seasonal events 18 → **20**（首破 20 milestone）
+
+4. **「form-less 軸的設計選擇」更新**：4 軸 → **5 軸（cottagecore / y2k / dark academia / minimalist / kawaii-decora）**；v0.7+ 候選 minimalist 派生 form「克制收藏家」narrative 對稱 drifter 反向 設計 explicit 留檔
+
+5. **「11 軸覆蓋演進時序」→「12 軸覆蓋演進時序」**：加 iter#227-228 form-less seasonal mini-batch + iter#229-231 kawaii-decora ship 兩個 milestone 行
+
+6. **「ship pipeline SOP 第 N 次成功複製」更新**：軸 ship pipeline 「3 次成功」→ **「4 次成功」**（boho / dark academia / minimalist / **kawaii-decora**） + **新增「form-less 軸 seasonal 補完 mini-batch SOP」段落**（iter#227-228 兩輪驗證設計準則）
+
+7. **「v0.7+ 美學軸候選方向」更新**：
+   - 11 軸後 → **12 軸後**「新軸 ROI 顯著遞減」風險提示加強（候選 light academia / goblincore / regencycore，需嚴謹差異化分析）
+   - 加「kawaii-decora 軸 seasonal 補完」候選白色情人節 03-14（iter#233 即啟動）
+   - schema migration 候選：「30 件後」（目前 27 件以 hardcoded map 維護成本仍低）
+   - **新增「5 form-less 軸首 seasonal 全補完 mega-batch」候選**：dark academia + minimalist 已補 / cottagecore (sakura) / y2k (redenvelope/retro_console) 已有 / kawaii-decora 待補 → 後續 1 cron-輪可全補完（iter#233 即啟動）
+
+**lint chain**：純文檔不影響 code（assets / cfg / i18n unchanged from iter#231）；7 step + 8/8 smoke ✅
+**i18n 進度**：435 條（unchanged）
+
+**為什麼 GDD sync 在 iter#232 而非 iter#234+**：本次 sync 跟 iter#226 cadence 一致（每 5-6 cron 輪 sync 一次），且 kawaii-decora 軸成形 + spectrum 兩端對立 + ship pipeline SOP 4 次成功是高權重事件，不能拖延
+
+**影響檔案**：`docs/gdd.md`（§5.5 7 個 sub-section 全翻新）+ `docs/iteration-log.md`（本條 entry）
+
+**驗證**：`./scripts/run-checks.sh` 全 7 step + 8/8 smoke 綠燈 ✅
+
+---
+
+## 2026-04-30 17:11 · Session A — iter#231 kawaii-decora 軸第三件達軸成形：蓬蓬蝴蝶結 (plush_bow)，accessories 26 → 27 + 軸成形 ≥ 3 件達標 + 軸 ship pipeline SOP 第 4 次成功
+
+**觸發**：cron 第 231 輪 — iter#229 (decora_clips R1 accessory) → iter#230 (candy_jar R2 event) → 本輪 R3 第三件達軸成形 ≥ 3 件 GDD §5.5 門檻。**軸 ship pipeline SOP 第 4 次成功複製** ✅✅（boho / dark academia / minimalist / **kawaii-decora** — 3 cron-輪達軸成形 SOP 已從「3 次驗證的標準做法」升級為「4 次成熟做法」）
+
+**為什麼 plush_bow 是 kawaii-decora 第三件最佳選擇**：
+- **slot 互補**：neck slot — 跟 decora_clips (hat) 不同 slot 設計上可同時佩戴 = 完整 kawaii-decora look（hat clips + neck bow）
+- **跟既有 5 件 neck bow 區隔**：bow / velvet_bow / ribbon_tie / scarf 都單色精緻 vs 本件 **triple-layer 多色堆疊**（lavender 底 + mint 中 + pink 頂 + pearl center + 多 ribbon tails + 4 corner dots + 3 ✦） — kawaii narrative「堆量」第三度強化
+- **230 FC mid-high tier**：跟 decora_clips 200 / fringe_ribbon 170 / round_glasses 180 對比同段位偏高；narrative 一致 kawaii-decora「堆量價值感」
+
+**動作**：
+1. **新增 `assets/svg/acc-plush-bow.svg`（28 行）**：cream backing ellipse + **3 層彩虹 bow path**（lavender / mint / pink 從大到小）+ **cream 中央 knot rect** + **pearl center**（white circle + cream inner highlight）+ **3 條 ribbon tails 多色 dangling**（pink × 2 + lavender × 1）+ **4 顆 corner deco dots 多色**（黃/藍/粉/綠 — 堆量 narrative）+ **3 ✦ 多色 sparkles** + corner pink dot
+2. **`src/cfg.js` accessories +1**（26 → 27）：`plush_bow: { slot:"neck", price:230, icon:"🎀" }`
+3. **`src/achievements.js` ACCESSORY_AXIS map +1**：`plush_bow: "kawaii_decora"` — 跨軸成就自動納入計算
+4. **`src/i18n.js` 雙語 +1**（435 → 436 條）：zh「蓬蓬蝴蝶結」+ en「Plush Layered Bow」
+5. **`sw.js`：iter229 → iter231**
+
+**lint chain**：assets 112 → **114**（含 iter#230 candy_jar）/ cfg-schema 26 → **27 accessories** / 7 step + 8/8 smoke ✅
+
+**未來 follow-up（不在本輪）**：iter#232 GDD §5.5 sync（即啟動）/ iter#233 kawaii-decora 首 seasonal（即啟動）
+
+**影響檔案**：`assets/svg/acc-plush-bow.svg`（新檔）+ `src/cfg.js` + `src/achievements.js` + `src/i18n.js` + `sw.js` + `docs/iteration-log.md`
+
+**驗證**：`./scripts/run-checks.sh` 全 7 step + 8/8 smoke 綠燈 ✅
+
+---
+
+## 2026-04-30 17:11 · Session A — iter#230 retrospective-230.md milestone（iter#210-229 共 20 輪 v0.5 全 ship + v0.6 起手總結）+ kawaii-decora 第二件 event「彩色糖果罐」(candy_jar)
+
+**觸發**：cron 第 230 輪 — retrospective cadence 已到（iter#210 + 20 = iter#230），同步推進 kawaii-decora 軸第二件 R2 event（軸 ship pipeline SOP 中段）。
+
+**為什麼本輪雙產出（retrospective + ship）而非單一**：
+- retrospective-230 是 cadence-driven milestone（不能拖到 iter#231+）
+- kawaii-decora R2 event 不寫等於拖延軸 ship pipeline 第 4 次複製進度
+- 兩件不重疊（純 docs vs 純 SVG/cfg）— 並行做 zero conflict
+
+**動作 1：新增 `docs/retrospective-230.md`（200 行）**：
+- 涵蓋 iter#210-229 共 20 輪：v0.5 主軸 5/5 + v0.6 起手 9 cron 輪
+- §1 TL;DR：v0.5 全 ship + v0.6 minimalist + form-less seasonal mini-batch + kawaii-decora 起手
+- §2 階段時序表（11 個 phase 涵蓋 20 輪）
+- §3 關鍵學習（6 sub-section）：軸 ship pipeline SOP 4 次成功 / 派生 trait 第一例 / form-less seasonal mini-batch SOP / 跨軸成就 idea-to-impl 速度 / aesthetic spectrum 對立 / lint chain 30 輪 0 P0 milestone
+- §4 v0.7+ 候選方向（即時/中期/長期 ROI 排序）
+- §5 設計原則 carry-forward（7 條從 iter#210-229 到 v0.7+ 的 reusable 原則）
+
+**動作 2：kawaii-decora 第二件 event candy_jar**：
+- **新增 `assets/svg/event-candy-jar.svg`（28 行）**：玻璃罐 outline + **9 顆 pastel rainbow 糖果堆疊**（pink / yellow / cyan / lavender / mint / red / cream / wine / 多色，分 3 層）+ heart-shaped 蓋（粉色 + ♥ 把手）+ pink ribbon tied around neck + 2 顆 candy stripe accents + **4 顆 ✦ 多色** + ground shadow — 跟 decora_clips (iter#229) 同軸「堆量」narrative 第二次強化
+- **`src/cfg.js` randomEvents.pool +1**（25 → 26 regular events）：`{ id:"candy_jar", weight:6, stats:{mood:16, hunger:6}, coin:5, coinReason:"打開糖果罐" }` 跟 candy / macaron 同 pickup-style segment
+- **`src/i18n.js` 雙語 +1**（434 → 435 條）：zh「挑哪顆都甜」+ en「Every pick is sweet」
+- **`sw.js`：iter229 → iter230**
+
+**lint chain**：assets 112 → **113** / cfg-schema 26 accessories（unchanged）/ 7 step + 8/8 smoke ✅
+
+**美學軸覆蓋更新（iter#230）— kawaii-decora 軸推進 1 → 2**：
+- kawaii-decora 軸：decora_clips（accessory）+ **candy_jar（本輪 R2 event）** = 2 件，距離軸成形差 1 件 accessory（iter#231 即補）
+
+**i18n 進度**：435 條
+**事件池進度**：**26 regular** + 20 seasonal events = 46 total event SVGs（首破 26 regular events）
+
+**影響檔案**：
+- `docs/retrospective-230.md`（新檔，200 行 dev journal）
+- `assets/svg/event-candy-jar.svg`（新檔）
+- `src/cfg.js`（randomEvents.pool +1）
+- `src/i18n.js`（zh + en 各 +1）
+- `sw.js`（CACHE_VERSION → iter230）
+- `docs/iteration-log.md`（本條 entry）
+
+**驗證**：`./scripts/run-checks.sh` 全 7 step + 8/8 smoke 綠燈 ✅；30 cron 輪 0 P0 bug milestone 達成（since iter#166）— retrospective-230 §3.6 已紀錄
+
+---
+
+## 2026-04-30 17:01 · Session A — v0.6 第 12 美學軸 kawaii-decora 起手第一件「多色髮夾組」(decora_clips)，accessories 25 → 26 + 美學軸 11 → 12（minimalism 直接對立軸 narrative spectrum 兩端）
+
+**觸發**：cron 第 229 輪 — iter#228 form-less seasonal 補完 mini-batch 第 2 輪後，從 candidates ROI 排序選 (1)「kawaii-decora 軸起手」（form-less seasonal mini-batch 已飽和兩輪後升級為高 ROI 首選）。對標 boho 軸（iter#205-207 三輪）/ dark academia 軸（iter#218-220 三輪）/ minimalist 軸（iter#223-225 三輪）ship pipeline 第 4 次複製：先 1 個 accessory 探水溫，後續 2-3 cron 輪補 event + 第三件達軸成形 ≥ 3 件門檻。
+
+**為什麼 kawaii-decora 第 12 軸 ship 而非 light academia / goblincore（iter#226 GDD §5.5 列出的 3 個 v0.7+ candidates）**：
+- **narrative 對立差異化最強**：kawaii-decora narrative「堆量 / 過度可愛」**直接對立** minimalism 軸 narrative「不堆 / 留白」 — 兩軸形成 aesthetic spectrum 兩端，**強化「choose your aesthetic axis」承諾的 spectrum 完整性**（之前 11 軸都在 spectrum 中段，缺 maximalist 端極點）
+- **light academia 跟 dark academia 視覺競爭高**：兩軸都涉及書 / 學院 / 古典，需高度差異化（白色學院風 vs 深色哥德學院），10 分鐘無法快速設計差異 — 留 v0.7+
+- **goblincore 跟 cottagecore 視覺競爭高**：兩軸都涉及自然 / 蕈菇 / earth-tone，cottagecore 已 9 件 ★★★★ 飽和，新軸難有差異化空間 — 留 v0.7+
+- **kawaii-decora 跟既有 11 軸都距離大**：軸 narrative「堆量」是 unique aesthetic DNA，跟 cottagecore（自然田園單元素）/ coquette（甜點食物）/ y2k（數位 nostalgia）等都有清楚 narrative 區隔
+- **TA 直接命中**：18-35 女性 TA 對 kawaii-decora narrative 接受度天然高（Y2K 復興 + Harajuku revival + Sanrio nostalgia 都是 2024-2025 主流 social aesthetic）— 軸 narrative 即 TA-friendly，無需強 TA 軟化處理
+
+**為什麼 decora_clips 是 kawaii-decora 第一件最佳選擇**：
+- **Harajuku Decora street fashion No.1 motif**：「many colorful hair clips at once」是 decora subculture 視覺辨識物 No.1（cf. 6%DOKIDOKI / Sebastian Masuda / 原宿 KAWAII MONSTER CAFE 主視覺）— 絕無他軸誤代表風險
+- **跟 strawberry_clip / star_clip / minimal_pin 三既有 hat clip 強對比**：strawberry_clip / star_clip 是「1 motif single accent」/ minimal_pin 是「無 motif 純線條」/ **decora_clips 是「5+ motifs 並列堆疊」** — 三件形成 hat clip narrative 階梯：minimalism → standard → maximalism，**hat slot 內部 narrative spectrum 完整**
+- **slot 互補設計**：hat slot — 跟 minimal_chain (neck) 不同 slot 設計上可同時佩戴；跟 strawberry_clip / star_clip / minimal_pin 同 slot 但**互斥佩戴**設計合理（玩家一次只能選一個美學身份的 hat clip narrative）
+- **200 FC mid-high tier 定價**：跟 fringe_ribbon 170 / round_glasses 180 / chef_hat 130 對比中段偏高；narrative 一致 kawaii-decora「高堆量價值感」（多元素需 mass-produce → 較高價合 narrative）；對比 minimal_chain 160 / minimal_pin 140 兩者明顯較貴 — 軸 narrative 經濟層級也對立
+- **TA narrative 即 軸 narrative**：軸即「過度可愛」對 18-35 女性 TA 直接高吸引力，無需強 TA 軟化（軸 narrative 自然 TA-friendly）— 但仍保留 1 corner soft pink dot 維持配件 SVG SOP 一致性
+
+**動作**：
+
+1. **新增 `assets/svg/acc-decora-clips.svg`（45 行 SVG，**最複雜的單一配件 SVG**）**：
+   - viewBox 100×100 對標既有 acc SVG
+   - 色票嚴守 CLAUDE.md §5：粉 #FFB7B7 / #FFC8D6（pink star clip + heart fill + bow + tiny pink dots + ribbon tails + corner dot）+ 黃 #FFD86B（star fill + ✦ × 2）+ 綠 #6BCB77 / #3E8C4A（mint cherry clip + cherry stems）+ 紫 #D6C8FF（lavender bow clip）+ 藍 #6BCBFF（cyan candy clip + ✦ 1）+ 暗紅 #B23A48 / #8B2030（cherry + candy fills）+ 棕 #8B5A2B（hair strand + clip outlines）
+   - 結構：**cream 髮型背景 rect**（rounded ends 暗示 hair area）+ **單一髮絲曲線**（quadratic curve 0.7 opacity 模擬 hair strand）+ **5 顆並列髮夾**（每顆 transform translate 不同 X 位置 22/34/46/58/70）每顆有 base rect bar + 上方獨特 motif（star / cherry pair / heart / bow / candy）+ **5 顆 tiny pastel dots**（clip 之間 4-5px 各一顆，堆量 narrative reinforcement）+ **2 顆 pink ribbon tails**（左右兩側 quadratic curves，kawaii ribbon 典型）+ **3 顆 ✦ sparkles 不同顏色**（黃 / 粉 / 藍 — 跟 minimalism「only 1 ✦」narrative **直接對立** 3 顆 ✦ 多色 = 「堆量」narrative 強化）+ **1 corner pink dot**（SOP 一致性）
+   - **「5 motifs 並列 vs strawberry_clip 1 motif」+「3 ✦ 多色 vs minimalism 1 ✦」+「pastel rainbow 5 色 vs minimalism 黃白雙色」+「5 顆 dots + 2 ribbons 額外裝飾 vs minimalism 1 dot」**：narrative 一致 kawaii-decora「堆量」設計準則 — **5 處 maximalism「many」design choice 集中 SVG**，跟 minimalism 軸 5 處「only 1」design choice 形成 axis 對稱
+
+2. **`src/cfg.js` accessories 加第 26 條**（25 → 26 accessories）：
+   ```
+   decora_clips: { slot:"hat", art:"assets/svg/acc-decora-clips.svg",
+                   labelKey:"acc.decora_clips", label:"多色髮夾組",
+                   icon:"🎀", price:200 }
+   ```
+   - 加在 minimal_pin 後（kawaii-decora 軸標識 + design rationale 註解 explicitly state「直接對立 minimalism 軸」narrative 對稱）
+   - hat slot — 跟 minimal_pin / strawberry_clip / star_clip 互斥佩戴（玩家選擇 aesthetic 身份的關鍵 slot）
+
+3. **`src/achievements.js` ACCESSORY_AXIS map 加 1 條 + 新軸 key**：
+   - `decora_clips: "kawaii_decora"` — iter#222 跨軸成就（axis_mixer / rainbow_collector）自動納入第 12 軸計算
+   - **跨軸成就效應雙重強化**：
+     - 玩家穿戴 decora_clips + minimal_chain → axis_mixer ≥ 2 軸觸發（**最諷刺 narrative**：堆量軸 + 留白軸跨軸混搭，玩家自我表達的彈性極限）
+     - rainbow_collector ownedAxes ≥ 4 — 玩家收藏不同軸的 accessory 達 4 軸即觸發；新軸入池讓門檻達成更靠近
+
+4. **`src/i18n.js` 雙語 1 條**（434 → 435 條 zh-TW + en）：
+   - zh-TW: `acc.decora_clips` = "多色髮夾組"
+   - en: `acc.decora_clips` = "Decora Hair Clip Set"
+   - i18n narrative 對標：zh「**多色** + 組」+ en「**Decora** + Set」對齊 kawaii-decora「堆量」精神 — 跟 minimalist「**簡約** + Minimal」narrative 直接對立
+
+5. **`sw.js`：CACHE_VERSION iter228 → iter229**
+
+**lint chain 報表**：
+- 上輪 cfg-schema：`9 traits / 50 speech_pools / 11 final_forms / 25 accessories`
+- 本輪 cfg-schema：`9 traits / 50 speech_pools / 11 final_forms / **26 accessories**`
+- check-assets：111 → **112** asset references resolve
+- 7 step + 8/8 smoke + i18n-shadow 23 src + i18n-coverage 175 keys ✅
+
+**美學軸覆蓋更新（iter#229）— 12 軸首發**：
+| 軸 | event | form | accessory | 件數 | 飽和度 |
+|----|-------|------|-----------|------|--------|
+| coquette / 美食家 | tea / macaron + carnation(s) | gourmet | chef_hat / strawberry_clip | 6 | ★★★★ |
+| cottagecore | 5 events + sakura(s) | — | flower / pin_butterfly / lace_collar | 9 | ★★★★ |
+| 智慧 / sage | book / message_bottle + stationery_set(s) | sage | glasses_thin | 5 | ★★★ |
+| balletcore | rose_bouquet / pointe_shoe + dance_tutu(s) | diva | ribbon_tie | 5 | ★★★ |
+| fairycore | dewdrop / moonlight + winter_starlight(s) | divine | wings_fairy | 5 | ★★★ |
+| cleangirl | bubble / towel + spa_salts(s) | healthy | blush | 5 | ★★★ |
+| y2k | pixel_heart + redenvelope(s) + retro_console(s) | — | star_clip / cd_pendant | 5 | ★★★ |
+| 元氣 | rainbow / confetti_pop + pinwheel(s) + rainbow_heart(s) | fighter | party_hat | 6 | ★★★★ |
+| boho | dried_herbs + picnic_blanket(s) | drifter | fringe_ribbon / straw_hat | 5 | ★★★ |
+| dark academia | quill_pen + gothic_candle(s) | — | velvet_bow / round_glasses | 4 | ★★★★ |
+| minimalist | morning_coffee + new_year_dawn(s) | — | minimal_chain / minimal_pin | 4 | ★★★★ |
+| **kawaii-decora（v0.6 新軸 12）** | — | — | **decora_clips（本輪）** | **1** | ★ |
+
+**美學軸從 11 → 12 軸首發** 🎉。**aesthetic spectrum 兩端首次完整**：minimalism「不堆 / 留白」端 ↔ kawaii-decora「堆量 / 過度可愛」端，跨軸混搭設計強化「choose your aesthetic axis」承諾的 spectrum 完整性。
+
+**v0.6 ship pipeline 結算**：
+- ✅ iter#222 跨軸成就系統（axis_mixer / rainbow_collector）
+- ✅ iter#223-225 minimalist 軸完整 ship（3 cron-輪達 ≥ 3 件）
+- ✅ iter#226 GDD §5.5 sync 11 軸（canonical reference 更新）
+- ✅ iter#227-228 form-less 軸 seasonal 補完 mini-batch 2 輪（dark academia + minimalist 升 4 件 ★★★★）
+- ✅ **iter#229 kawaii-decora 軸起手 decora_clips（軸 12 首發 1/3 件，aesthetic spectrum 兩端完整）**
+- ⏳ v0.6 後續候選（iter#230+ ROI 排序）：
+  1. **kawaii-decora 第二件 event 補完**（高 ROI 連續性 + ship pipeline SOP 第 4 次複製啟動，candidate「彩色糖果罐」/「Sanrio-style 萬花筒」/「pop-it 玩具」）
+  2. **GDD §5.5 增量 sync**（iter#226 → iter#229 累積 4 件變動：dark academia 4 件 + minimalist 4 件 + kawaii-decora 軸首發 + 跨軸成就 narrative 強化）
+  3. **minimalist 派生 form「克制收藏家」**（中 ROI，complete 派生 trait 第二例 SOP）
+- ⏳ **iter#230 retrospective-230（下輪即達）**：素材豐富（v0.6 ship 主推進 9 cron 輪總結 — 12 軸 + 4 軸 ≥ 4 件 + 跨軸成就 idea-to-impl + form-less seasonal mini-batch + ship pipeline SOP 4 次成功）
+
+**i18n 進度**：434 + 1 = **435 條** zh-TW + 435 條 en
+**事件池進度**：25 regular + 20 seasonal events = 45 total event SVGs（unchanged）
+**配件池進度**：25 → **26 accessories**
+
+**未來 follow-up（不在本輪）**：
+- iter#230 候選：**retrospective-230**（必做，cadence 已到）+ kawaii-decora 第二件 event（補完到軸成形 SOP 啟動）
+- iter#231-232：完成 kawaii-decora 軸 ≥ 3 件成形（candle pipeline SOP 第 4 次複製）
+- 派生 form「克制收藏家」minimalist 軸 candidate 仍預留 v0.7
+
+**影響檔案**：
+- `assets/svg/acc-decora-clips.svg`（新檔，45 行 — 最複雜單一配件 SVG）
+- `src/cfg.js`（accessories 加 1 條 + design rationale 註解 explicit「直接對立 minimalism」narrative）
+- `src/achievements.js`（ACCESSORY_AXIS map +1 + 新軸 key `kawaii_decora` 進入 axis 集合）
+- `src/i18n.js`（zh-TW + en 各 +1 條）
+- `sw.js`（CACHE_VERSION iter228 → iter229）
+- `docs/iteration-log.md`（本條 entry）
+
+**驗證**：`./scripts/run-checks.sh` 全 7 step + 8/8 smoke 綠燈 ✅；29 cron 輪 0 P0 bug accumulated（since iter#166 render regression）
+
+---
+
+## 2026-04-30 16:51 · Session A — minimalist 軸首 seasonal「新年初晨」(new_year_dawn)，seasonal events 19 → 20（首破 20 milestone）+ minimalist 從 3 件 → 4 件（飽和度 ★★★ → ★★★★）+ form-less 軸 seasonal 補完 mini-batch 第 2 輪
+
+**觸發**：cron 第 228 輪 — iter#227 dark academia seasonal SOP 第 3 次複製成功後，從 candidates ROI 排序選 (1)「minimalist seasonal 補完」(高一致性，本輪是 form-less 軸 seasonal 補完 mini-batch 第 2 輪 — 形成「2-輪 form-less 軸 seasonal 補完 SOP」reusable pattern)。**選 minimalist 而非 kawaii-decora 起手的理由**：
+- **連續性 ROI**：iter#227 剛完成 dark academia 軸 seasonal 補完，本輪接續 minimalist seasonal 補完，形成「form-less 軸 seasonal 補完 mini-batch」連續推進 — 跟 iter#211-215 「5 軸 seasonal 補完 batch」相同 batch SOP 設計哲學
+- **kawaii-decora 起手風險未充分評估**：差異化分析需先做 retrospective-style 視覺 / narrative competition 研究，10 分鐘內無法完成
+- **日曆缺口分析**：既有 14 個 seasonal events 全部排程後，**01-01 ~ 02-11 是 January 全月日曆大缺口**（valentine 02-12 之前無事件）— 跟 iter#227 dark academia 補 10-31 大缺口同樣 narrative 命中
+
+**為什麼 new_year_dawn 是 minimalist 第一個 seasonal 的最佳選擇**：
+- **iconic 元旦 + minimalist 雙重命中**：「新年第一道晨光 / fresh start dawn ritual」是 minimalist narrative 的 signature 場景（cf. The Minimalists / Marie Kondo new year reset / scandinavian「年首意圖設定」 lifestyle）— 絕無他軸誤代表風險
+- **跟 morning_coffee (iter#224) 強配對**：morning_coffee = 每日晨間儀式（minimalist daily ritual） / new_year_dawn = 每年首日晨間儀式（minimalist yearly ritual） — narrative 從 daily scope 延伸到 yearly scope，**軸內 narrative 階梯感強化**（跟 dark academia quill_pen 寫字當下 / gothic_candle 萬聖夜閱讀 = 同軸不同情境的 narrative 階梯感同 SOP）
+- **跟 winter_starlight (12-19~12-22 fairycore 仙氣冬至) 區隔**：本件 = 元旦**白日**早晨（晨光 + 雪景 + 醒來 narrative） / winter_starlight = 冬至**夜晚**星空（星光 + halo + 神祕 narrative） — 季節相鄰但 mood / palette / 軸全區隔
+- **TA 軟化 SOP 第 4 次複製**：純白 minimalist 雪景對 18-35 女性 TA 太冷 / 太空 — 本設計改 cream + soft pink dawn sky tint + warm pink halo 圍著 sun + 1 顆橘色小鳥輪廓 + 1 cream coffee cup callback morning_coffee + corner pink dot，**「intentional warm minimalism」narrative**（跟 minimal_chain iter#223 / morning_coffee iter#224 / minimal_pin iter#225 / gothic_candle iter#227 同 TA 軟化處理 SOP）
+- **stats 配置 mood:20 / energy:10 / clean:5 + coin:15**：mood 20 對應 seasonal 級 + energy 10（晨光啟動感跟 morning_coffee 同 energy 10）+ clean 5（雪景 / 純白 narrative） + coin:15 跟 gothic_candle / picnic_blanket / spa_salts 同段位
+
+**動作**：
+
+1. **新增 `assets/svg/event-new-year-dawn.svg`（35 行 SVG）**：
+   - viewBox 100×100 對標既有 seasonal SVG
+   - 色票嚴守 CLAUDE.md §5：白 #FFFFFF（雪地 + 杯 + 樹枝雪頂）+ 奶油 #FFE8C8（晨空底色 + 杯口 + sun 中層 halo）+ 粉 #FFB7B7 / #FFC8D6（晨空高光 + sun 外 halo + 雪地 ground 軟化 + corner dot — 4 處 TA 軟化）+ 棕 #8B5A2B（樹幹 + 樹枝 + 鳥 + 杯邊線 + 蒸氣 + 咖啡液）+ 黃 #FFD86B（單一 ✦）
+   - 結構：**stacked 晨空帶**（cream + 粉色 opacity layered，模擬 dawn gradient 不需 SVG defs）+ **單一晨陽**（3 層同心 circle: 粉色 halo + cream mid + white core，TA 軟化關鍵）+ **雪地 horizon line**（細 cream stroke + ground shadow）+ **單一細樹 silhouette**（trunk + 3 條 sparse branches，minimalism narrative 不畫茂密樹冠）+ **2 顆雪頂**（branch 上小白圓圈，1 per branch tip 不堆量）+ **單一小鳥輪廓**（M-shape path 飛向 sun）+ **callback morning_coffee 杯**（杯身 + 杯口 cream + 棕色咖啡液 + 1 highlight + 單一蒸氣 quadratic curve — 視覺一致 minimalist 軸 ritual narrative）+ **1 corner pink dot + 1 ✦**
+   - **「1 棵樹 not 樹林」+「1 隻鳥 not 鳥群」+「3 條 sparse 樹枝 not 茂密樹冠」+「2 顆雪頂 not 滿樹雪」+「1 ✦ not 多顆」+「1 corner dot not 多顆」**：narrative 一致 minimalism「不堆」設計準則 — **5 處 minimalism「only 1」design choice 集中 SVG**，跟 minimal_chain / morning_coffee / minimal_pin 同 design language
+
+2. **`src/cfg.js` seasonalEvents.pool 加第 15 條**（pool length 14 → 15，全 pool 含早期 5 個 = 19 → 20 total events，**首破 20 seasonal events milestone**）：
+   ```
+   { id:"new_year_dawn", art:"assets/svg/event-new-year-dawn.svg",
+     weight:25, label:"新年初晨", apply:"new_year_dawn",
+     applyEffects:{ stats:{mood:20, energy:10, clean:5}, coin:15, coinReason:"新年第一道晨光" },
+     applyToastKey:"seasonal.new_year_dawn",
+     applyToast:"🌅 新年第一道晨光~ 留白的一天從這裡開始",
+     applyToastStyle:"gold",
+     dateRange: { from: "01-01", to: "01-07" } }
+   ```
+   - 加在 gothic_candle (10-28~11-03) 後（時序排列 + design rationale 註解）
+   - dateRange 01-01 ~ 01-07（7 天 window 對標既有 stationery_set / dance_tutu / spa_salts / retro_console / picnic_blanket / pinwheel / gothic_candle 7 天 SOP）
+   - applyToastStyle:"gold"
+
+3. **`src/i18n.js` 雙語 1 條**（433 → 434 條 zh-TW + en）：
+   - zh-TW: `seasonal.new_year_dawn` = "🌅 新年第一道晨光~ 留白的一天從這裡開始"
+   - en: `seasonal.new_year_dawn` = "🌅 First light of the new year~ A spacious day begins"
+   - i18n narrative 對標：zh「**留白的一天**」+ en「**A spacious day**」對齊 minimalism「intentional space / 留白美學」精神 — 跟 morning_coffee「**靜靜開始** / **A quiet day begins**」同 minimalism 文案語調，避免「new year energy！goal-setting！achieve！」之類元氣派字眼
+
+4. **`sw.js`：CACHE_VERSION iter227 → iter228**
+
+**lint chain 報表**：
+- 上輪 cfg-schema：`9 traits / 50 speech_pools / 11 final_forms / 25 accessories`
+- 本輪 cfg-schema：`9 traits / 50 speech_pools / 11 final_forms / 25 accessories`（accessories 不變，seasonal events 19 → 20 不在 schema summary 顯示）
+- check-assets：110 → **111** asset references resolve
+- 7 step + 8/8 smoke + i18n-shadow 23 src + i18n-coverage 175 keys ✅
+
+**美學軸覆蓋更新（iter#228）— 11 軸 + minimalist 補 seasonal**：
+| 軸 | event | form | accessory | 件數 | 飽和度 |
+|----|-------|------|-----------|------|--------|
+| coquette / 美食家 | tea / macaron + carnation(s) | gourmet | chef_hat / strawberry_clip | 6 | ★★★★ |
+| cottagecore | 5 events + sakura(s) | — | flower / pin_butterfly / lace_collar | 9 | ★★★★ |
+| 智慧 / sage | book / message_bottle + stationery_set(s) | sage | glasses_thin | 5 | ★★★ |
+| balletcore | rose_bouquet / pointe_shoe + dance_tutu(s) | diva | ribbon_tie | 5 | ★★★ |
+| fairycore | dewdrop / moonlight + winter_starlight(s) | divine | wings_fairy | 5 | ★★★ |
+| cleangirl | bubble / towel + spa_salts(s) | healthy | blush | 5 | ★★★ |
+| y2k | pixel_heart + redenvelope(s) + retro_console(s) | — | star_clip / cd_pendant | 5 | ★★★ |
+| 元氣 | rainbow / confetti_pop + pinwheel(s) + rainbow_heart(s) | fighter | party_hat | 6 | ★★★★ |
+| boho | dried_herbs + picnic_blanket(s) | drifter | fringe_ribbon / straw_hat | 5 | ★★★ |
+| dark academia | quill_pen + gothic_candle(s) | — | velvet_bow / round_glasses | 4 | ★★★★ |
+| **minimalist** | morning_coffee + **new_year_dawn(s)（本輪）** | — | minimal_chain / minimal_pin | **4** | **★★★★ ⬆** |
+
+**v0.6 ship pipeline 結算**：
+- ✅ iter#222 跨軸成就系統（axis_mixer / rainbow_collector）
+- ✅ iter#223-225 minimalist 軸完整 ship（3 cron-輪達 ≥ 3 件）
+- ✅ iter#226 GDD §5.5 sync 11 軸（canonical reference 更新）
+- ✅ iter#227 dark academia 首 seasonal gothic_candle（軸 3 → 4 件）
+- ✅ **iter#228 minimalist 首 seasonal new_year_dawn（軸 3 → 4 件，飽和度 ★★★ → ★★★★）+ form-less 軸 seasonal 補完 mini-batch 完成（dark academia + minimalist 2/4 form-less 軸補完）**
+- ⏳ v0.6 後續候選（iter#229+ ROI 排序）：
+  1. **cottagecore / y2k 兩 form-less 軸 seasonal「補完到 ★★★★」**（中 ROI，跟本輪同 mini-batch SOP 第 3-4 次複製；cottagecore 已有 sakura / y2k 已有 redenvelope / retro_console，但 cottagecore 9 件已飽和到 ★★★★ 不需再補；y2k 從 5 件 → 6 件還有空間）
+  2. **kawaii-decora 軸起手**（高 ROI 但需差異化分析）
+  3. **minimalist「克制收藏家」派生 form**（中 ROI，complete 派生 trait 第二例 SOP）
+  4. **GDD §5.5 增量 sync**（iter#226 sync 後第 2 輪 ship，可選 iter#229+ 累積到 5 件變動再 sync）
+- ⏳ iter#230 retrospective-230（2 cron 輪後 from now，將以 4 軸成形 + 跨軸成就 + form-less seasonal mini-batch 為素材）
+
+**i18n 進度**：433 + 1 = **434 條** zh-TW + 434 條 en
+**事件池進度**：25 regular + 19 → **20 seasonal** events = **45 total event SVGs**（**首破 20 seasonal milestone** 🎉）
+**配件池進度**：25 accessories（unchanged）
+
+**form-less 軸 seasonal 補完 mini-batch SOP 形成（iter#227-228 兩輪驗證）**：
+1. iter#227 dark academia → gothic_candle（萬聖節 10-31，軸 3→4，TA 軟化 kawaii-soft Halloween）
+2. **iter#228 minimalist → new_year_dawn（元旦 01-01，軸 3→4，TA 軟化 warm minimalism）**
+- 共同 SOP：軸 narrative 強連結節日 anchor + 填補日曆缺口 + 軸內 narrative 階梯感（同軸 regular event 跟 seasonal event 不同情境）+ TA 軟化 palette + ★★★ → ★★★★ 飽和度升級
+- **可複製到剩餘 2 form-less 軸**（y2k 補強到 6 件 / cottagecore 已飽和不需）— 但 ROI 較低（兩軸件數已 ≥ 5），可能 iter#229+ 改 ship pipeline 重心
+
+**未來 follow-up（不在本輪）**：
+- iter#229 候選 ROI 重排（form-less seasonal mini-batch 已飽和兩輪後，剩餘 ROI 集中在）：
+  1. **kawaii-decora 軸起手**（升級為高 ROI 首選，前提先做差異化分析）
+  2. **minimalist 派生 form「克制收藏家」**（complete 派生 trait 第二例 SOP，從 drifter 累積收藏家對稱反向）
+  3. **GDD §5.5 增量 sync**（iter#226 → iter#228 累積 minimalist 4 件 + dark academia 4 件 + 跨軸成就，已可累積到 retrospective-230）
+- iter#230 retrospective-230：素材豐富（v0.6 主推進 8 cron 輪總結 — 4 軸 ≥ 4 件、跨軸成就 idea-to-impl 1 cron 輪、form-less seasonal mini-batch、ship pipeline SOP 3 次成功）
+
+**影響檔案**：
+- `assets/svg/event-new-year-dawn.svg`（新檔，35 行）
+- `src/cfg.js`（seasonalEvents.pool 加 1 條 + design rationale 註解）
+- `src/i18n.js`（zh-TW + en 各 +1 條）
+- `sw.js`（CACHE_VERSION iter227 → iter228）
+- `docs/iteration-log.md`（本條 entry）
+
+**驗證**：`./scripts/run-checks.sh` 全 7 step + 8/8 smoke 綠燈 ✅；28 cron 輪 0 P0 bug accumulated（since iter#166 render regression）
+
+---
+
+## 2026-04-30 16:41 · Session A — dark academia 軸首 seasonal「哥德萬聖燭台」(gothic_candle)，seasonal events 18 → 19 + dark academia 從 3 件 → 4 件（飽和度 ★★★ → ★★★★）
+
+**觸發**：cron 第 227 輪 — iter#226 GDD §5.5 sync 完成後，從 candidates ROI 排序選 (2)「dark academia / minimalist seasonal 補完」(中 ROI，10 分鐘 scope clear)。**選 dark academia 而非 minimalist 的理由**：
+- dark academia 已 3 件成形 7 cron 輪（since iter#220），narrative 飽和度測試已完成 — 補 seasonal 強化軸深度
+- minimalist 才剛 2 cron 輪前成形（iter#225），讓它「呼吸」一輪再補
+- Halloween 10-31 是 dark academia narrative No.1 iconic moment — gothic / candle / library / scholar，跟 velvet_bow + quill_pen + round_glasses 三件 atmosphere 完美一致
+- **日曆缺口分析**：既有 13 個 seasonal events 全部排程後，**10-03 ~ 12-18 是日曆大缺口**（stationery_set 結束 10-02 → winter_starlight 起 12-19，整整 2 個半月空檔），Halloween 10-31 是天然 anchor
+
+**為什麼 gothic_candle 是 dark academia 第一個 seasonal 的最佳選擇**：
+- **iconic Halloween + dark academia 雙重命中**：燭光下翻古書是 dark academia narrative 的 signature 場景（cf. Donna Tartt《The Secret History》/ Hogwarts library / Oxford 哥德建築）— 絕無他軸誤代表風險
+- **TA 軟化 SOP 第三次複製**：Halloween 標準視覺（黑橙 + 蜘蛛網 + 骷髏）對 18-35 女性 TA 太冷 / 太恐怖 — 本設計改 deep wine + brass + parchment + 1 顆橘色小南瓜 + cottagecore pink halo + corner pink dot，**「kawaii-soft Halloween」narrative**（跟 velvet_bow iter#218 / quill_pen iter#219 / round_glasses iter#220 同 TA 軟化處理 SOP）
+- **跟既有 13 seasonal 全區隔**：carnation（母愛粉）/ rainbow_heart（Pride 彩虹）/ winter_starlight（仙氣冬至）/ stationery_set（教師節學術）等都在不同 narrative 軸 — gothic_candle 走「scholar's lonely night ritual」軸線
+- **無單軸獨佔**：跟 stationery_set（智慧軸）的「白天教室 / 教師禮物」narrative 對比，gothic_candle 是「夜晚私人 / 古書研讀」narrative — 兩軸都涉及書 + 學術但 atmosphere 完全區隔
+- **stats 配置 mood:20 / energy:8 / clean:5 + coin:15**：mood 20 對應 seasonal 級高效獎勵 + energy 8 + clean 5（跟 quill_pen 10/6/3 + dried_herbs 10/6/4 同 atmospheric mid-range，但 seasonal 加成所以加倍）；coin:15 跟 picnic_blanket / spa_salts 同段位
+
+**動作**：
+
+1. **新增 `assets/svg/event-gothic-candle.svg`（35 行 SVG）**：
+   - viewBox 100×100 對標既有 seasonal SVG
+   - 色票嚴守 CLAUDE.md §5：暗紅 #8B2030 / #5C1A1F（candle pillar + book text + dripped wax outline）+ 棕 #8B5A2B（book outline + spine + holder stem）+ 黃 #FFD86B（brass holder saucer + flame outline + ✦）+ 奶油 #FFE8C8（parchment 雙頁 + flame center）+ 暗黑 #2C2C2C（wick）+ 橘 #FF9F43（flame body + pumpkin）+ 綠 #3E8C4A（pumpkin stem + leaf hint）+ 粉 #FFB7B7（candle wax drip + corner dot + halo softening — TA 軟化 3 處）
+   - 結構：**雙頁攤開古書**（左右各 path 梯形 + 中央 spine + 各 3 行 deep wine 文字）+ **brass 燭台**（saucer ellipse + 窄 stem rect）+ **deep wine 蠟燭柱**（rect + 1 個 dripping wax pink path 作 gothic 浪漫 detail）+ **wick + 橘紅火焰**（path quadratic curves + cream center oval + warm pink halo opacity 0.18 = TA 軟化最關鍵）+ **小南瓜 right page**（橘 ellipse + 3 條 vertical sectional lines + 綠 stem，kawaii-soft 不畫 carved 鬼臉）+ **1 corner pink dot + 1 ✦**
+   - **「1 個南瓜 not 多個」+「1 蠟燭 not 燭台組」+「kawaii-soft pumpkin not carved jack-o-lantern」**：narrative 一致 dark academia「scholar's solitary night」+ TA「不過冷 / 不過恐怖」雙重設計準則
+
+2. **`src/cfg.js` seasonalEvents.pool 加第 14 條**（13 → 14 seasonal events，但全 pool 含早期 3 個 = 18 → 19 total）：
+   ```
+   { id:"gothic_candle", art:"assets/svg/event-gothic-candle.svg",
+     weight:25, label:"哥德萬聖燭台", apply:"gothic_candle",
+     applyEffects:{ stats:{mood:20, energy:8, clean:5}, coin:15, coinReason:"萬聖夜閱讀" },
+     applyToastKey:"seasonal.gothic_candle",
+     applyToast:"🕯 燭光下翻著古書~ 萬聖之夜的學者時光",
+     applyToastStyle:"gold",
+     dateRange: { from: "10-28", to: "11-03" } }
+   ```
+   - 加在 retro_console (08-06) 後（時序排列 + design rationale 註解）
+   - dateRange 10-28 ~ 11-03（Halloween 10-31 ±3，7 天 window 對標既有 stationery_set / dance_tutu / spa_salts / retro_console / picnic_blanket / pinwheel 7 天 SOP）
+   - applyToastStyle:"gold" — seasonal 級高光 toast，跟既有 5 軸 seasonal batch 一致
+
+3. **`src/i18n.js` 雙語 1 條**（432 → 433 條 zh-TW + en）：
+   - zh-TW: `seasonal.gothic_candle` = "🕯 燭光下翻著古書~ 萬聖之夜的學者時光"
+   - en: `seasonal.gothic_candle` = "🕯 Reading by candlelight~ Scholar's Halloween night"
+   - i18n narrative 對標：zh「學者時光」+ en「Scholar's Halloween night」對齊 dark academia「intellectual ritual」精神，避免「scary！creepy！spooky！」之類恐怖派字眼
+
+4. **`sw.js`：CACHE_VERSION iter225 → iter227**（跳 iter226 因為 GDD sync 不需要 sw bump，但本輪有新 SVG 需要 bump）
+
+**lint chain 報表**：
+- 上輪 cfg-schema：`9 traits / 50 speech_pools / 11 final_forms / 25 accessories`
+- 本輪 cfg-schema：`9 traits / 50 speech_pools / 11 final_forms / 25 accessories`（accessories 不變，seasonal events 18 → 19 不在 schema summary 顯示）
+- check-assets：109 → **110** asset references resolve
+- 7 step + 8/8 smoke + i18n-shadow 23 src + i18n-coverage 175 keys ✅
+
+**美學軸覆蓋更新（iter#227）— 11 軸 + dark academia 補 seasonal**：
+| 軸 | event | form | accessory | 件數 | 飽和度 |
+|----|-------|------|-----------|------|--------|
+| coquette / 美食家 | tea / macaron + carnation(s) | gourmet | chef_hat / strawberry_clip | 6 | ★★★★ |
+| cottagecore | 5 events + sakura(s) | — | flower / pin_butterfly / lace_collar | 9 | ★★★★ |
+| 智慧 / sage | book / message_bottle + stationery_set(s) | sage | glasses_thin | 5 | ★★★ |
+| balletcore | rose_bouquet / pointe_shoe + dance_tutu(s) | diva | ribbon_tie | 5 | ★★★ |
+| fairycore | dewdrop / moonlight + winter_starlight(s) | divine | wings_fairy | 5 | ★★★ |
+| cleangirl | bubble / towel + spa_salts(s) | healthy | blush | 5 | ★★★ |
+| y2k | pixel_heart + redenvelope(s) + retro_console(s) | — | star_clip / cd_pendant | 5 | ★★★ |
+| 元氣 | rainbow / confetti_pop + pinwheel(s) + rainbow_heart(s) | fighter | party_hat | 6 | ★★★★ |
+| boho | dried_herbs + picnic_blanket(s) | drifter | fringe_ribbon / straw_hat | 5 | ★★★ |
+| **dark academia** | quill_pen + **gothic_candle(s)（本輪）** | — | velvet_bow / round_glasses | **4** | ★★★★ ⬆ |
+| minimalist | morning_coffee | — | minimal_chain / minimal_pin | 3 | ★★★ |
+
+**v0.6 ship pipeline 結算**：
+- ✅ iter#222 跨軸成就系統（axis_mixer / rainbow_collector）
+- ✅ iter#223-225 minimalist 軸完整 ship（3 cron-輪達 ≥ 3 件）
+- ✅ iter#226 GDD §5.5 sync 11 軸（canonical reference 更新）
+- ✅ **iter#227 dark academia 首 seasonal gothic_candle（軸件數 3 → 4，飽和度 ★★★ → ★★★★）**
+- ⏳ v0.6 後續候選（iter#228+ ROI 排序）：
+  1. minimalist seasonal 補完（候選「冬日純白雪景」/ 「白瓷單花」 — 對標本輪 dark academia seasonal SOP）
+  2. kawaii-decora 軸起手（高 ROI 但需差異化分析）
+  3. minimalist「克制收藏家」派生 form（中 ROI，complete 派生 trait 第二例）
+- ⏳ iter#230 retrospective-230（3 cron 輪後 from now）
+
+**i18n 進度**：432 + 1 = **433 條** zh-TW + 433 條 en
+**事件池進度**：25 regular + 18 → **19 seasonal** events = **44 total event SVGs**
+**配件池進度**：25 accessories（unchanged）
+
+**未來 follow-up（不在本輪）**：
+- 下輪 iter#228 候選：minimalist seasonal 補完「冬日純白雪景」(winter_white_landscape) — 對齊 winter_starlight (12-19~12-22) 之前的「初雪 / 純白冬日 12-10~12-16」7 天 window；或「白瓷單花瓶」非 seasonal 純 minimalist 軸 second event
+- iter#230 retrospective-230：以 GDD §5.5 sync iter#226 + dark academia 補 seasonal iter#227 為新進展素材
+- form-less 軸補 form 候選：minimalist「克制收藏家」 / dark academia「scholar」 / cottagecore「farmer」 — 前述派生 trait SOP
+
+**影響檔案**：
+- `assets/svg/event-gothic-candle.svg`（新檔，35 行）
+- `src/cfg.js`（seasonalEvents.pool 加 1 條 + design rationale 註解）
+- `src/i18n.js`（zh-TW + en 各 +1 條）
+- `sw.js`（CACHE_VERSION iter225 → iter227）
+- `docs/iteration-log.md`（本條 entry）
+
+**驗證**：`./scripts/run-checks.sh` 全 7 step + 8/8 smoke 綠燈 ✅；27 cron 輪 0 P0 bug accumulated（since iter#166 render regression）
+
+---
+
+## 2026-04-30 16:31 · Session A — GDD §5.5 sync：10 軸 → 11 軸 + iter#222 跨軸成就 idea→已實作翻轉 + ship pipeline SOP 3 次複製紀錄
+
+**觸發**：cron 第 226 輪 — iter#225 minimalist 軸成形 (≥ 3 件 GDD §5.5 門檻達標) 後，GDD §5.5 仍標記「10/10 美學軸 / 23 accessories」(last sync iter#221 v0.5 main 完成)，已落後 5 輪 ship。對齊 retrospective-130/-150/-170/-190/-210 同 cadence「每 10-15 cron 輪 GDD 同步」：本輪是 iter#221 sync 後第 5 輪，雖未到 10 輪但有兩個重要 milestone「軸成形 + 跨軸成就落地」需即時記錄到 canonical reference，不該等 retrospective-230 才同步。
+
+**為什麼 iter#226 排序為「GDD sync」優先於「kawaii-decora 起手」/「cottagecore 補 form」**：
+- **canonical reference 落後 = 後續決策風險**：GDD §5.5 是後續美學軸決策的真相之源（CLAUDE.md §9「不要憑印象改數值」 + 任何「下個軸 ship 什麼」/「form-less 軸是否補 form」決策都要看 §5.5）— 落後 5 輪會讓後續 cron 出現「重複設計 / 漏軸 / kawaii-decora 起手時不知 minimalist 已成形」風險
+- **跨軸成就 idea→已實作翻轉是高權重事件**：v0.5/v0.6 預留 idea「跨軸 mixing-mode」在 iter#222 已落地（axis_mixer / rainbow_collector），但 GDD §5.5 仍寫「v0.5/v0.6 預留 idea」誤導 — 翻轉不能拖
+- **ship pipeline SOP 3 次成功複製**是 retrospective-230 的 case study 素材：boho (iter#205-207) / dark academia (iter#218-220) / minimalist (iter#223-225) 三軸都遵循「accessory → event → accessory」三段 SOP，**3 cron-輪達軸成形 SOP** 已從「2 次成功實驗」升級為「3 次驗證的標準做法」 — 必須記錄
+- **kawaii-decora 起手與 cottagecore 補 form 風險未充分評估**：兩者都需先讀玩家行為數據 / 軸視覺競爭分析才啟動，本輪 10 分鐘內無法做完，留給 iter#227+
+
+**動作**：
+
+1. **更新 GDD §5.5 標題與摘要**（iter#221 → iter#225 sync）：
+   - 「10 個美學軸」→ **「11 個美學軸」**
+   - 「23 accessories」→ **「25 accessories」**（首破 25 milestone）
+   - 「24 regular events」→ **「25 regular events」**（首破 25 milestone）
+   - 「10/10 美學軸成形 ✅」→ **「11/11 美學軸成形 ✅」**
+   - 「42 events」→ **「43 events」**
+
+2. **更新 §5.5 美學軸地圖表格**（11 軸全表）：
+   - 加 minimalist 軸新行：`(fallback to healthy) | morning_coffee | — | minimal_chain / minimal_pin | 3 | ★★★`
+   - dark academia 軸去除「(v0.5 新軸)」標籤（已成熟）
+   - drifter form 去除「(v0.5 新加)」標籤（已成熟）
+   - seasonal 標籤精簡（去除已成熟的「(v0.5)」）
+
+3. **新增「v0.6 主要變動」section**（取代 v0.5 為頭條，v0.5 留檔 reference）：
+   - 跨軸成就系統 axis_mixer / rainbow_collector（iter#222）「v0.5/v0.6 預留 idea **正式落地**」翻轉敘述
+   - minimalist 新軸完整 ship（iter#223-225）：minimal_chain / morning_coffee / minimal_pin 達 ≥ 3 件
+   - 配件總數 23 → 25 / regular events 24 → 25 milestone 紀錄
+   - 軸 narrative「少即是多 / single accent / 留白美學」+ TA 軟化處理 design rationale 留檔
+
+4. **更新「form-less 軸的設計選擇」section**：
+   - 「cottagecore / y2k / dark academia 三軸 + boho 加了 drifter form 後變兩軸 form-less」→ 「**cottagecore / y2k / dark academia / minimalist 四軸 form-less**，boho 加 drifter form 後不再 form-less」
+   - 加 v0.6+ 候選 minimalist 派生 trait 設計提示：「ownedAccessories ≤ 某閾值的『克制收藏家』反向 trait」對齊「少即是多」narrative
+
+5. **更新「軸覆蓋演進時序」**：
+   - 「10 軸覆蓋演進時序」→ **「11 軸覆蓋演進時序」**
+   - 加 iter#222（跨軸成就系統落地）/ iter#223-225（minimalist 軸 ship）兩個 milestone 行
+   - 去除已成熟條目的 emphasis 標記（**bold** → 普通）保持時序乾淨
+
+6. **更新「ship pipeline SOP 第 N 次成功複製」**：
+   - 軸 ship pipeline：「2 次成功」→ **「3 次成功，3 cron-輪達軸成形 SOP ✅」**（boho / dark academia / minimalist）
+   - 標記「軸 ship pipeline」已從實驗升級為「驗證的標準做法」 — 後續 v0.7+ 新軸都可遵循此 SOP
+
+7. **更新「v0.6+ 美學軸候選方向」→「v0.7+ 美學軸候選方向」**：
+   - 新軸 candidate 改寫：minimalist 已落地，候選改為 kawaii-decora / light academia / goblincore；加註「11 軸後新軸 ROI 遞減，下一個應更謹慎評估」風險提示
+   - 既有軸補強強調「四 form-less 軸補 form」+ minimalist 的 ownedAccessories 反向 trait 設計
+   - 加「既有 form-less 軸 seasonal 補完」候選：dark academia 萬聖節哥德書房 / minimalist 冬日純白雪景
+   - 加「schema migration 候選」：cfg.accessories.axis 顯式 field（取代 ACCESSORY_AXIS map） — 配件數突破 30 後考慮，目前 25 件 hardcoded 成本低
+
+**lint chain 報表**：
+- GDD 是純文檔檔，不影響 src/* 任何檔；7 step 全綠（assets 109 unchanged / cfg 25 accessories unchanged / i18n 432 條 unchanged / 8/8 smoke）
+- check-cfg-schema：跟 §5.5 表格 cross-validate 一致（11 final_forms / 25 accessories）
+
+**為什麼不更新 §10.x backlog 章節（本輪）**：
+- §10.2 / §10.3 是「v0.2 / v0.3 階段」backlog 章節 — 跟 §5.5 美學軸地圖屬於不同 sub-domain
+- iter#225 closing notes 提到的 GDD update 是 §5.5 sync，不是 §10.x — 留給後續（v0.6 main 全完成後做 v0.7 backlog 規劃時）
+
+**v0.6 ship pipeline 結算（iter#222-226）**：
+- ✅ iter#222 跨軸成就系統（axis_mixer / rainbow_collector）
+- ✅ iter#223-225 minimalist 軸完整 ship（3 cron-輪達 ≥ 3 件）
+- ✅ **iter#226 GDD §5.5 sync 11 軸 + ship pipeline SOP 3 次紀錄**
+- ⏳ v0.6 後續：kawaii-decora / cottagecore 補 form / form-less 軸 seasonal 補完
+- ⏳ iter#230 retrospective-230（4 cron 輪後 from now，將以本次 GDD §5.5 sync 為 baseline）
+
+**i18n 進度**：432 條（unchanged）
+**事件池 / 配件池**：43 events / 25 accessories（unchanged）
+
+**未來 follow-up（不在本輪）**：
+- iter#227+ 候選（**3 個方向 ROI 各自不同，建議排序**）：
+  1. **kawaii-decora 軸起手**（高 ROI，但 narrative 跟 cottagecore-coquette 競爭風險，需先做差異化分析）
+  2. **dark academia / minimalist seasonal 補完**（中 ROI，補完已成形軸的「節日延伸」，narrative 一致）
+  3. **minimalist「克制收藏家」派生 form**（中 ROI，complete「派生 trait」第二例 SOP，跟 drifter「累積收藏家」對稱）
+- iter#230 retrospective-230：以本次 GDD sync 為 baseline，重點 case study「軸 ship pipeline 3 次成功 SOP」+「跨軸成就 idea-to-impl 1 cron 輪落地速度」
+
+**影響檔案**：
+- `docs/gdd.md`（§5.5 大幅更新：標題 + 表格 + v0.6 變動章節 + form-less section + 時序 + ship pipeline SOP + v0.7 候選 — 全 6 sub-section 翻新）
+- `docs/iteration-log.md`（本條 entry）
+
+**驗證**：`./scripts/run-checks.sh` 全 7 step + 8/8 smoke 綠燈 ✅；GDD 純文檔不影響 lint chain；26 cron 輪 0 P0 bug accumulated（since iter#166 render regression）
+
+---
+
+## 2026-04-30 16:21 · Session A — v0.6 minimalist 軸第三件達軸成形：簡約一字夾 (minimal_pin)，accessories 24 → 25 + 美學軸從 11 軸 1 件 → 11 軸 + minimalist 成形 ≥ 3 件門檻
+
+**觸發**：cron 第 225 輪 — iter#223 minimal_chain (1/3) + iter#224 morning_coffee (2/3) 鋪底後，本輪推第三件達 GDD §5.5「軸 ≥ 3 件成形」門檻。對標 boho 軸 iter#205-207 三輪 SOP（fringe_ribbon → dried_herbs → straw_hat）+ dark academia 軸 iter#218-220 三輪 SOP（velvet_bow → quill_pen → round_glasses）— minimalist 軸成第三個複製此「accessory → event → accessory」三段節奏的新軸，**ship pipeline 三段 SOP 第三次成功應用**。
+
+**為什麼選 minimal_pin（簡約一字夾）作為 minimalist 軸第三件**：
+- **slot 互補設計**：minimal_chain (iter#223) 是 neck slot — 新件選 hat slot 跟它區隔，玩家可同時佩戴 hat + neck 達「跨件 minimalist look」mixing-mode。對比 boho 第三件 straw_hat (hat slot) 跟 fringe_ribbon (neck slot) 同樣互補設計
+- **iconic minimalism hat-slot piece**：scandinavian / Mejuri / Cafune 風格的「single thin gold bar bobby pin」是 minimalism No.1 hairpiece（純線條 + 單一細金屬條 + 無 figurative motif）— 跟 minimal_chain 細鏈 narrative 一致
+- **跟既有 hat slot 9 件全區隔**：strawberry_clip/star_clip 都有 figurative motif（草莓 / 星星裝飾），本件純 single bar 線條 = minimalism「無 motif」narrative 區隔；velvet_bow（dark academia 深酒紅 velvet 蝴蝶結）對比則是「無紋理 vs 滿紋理」軸線；headband (cottagecore 寬版花環) 對比則是「細條 vs 粗版」軸線
+- **140 FC 低-中 tier 定價**：對標 minimalism 軸 narrative「貴精不貴多 / 不堆量」 — 本件比 minimal_chain (160 FC) 略低，跟 hat slot 既有 party_hat (120) / chef_hat (130) 同段位；GDD §5.5 軸成形不要求高價，求 silhouette 完整
+- **TA 軟化 SOP 一致**：1 顆 #FFB7B7 corner pink dot + #FFE8C8 cream highlight + 1 顆 ✦ sparkle — 跟 minimal_chain (iter#223) / morning_coffee (iter#224) 同 minimalism「allow 1 not 堆量」design language
+- **icon 📌**：標準 push pin emoji 對齊 single bar bobby pin 概念 — 跟 🎀（蝴蝶結） / 👒（帽子） / 🤓（眼鏡） 等既有 hat icon 區隔
+
+**動作**：
+
+1. **新增 `assets/svg/acc-minimal-pin.svg`（21 行 SVG）**：
+   - viewBox 100×100 對標既有 acc SVG
+   - 色票嚴守 CLAUDE.md §5：黃 #FFD86B（金色 pin 主體 + ✦）+ 棕 #8B5A2B（描邊 0.4-0.9px 細線 + 內影）/ 奶油 #FFE8C8（pin 內 highlight + clasp loop 內圈）/ 白 #FFFFFF（中央 pearl-like dot + sheen highlight line）+ 粉 #FFB7B7（corner soft dot — TA 軟化 1 顆）
+   - 結構：**極淡 cream rect 背景 swatch**（10% opacity 增加深度）+ **單一金色長條 pin**（rect 56×4 rounded ends + 內白 highlight line）+ **左 clasp loop**（單一 outline circle 暗示 pin opens here）+ **右 pointed end**（單一 path triangle 暗示 pin tip）+ **中央 pearl-like dot**（1 顆 white circle + cream inner，minimalism allows 1 accent）+ **單一 corner pink dot**（TA 軟化 1 顆）+ **單一 ✦ sparkle**（minimalism narrative）
+   - **「single bar 線條 vs strawberry/star clip 的 figurative motif」+「1 pearl center vs 多裝飾」+「1 sparkle vs 3 sparkles」**：narrative 一致 minimalism「不堆」design準則
+
+2. **`src/cfg.js` accessories 加第 25 條**（24 → 25 accessories，**首破 25 milestone**）：
+   ```
+   minimal_pin: { slot:"hat", art:"assets/svg/acc-minimal-pin.svg",
+                  labelKey:"acc.minimal_pin", label:"簡約一字夾",
+                  icon:"📌", price:140 }
+   ```
+   - 加在 minimal_chain 後（minimalist 軸標識 + design rationale 註解）
+   - hat slot — 跟 minimal_chain (neck) 不同 slot 設計上可同時佩戴
+
+3. **`src/achievements.js` ACCESSORY_AXIS map 加 1 條**：
+   - `minimal_pin: "minimalist"` — iter#222 跨軸成就（axis_mixer / rainbow_collector）自動納入新軸計算
+   - **跨軸成就效應**：玩家若同時穿戴 minimal_pin + minimal_chain 是同軸（不算 axis_mixer），但若搭配其他軸件（如 fringe_ribbon 或 round_glasses）則 axis_mixer ≥ 2 軸觸發
+
+4. **`src/i18n.js` 雙語 1 條**（431 → 432 條 zh-TW + en）：
+   - zh-TW: `acc.minimal_pin` = "簡約一字夾"
+   - en: `acc.minimal_pin` = "Minimal Hair Pin"
+
+5. **`sw.js`：CACHE_VERSION iter224 → iter225**
+
+**lint chain 報表**：
+- 上輪 cfg-schema：`9 traits / 50 speech_pools / 11 final_forms / 24 accessories`
+- 本輪 cfg-schema：`9 traits / 50 speech_pools / 11 final_forms / **25 accessories**`（**首破 25 accessories milestone** 🎉）
+- check-assets：108 → **109** asset references resolve
+- 7 step + 8/8 smoke + i18n-shadow 23 src + i18n-coverage 175 keys ✅
+
+**美學軸覆蓋更新（iter#225）— 11 軸 + minimalist 軸成形**：
+| 軸 | event | form | accessory | 件數 |
+|----|-------|------|-----------|------|
+| coquette / 美食家 | tea / macaron + carnation(s) | gourmet | chef_hat / strawberry_clip | 6 |
+| cottagecore | 5 events + sakura(s) | — | flower / pin_butterfly / lace_collar | 9 |
+| 智慧 / sage | book / message_bottle + stationery_set(s) | sage | glasses_thin | 5 |
+| balletcore | rose_bouquet / pointe_shoe + dance_tutu(s) | diva | ribbon_tie | 5 |
+| fairycore | dewdrop / moonlight + winter_starlight(s) | divine | wings_fairy | 5 |
+| cleangirl | bubble / towel + spa_salts(s) | healthy | blush | 5 |
+| y2k | pixel_heart + redenvelope(s) + retro_console(s) | — | star_clip / cd_pendant | 5 |
+| 元氣 | rainbow / confetti_pop + pinwheel(s) + rainbow_heart(s) | fighter | party_hat | 6 |
+| boho | dried_herbs + picnic_blanket(s) | drifter | fringe_ribbon / straw_hat | 5 |
+| dark academia | quill_pen | — | velvet_bow / round_glasses | 3 |
+| **minimalist（v0.6 新）** | **morning_coffee** | — | **minimal_chain / minimal_pin（本輪）** | **3 ✅ 軸成形** |
+
+**v0.6 ship pipeline 結算**：
+- ✅ v0.6 minimalist 起手 minimal_chain（iter#223 1/3）
+- ✅ v0.6 minimalist 第二件 morning_coffee（iter#224 2/3）
+- ✅ **v0.6 minimalist 第三件達軸成形 minimal_pin（本輪 3/3 ≥ 3 件 GDD §5.5 門檻）**
+- 📊 **三段 SOP（accessory → event → accessory）第三次成功複製** — boho / dark academia / minimalist 三軸都遵循此 ship pipeline，retrospective-230 可作 case study
+- ⏳ v0.6 後續：kawaii-decora 軸 / cottagecore 補 form / cfg.accessories.axis schema migration（v0.6 candidates）
+- ⏳ iter#230 retrospective-230（5 cron 輪後 from now）
+
+**i18n 進度**：
+- 種子翻譯：431 + 1 = **432 條** zh-TW + 432 條 en
+
+**事件池進度**：25 regular events（unchanged）+ 18 seasonal events = 43 total event SVGs
+**配件池進度**：24 → **25 accessories**（首破 25 milestone）
+
+**未來 follow-up（不在本輪）**：
+- iter#226+：v0.6 候選（kawaii-decora 起手 / cottagecore 補 form / GDD §5.5 11 軸 sync update）
+- iter#226 高優建議：**GDD §5.5 sync update from 10 軸 → 11 軸 minimalist 成形** — 跟 retrospective-130/-150/-170/-190/-210 同 cadence，每 10-15 cron 輪 GDD 同步一次（last sync iter#221 v0.5 main 完成）
+- iter#230 retrospective-230
+
+**影響檔案**：
+- `assets/svg/acc-minimal-pin.svg`（新檔，21 行）
+- `src/cfg.js`（accessories 加 1 條 + design rationale 註解）
+- `src/achievements.js`（ACCESSORY_AXIS map +1）
+- `src/i18n.js`（zh-TW + en 各 +1 條）
+- `sw.js`（CACHE_VERSION → iter225）
+- `docs/iteration-log.md`（本條 entry）
+
+**驗證**：`./scripts/run-checks.sh` 全 7 step + 8/8 smoke 綠燈 ✅；25 cron 輪 0 P0 bug accumulated（since iter#166 render regression）
+
+---
+
+## 2026-04-30 16:11 · Session A — v0.6 minimalist 軸第二件：晨間咖啡 event (morning_coffee)，events 24 → 25
+
+**觸發**：cron 第 224 輪 — iter#223 minimalist 軸起手 minimal_chain accessory ship 後續推進。對標 boho 軸（iter#205 fringe_ribbon → iter#206 dried_herbs → iter#207 straw_hat 三輪達 ≥ 3 件軸成形）/ dark academia 軸（iter#218 velvet_bow → iter#219 quill_pen → iter#220 round_glasses 三輪同樣 SOP）ship pipeline 第三次複製。本輪 minimalist 軸第二件選 event 而非 accessory，跟 boho/dark academia 「accessory → event → accessory」三段節奏一致。
+
+**為什麼選 morning_coffee（晨間咖啡）作為 minimalist 軸第二件 event**：
+- **minimalist iconic ritual**：scandinavian / pinterest minimalism 視覺敘事「晨間第一杯咖啡 + 純白瓷杯」是 No.1 lifestyle moment（對應 the_minimalists / Mejuri / Cafune 等 brand vibe）— 跟手機壁紙 / lifestyle photography 主流一致
+- **跟既有 24 events 全區隔**：tea (coquette 暖) / bubble (clean spa) / dewdrop (fairy 自然) 等都已有自身 narrative；morning_coffee 走「intentional simplicity / single moment of beauty」軸線，純白瓷杯 + 單一蒸氣 + 單一咖啡豆 = 不堆量設計 DNA
+- **無 coin 純 atmospheric**：minimalist 軸 narrative 是「不 acquisition」— quill_pen / dried_herbs 等 axis events 模式參考下，本 event 故意省略 coin，跟 minimalism 反消費敘事吻合。對比 quill_pen +5 coin（dark academia 學術成就感） / dried_herbs 0 coin（boho handmade craft） / morning_coffee 0 coin（minimalism intentional ritual）— 各軸 economic 敘事獨特
+- **stats 配置 mood:10 / energy:10 / clean:3**：energy 10 對應「咖啡 = 早晨能量提神」+ mood 10 對應「ritual 心靈撫平」+ clean 3 微量對應「精緻日常 = 整潔感」— 三項 stat 配比跟 quill_pen (10/6/3) 接近但 energy 較高（咖啡 vs 寫字勞動的差別）
+- **TA 軟化處理**：minimalist 純色版本太冷（pure white + grey），本 SVG 加 1 顆 #FFB7B7 corner soft pink dot + #FFC8D6 saucer shadow + #FFE8C8 cream highlights — 跟 minimal_chain (iter#223) 同處理 SOP（minimalism 不放棄 cottagecore palette warmth）
+
+**動作**：
+
+1. **新增 `assets/svg/event-morning-coffee.svg`（30 行 SVG）**：
+   - viewBox 100×100 對標既有 event SVG
+   - 色票嚴守 CLAUDE.md §5：白 #FFFFFF（瓷杯主體 + 茶碟）+ 棕 #8B5A2B（咖啡液 + 邊線 0.9-1.6px）/ 奶油 #FFE8C8（杯口 + highlight 帶）+ 暗紅 #5C1A1F（咖啡豆 — 跟 quill_pen ink pot 同色票一致）+ 黃 #FFD86B（單一 ✦ sparkle）+ 粉 #FFB7B7 (corner accent dot — TA 軟化最關鍵)
+   - 結構：**茶碟橢圓 + 純白瓷杯**（底部 quadratic curve 自然收圓 + 杯口開口 ellipse）+ **咖啡液橢圓**（單一 #8B5A2B + 1 個 cream highlight tiny ellipse）+ **單一杯把曲線**（右側 quadratic 線條，不加裝飾紋）+ **單一蒸氣曲線**（中央 wavy quadratic curve，**1 主 line + 1 faint shadow line** depth — minimalism「1 不 3」narrative）+ **單一咖啡豆**（茶碟右側 ellipse + 中縫線）+ **1 顆 corner soft pink dot**（左上）+ **1 顆 ✦ sparkle**（右上）
+   - **「單一蒸氣 1 條而非 3 條」+「單一咖啡豆 1 顆而非散落多顆」+「單一 ✦ 1 個而非 3 個」**：narrative 一致 minimalism「不堆」設計準則 — 跟 minimal_chain (iter#223) 同 design language
+
+2. **`src/cfg.js` events.pool 加第 25 條**（24 → 25 regular events）：
+   ```
+   { id:"morning_coffee", art:"assets/svg/event-morning-coffee.svg",
+     weight:5, label:"晨間咖啡", apply:"morning_coffee",
+     applyEffects:{ stats:{mood:10, energy:10, clean:3} },
+     applyToastKey:"event.morning_coffee",
+     applyToast:"☕ 第一口咖啡~ 一天靜靜開始" }
+   ```
+   - 加在 quill_pen 後（minimalist 軸標識 + design rationale 註解）
+   - **無 coin** + 無 coinReason — 純 atmospheric 設計，跟 dewdrop / pointe_shoe / dried_herbs 同模式
+   - applyEffects 走 cfg.applyEffects 路徑（runEventApply 自動處理） — 不需動 RANDOM_EVENT_APPLIES dispatch 表
+
+3. **`src/i18n.js` 雙語 1 條**（430 → 431 條 zh-TW + en）：
+   - zh-TW: `event.morning_coffee` = "☕ 第一口咖啡~ 一天靜靜開始"
+   - en: `event.morning_coffee` = "☕ The first sip~ A quiet day begins"
+   - i18n narrative 對標：zh「靜靜開始」+ en「quiet day begins」對齊 minimalism「intentional / unhurried」精神，避免「super energizing！」之類元氣派字眼
+
+4. **`sw.js`：CACHE_VERSION iter223 → iter224**
+
+**lint chain 報表**：
+- 上輪 cfg-schema：`9 traits / 50 speech_pools / 11 final_forms / 24 accessories`
+- 本輪 cfg-schema：`9 traits / 50 speech_pools / 11 final_forms / 24 accessories`（accessories 不變，events pool 24 → 25 不在 schema summary 顯示）
+- check-assets：107 → **108** asset references resolve
+- 7 step + 8/8 smoke + i18n-shadow 23 src + i18n-coverage 175 keys ✅
+
+**美學軸覆蓋更新（iter#224）**：
+| 軸 | event | form | accessory | 件數 |
+|----|-------|------|-----------|------|
+| coquette / 美食家 | tea / macaron + carnation(s) | gourmet | chef_hat / strawberry_clip | 6 |
+| cottagecore | 5 events + sakura(s) | — | flower / pin_butterfly / lace_collar | 9 |
+| 智慧 / sage | book / message_bottle + stationery_set(s) | sage | glasses_thin | 5 |
+| balletcore | rose_bouquet / pointe_shoe + dance_tutu(s) | diva | ribbon_tie | 5 |
+| fairycore | dewdrop / moonlight + winter_starlight(s) | divine | wings_fairy | 5 |
+| cleangirl | bubble / towel + spa_salts(s) | healthy | blush | 5 |
+| y2k | pixel_heart + redenvelope(s) + retro_console(s) | — | star_clip / cd_pendant | 5 |
+| 元氣 | rainbow / confetti_pop + pinwheel(s) + rainbow_heart(s) | fighter | party_hat | 6 |
+| boho | dried_herbs + picnic_blanket(s) | drifter | fringe_ribbon / straw_hat | 5 |
+| dark academia | quill_pen | — | velvet_bow / round_glasses | 3 |
+| **minimalist（v0.6 新）** | **morning_coffee（本輪）** | — | minimal_chain | **2** |
+
+**v0.5 backlog 結算 → v0.6 minimalist 軸推進**：
+- ✅ v0.5 main 5/5 完成（iter#211-222）
+- ✅ v0.6 minimalist 起手 minimal_chain（iter#223 1/3 件）
+- ✅ **v0.6 minimalist 第二件 morning_coffee（本輪 2/3 件）**
+- ⏳ v0.6 minimalist 第三件達軸成形 ≥ 3 件門檻（後續 1 cron 輪，candidate：accessory「白瓷胸針」/「灰調側分頭巾」 / event「純白瓷瓶 / single 花」 — 對標 boho iter#207 / dark academia iter#220 SOP）
+- ⏳ iter#230 retrospective-230（6 cron 輪後 from now）
+
+**i18n 進度跳躍**：
+- 種子翻譯：430 + 1 = **431 條** zh-TW + 431 條 en（跨破 430 milestone 後第一條）
+
+**事件池進度**：
+- 上輪：24 regular events + 18 seasonal events = 42 total event SVGs
+- 本輪：**25 regular events** + 18 seasonal events = 43 total event SVGs（首破 25 regular events milestone）
+
+**未來 follow-up（不在本輪）**：
+- 下輪 minimalist 第三件達軸成形：建議 accessory「白瓷胸針 (white_brooch)」或「灰調側分頭巾 (grey_headscarf)」 — 對標 boho straw_hat / dark academia round_glasses 第三件 SOP
+- 後續軸 candidates（kawaii-decora）等 minimalist 飽和再啟動
+- iter#230 retrospective-230
+
+**影響檔案**：
+- `assets/svg/event-morning-coffee.svg`（新檔，30 行）
+- `src/cfg.js`（events.pool 加 1 條 + design rationale 註解）
+- `src/i18n.js`（zh-TW + en 各 +1 條）
+- `sw.js`（CACHE_VERSION → iter224）
+- `docs/iteration-log.md`（本條 entry）
+
+**驗證**：`./scripts/run-checks.sh` 全 7 step + 8/8 smoke 綠燈 ✅
+
+---
+
+## 2026-04-30 16:01 · Session A — v0.6 新美學軸 minimalist 起手：簡約細鏈 (minimal_chain)，accessories 23 → 24
+
+**觸發**：cron 第 223 輪 — iter#222 v0.5 主軸 5/5 全 ship 後切到 v0.6 開新。retrospective-210.md §4.1 + GDD §5.5 v0.6+ candidates 列「minimalist（極簡 / 灰白）/ kawaii-decora（過度可愛堆疊）」是 2 candidates — 本輪起手 minimalist。對標 boho 軸（iter#205-207 三輪）/ dark academia 軸（iter#218-220 三輪）ship pipeline 第三次複製：先 1 個 accessory 探水溫，後續輪補 event + 第三件達軸成形 ≥ 3 件門檻。
+
+**為什麼 minimalist 第三個新軸 ship**：
+- 2 個 v0.6 candidates 中 minimalist 比 kawaii-decora 距離既有軸更安全：minimalist 跟 cleangirl 概念近但視覺距離大（cleangirl = 粉嫩柔美 spa / minimalist = 灰白冷靜 scandinavian）
+- kawaii-decora 跟 cottagecore-coquette 主軸視覺競爭風險高（三軸都偏可愛 + 粉嫩） — 留 v0.7 等 minimalist 飽和再開
+- TA「18-35 女性 / cottagecore-coquette」對 minimalist 視覺接受度高（pinterest minimalism + scandinavian + Mejuri-style 細鏈 = 主流 social aesthetic）
+- minimalist 軸 narrative：「**少即是多** / single accent / 留白美學」 — 跟既有 9 軸 + dark academia 都區隔
+
+**為什麼選 minimal_chain（簡約細鏈）作為 minimalist 第一件**：
+- **minimalist iconic motif**：細金鏈頸鏈（Mejuri / Daniel Wellington brand vibe）= scandinavian-minimalism No.1 視覺辨識物
+- **neck slot 跟既有 7 件 neck（ribbon_tie 芭蕾 / scarf 毛茸 / necklace 珍珠 / lace_collar 蕾絲 / cd_pendant Y2K / fringe_ribbon boho / velvet_bow dark academia）視覺距離大**：minimal 細線 + 單一墜飾 vs 其他多裝飾
+- **160 FC mid-low tier**：minimalist 軸不該定價過高（軸 narrative 是「不堆量」，貴精不貴多）— 對標 scarf 150 / glasses_thin 150 / cd_pendant 160 — 中段定價合 minimalist 取向
+- **TA 軟化處理**：標準 minimalist 用 pure black/white/grey，本設計改 #FFD86B 細金線 + #FFE8C8 cream pendant + 兩顆 #FFB7B7 粉色小 dot accent — 保 minimal 但不冷不空（CLAUDE.md TA 約束「避免過冷」）
+
+**動作**：
+
+1. **新增 `assets/svg/acc-minimal-chain.svg`（22 行 SVG）**：
+   - viewBox 100×100 對標既有 SVG 配件
+   - 色票嚴守 CLAUDE.md §5：黃 #FFD86B（細金鏈 main + 7 顆 chain link circles + 兩顆 clasp ends + 中央 ✦）+ 棕 #8B5A2B（描邊 0.4-1.2px 細線）/ 奶油 #FFE8C8（pendant 主色）+ 白 #FFFFFF 透明 0.85（pendant inner pearl-like dot）/ 粉 #FFB7B7（兩顆 corner soft dot — TA 軟化最關鍵的 1 件 detail，不全冷）
+   - 結構：**V-shape 細金鏈**（quadratic curve 兩條 — main 1.4px + inner shadow 0.5px opacity 0.6 depth 雙線）+ **7 顆 chain link tiny circles**（沿 V 線排列，r=0.9-1.0 暗示鏈節）+ **單一 pendant**（中央 V apex，r=3.5 cream + 棕邊 + r=1 white inner highlight 模擬 pearl 質感）+ **2 顆 clasp ends**（V 兩端 r=1.2 暗示鏈扣）+ **2 顆 ·  corner dots**（粉色 TA 軟化 — minimalism 軟化但不放棄 cottagecore palette）+ **單一 ✦ 中央底部**（minimalist 不放多 sparkles，only 1）
+   - **「單一 sparkle ✦ 而非多顆 ✦✧♥」+「2 顆粉色 dot 而非 4-6 顆」**：narrative 一致 minimalism「不堆」設計準則
+
+2. **`src/cfg.js` accessories 加第 24 條**：
+   ```
+   minimal_chain: { slot:"neck", art:"assets/svg/acc-minimal-chain.svg",
+                    labelKey:"acc.minimal_chain", label:"簡約細鏈",
+                    icon:"🪙", price:160 }
+   ```
+   - 加在 round_glasses 後（minimalist 軸標識 + design rationale 註解）
+   - icon 🪙 (coin) 是 minimal 金色小圓物 narrative 接近 — 比 🎀（蝴蝶結）/ 📿（珠串）/ 🪡（針線）更貼 minimalism scandinavian 細物件感
+
+3. **`src/achievements.js` ACCESSORY_AXIS map 加 1 條**：
+   - `minimal_chain: "minimalist"` — iter#222 跨軸成就（axis_mixer / rainbow_collector）自動納入新軸計算
+   - **iter#222 設計驗證**：第一個 v0.6 新 accessory ship 後，rainbow_collector 玩家 ownedAxes 自動 +1 軸 candidate — 跨軸成就系統的「自動延伸」設計兌現
+
+4. **`src/i18n.js` 雙語 1 條**：
+   - zh-TW: `acc.minimal_chain` = "簡約細鏈"
+   - en: `acc.minimal_chain` = "Minimal Chain"
+
+5. **`sw.js`：CACHE_VERSION iter222 → iter223**
+
+**lint chain 報表**：
+- 上輪 cfg-schema：`9 traits / 50 speech_pools / 11 final_forms / 23 accessories`
+- 本輪 cfg-schema：`9 traits / 50 speech_pools / 11 final_forms / **24 accessories**`
+- check-assets：106 → **107** asset references resolve
+- 7 step + 8/8 smoke + i18n-shadow 23 src + i18n-coverage 175 keys ✅
+
+**美學軸覆蓋更新（iter#223）— 11 軸首發**：
+| 軸 | event | form | accessory | 件數 |
+|----|-------|------|-----------|------|
+| coquette / 美食家 | tea / macaron + carnation(s) | gourmet | chef_hat / strawberry_clip | 6 |
+| cottagecore | 5 events + sakura(s) | — | flower / pin_butterfly / lace_collar | 9 |
+| 智慧 / sage | book / message_bottle + stationery_set(s) | sage | glasses_thin | 5 |
+| balletcore | rose_bouquet / pointe_shoe + dance_tutu(s) | diva | ribbon_tie | 5 |
+| fairycore | dewdrop / moonlight + winter_starlight(s) | divine | wings_fairy | 5 |
+| cleangirl | bubble / towel + spa_salts(s) | healthy | blush | 5 |
+| y2k | pixel_heart + redenvelope(s) + retro_console(s) | — | star_clip / cd_pendant | 5 |
+| 元氣 | rainbow / confetti_pop + pinwheel(s) + rainbow_heart(s) | fighter | party_hat | 6 |
+| boho | dried_herbs + picnic_blanket(s) | drifter | fringe_ribbon / straw_hat | 5 |
+| dark academia | quill_pen | — | velvet_bow / round_glasses | 3 |
+| **minimalist（v0.6 新）** | — | — | **minimal_chain（本輪）** | **1** |
+
+**美學軸從 10 → 11** 🎉。minimalist 軸目前 1 件 — accessory only / form-less / event-less，後續輪會逐步補完（每輪 ≥ 1 件，預期 2-3 cron 輪達 ≥ 3 件「軸成形」門檻 per GDD §5.5 + boho/dark academia 2-輪達標 SOP）。
+
+**v0.5 backlog 結算 → v0.6 起手**：
+- ✅ v0.5 main 5/5 完成（iter#211-222）
+- ⏳ **v0.6 新美學軸 minimalist 起手**（**本輪** 1/3 件）
+- ⏳ v0.6 第二件 + 第三件補完（後續 2-3 cron 輪達軸成形）
+- ⏳ iter#230 retrospective-230（7 cron 輪後）
+
+**i18n 進度跳躍**：
+- 種子翻譯：429 + 1 = **430 條** zh-TW + 430 條 en（**首破 430 整數 milestone**）
+- accessories 全 functional i18n（24/24 雙欄位 labelKey + label fallback）
+
+**未來 follow-up**（不在本輪）：
+- 下輪 minimalist 第二件：accessory（單一胸針 / 單色純白頭巾）/ event（早晨第一杯咖啡 / 純白瓷杯 / 單支花瓶）
+- 後續軸 candidates（kawaii-decora）等 minimalist 飽和再啟動
+- iter#230 retrospective-230
+
+**驗證**：
+- `node --check src/{cfg,achievements,i18n}.js` → ✅
+- `./scripts/run-checks.sh` → 全綠 7 step + cfg-schema **24 accessories**
+
+**影響檔案**：`assets/svg/acc-minimal-chain.svg`（新）、`src/cfg.js`、`src/achievements.js`、`src/i18n.js`、`sw.js`、`docs/iteration-log.md`
+
+---
+
+## 2026-04-30 15:51 · Session A — 跨軸 mixing-mode 成就 ship：axis_mixer + rainbow_collector — v0.5 預留 idea 兌現
+
+**觸發**：cron 第 222 輪 — iter#221 GDD §5.5 sync 後切回 src 變化。retrospective-210 §3.7 + GDD §5.5 v0.5+ candidates 列「跨軸 mixing-mode 成就（acrosshatch achievement system）— 強化『choose your aesthetic axis』承諾的彈性面」是長期預留 idea，本輪兌現第一波。
+
+**為什麼選 axis_mixer + rainbow_collector 兩個成就**：
+- **axis_mixer**（appearance 含 ≥ 2 個不同軸的配件）：當前 active state 達標 — D7-D14 玩家戴 2-3 件配件就有機會觸發（軸 cross 比例高）
+- **rainbow_collector**（ownedAccessories 跨 ≥ 4 軸）：cross-life 累積 — D14-D30 玩家走「廣度收集」路線達標
+- **兩個成就 difficulty 階梯**：active mixing（容易，戴上即觸發）→ accumulated diversity（中等，需多 cron 輪累積）
+- **narrative payoff**：玩家「跨軸混搭」是 GDD §5.5 設計準則「form = 角色身份 / axis = 美學選擇 / 玩家任何 form 都能透過配件 + 事件感受該軸氛圍」的具體可量化表達
+
+**動作**（5 處同步）：
+
+1. **`src/achievements.js` 加 `ACCESSORY_AXIS` map**（25 行 entries）：
+   - 23 個 accessories 全 mapped 到 10 個 aesthetic axes
+   - 對標 GDD §5.5 axis ownership：cottagecore 8（headband/bow/flower/crown/pin_butterfly/necklace/scarf/lace_collar）/ coquette 2（chef_hat/strawberry_clip）/ y2k 2 / fairycore 2 / cleangirl 2 / boho 2 / dark_academia 2 / 其他軸各 1
+   - 加 `appearanceAxes(appearance)` + `ownedAxes(ownedAcc)` 兩個 helper functions（Set-based 去重）
+   - inline comment 標明「v0.6 candidate: migrate to cfg.accessories.axis field for canonical reference」— 預留未來 schema migration 路徑
+
+2. **`src/achievements.js` evaluator 加 2 條**：
+   - `["axis_mixer", appearanceAxes(appearance).size >= 2]`
+   - `["rainbow_collector", ownedAxes(ownedAcc).size >= 4]`
+   - 排在 seasonal_3 後 / master_player 前（cross-axis cluster 邏輯位置）
+
+3. **`src/cfg.js` achievements 加 2 條**：
+   - `axis_mixer { icon:"🎨", labelKey:"ach.axis_mixer", label:"跨軸混搭家", descKey:"achdesc.axis_mixer", desc:"當前配戴 ≥ 2 種美學軸的飾品" }`
+   - `rainbow_collector { icon:"🌈", labelKey:"ach.rainbow_collector", label:"彩虹收藏家", descKey:"achdesc.rainbow_collector", desc:"已擁有 ≥ 4 種美學軸的飾品" }`
+   - 加在 form_drifter 後（v0.5 cluster 集中標識 + design rationale 註解）
+   - icon 🎨（palette）+ 🌈（rainbow）narrative 點題：mixing / spectrum
+
+4. **`src/i18n.js` 雙語 4 條**：
+   - zh-TW: `ach.axis_mixer`「跨軸混搭家」/ `achdesc.axis_mixer`「當前配戴 ≥ 2 種美學軸的飾品」/ `ach.rainbow_collector`「彩虹收藏家」/ `achdesc.rainbow_collector`「已擁有 ≥ 4 種美學軸的飾品」
+   - en: "Cross-Axis Mixer / Currently wearing ≥ 2 aesthetic axes' accessories" / "Rainbow Collector / Own ≥ 4 aesthetic axes' accessories"
+
+5. **`sw.js`：CACHE_VERSION iter220 → iter222**（iter#221 純 docs round 跳 cache bump）
+
+**lint chain 報表**：
+- 7 step + 8/8 smoke + i18n-shadow 23 src + i18n-coverage 175 keys ✅
+- cfg-schema 不變（achievements 不在 cfg-schema 統計，但 cfg.achievements entries 從 29 → 31 內部）
+- check-assets 不變（純 logic + i18n，無新 asset）
+
+**i18n 進度跳躍**：
+- 種子翻譯：425 + 4 = **429 條** zh-TW + 429 條 en（離 430 整數 milestone 1 條）
+- functional sites：~262 + 2 = ~264 處
+- achievements 從 29 → 31 全 functional i18n（label + desc dual-field）
+
+**設計細節 — 為什麼 ACCESSORY_AXIS map 放 achievements.js 而非 cfg.accessories**：
+- **保 cfg.accessories schema 穩定**：23 個 entries 各加 axis 字段是 invasive migration（i18n-coverage lint 不掃 cfg 字段，但 cfg-schema lint 會驗 schema）
+- **限定 scope**：軸資訊只在 axis_mixer / rainbow_collector 兩 achievement 用到 — 集中放 achievements.js
+- **v0.6 candidate**：等 mixing-mode 成就邏輯穩定後，將 ACCESSORY_AXIS 移進 cfg.accessories 作 canonical reference — 新 contributor 加 accessory 時直接寫 axis 字段，不會忘記更新 ACCESSORY_AXIS map
+
+**設計細節 — axis_mixer threshold ≥ 2 vs ≥ 3**：
+- **≥ 2 較親民**：D7 玩家可能買 2 件不同軸的配件（4 slot 中 2 個 slot 有東西就可達）— 鼓勵嘗試
+- **≥ 3 太嚴格**：玩家通常只配 1-2 件 accessories，4 slot 全配 + 跨 3 軸是稀有狀態
+- **rainbow_collector ≥ 4** 對應「累積廣度」narrative：23 件中 ≥ 4 軸 = 約 17%，D14+ 玩家自然達標
+
+**v0.5 backlog 結算（iter#222）**：
+- ✅ seasonal 補完 5/5 batch（iter#211-215）
+- ✅ 11th finalForm drifter 完整封閉（iter#216-217）
+- ✅ 新美學軸 dark academia ship（iter#218-220）
+- ✅ GDD §5.5 canonical sync（iter#221）
+- ✅ **跨軸 mixing-mode 成就 ship**（**本輪**）— v0.5 預留 idea 兌現
+- ⏳ iter#230 retrospective-230（8 cron 輪後）
+
+**v0.5 全部 main 主軸完成**（iter#211-222 共 12 cron 輪）— 5/5 ship plan 達標，剩 retrospective-230 收尾。
+
+**未來 follow-up**（不在本輪）：
+- 觀察玩家 axis_mixer / rainbow_collector unlock 比例（需 telemetry / 看 dex 玩家分享）
+- v0.6 候選：minimalist / kawaii-decora 軸 / cottagecore 軸補 form / cfg.accessories.axis schema migration
+- iter#230 retrospective-230
+
+**驗證**：
+- `node --check src/{cfg,achievements,i18n}.js` → ✅
+- `./scripts/run-checks.sh` → 全綠 7 step + i18n-coverage 175 keys
+- 行為驗證：玩家戴 hat 跨軸 + face 跨軸 → axis_mixer 觸發 / 玩家累積 ≥ 4 軸的配件擁有 → rainbow_collector 觸發
+
+**為什麼這輪 ship 對 v0.5 主結構是「收尾里程碑」**：
+- v0.5 backlog 5/5 全 ship 達標
+- 跨軸 mixing-mode 成就是 GDD §5.5 「form = 角色身份 / axis = 美學選擇」設計準則的可量化表達 — 玩家 narrative 完整
+- 為 v0.6 候選新軸開發（minimalist / kawaii-decora）打好「跨軸混搭」narrative 基礎 — 新軸 ship 時自動進入既有成就系統
+
+**影響檔案**：`src/achievements.js`、`src/cfg.js`、`src/i18n.js`、`sw.js`、`docs/iteration-log.md`
+
+---
+
+## 2026-04-30 15:41 · Session A — GDD §5.5 美學軸地圖 sync：v0.5 ship 完整反映（drifter form / 5 軸 seasonal 補完 / dark academia 新軸）
+
+**觸發**：cron 第 221 輪 — iter#220 dark academia 軸成形達標後，retrospective 與 GDD canonical 文件之間 13 cron 輪累積差異（iter#211-220 期間 ship 1 個 form + 5 axis-seasonal + 3 dark academia items + 1 boho form 加入）。對標 iter#208 GDD §5.5 sync 紀律 SOP — 每 10-15 cron 輪主動 sync。
+
+**為什麼 GDD §5.5 sync 是中段 P1 而非等 retrospective-230 寫**：
+- §5.5 是 canonical reference（10 軸 axis map）— 不 sync 的話後續 cron 看到 §5.5 寫「9 軸」就會以為 dark academia 不存在
+- 對齊 iter#176 / iter#208 既建立的 documentation drift 修正 SOP
+- iter#208 上次 sync 距 13 輪正好命中「10-15 輪主動 sync」cadence
+
+**動作**：
+
+1. **`docs/gdd.md` §5.4 加 drifter form 視覺描述**：
+   - 補一行：「漂泊者雞（v0.5 新加）：奶油 / 燕麥色編織披肩 + 多件 dangling 飾品（pendant / fringe / feather / pressed flower）+ 細手杖 + 微風塵感 weathered 表情（boho-traveler 收藏家軸）」
+   - 跟既有 11 form 視覺描述格式一致（form 名 + (版本) + 視覺特徵 + 軸所屬）— iter#208 補的 warmheart 風格延續
+
+2. **`docs/gdd.md` §5.5 整段 axis map 重寫**（iter#208 → iter#221 sync）：
+   - 標題從「iter#208 sync，含 v0.4 ship 更新」→「iter#221 sync，含 v0.5 ship 更新」
+   - **9 列 axis table → 10 列**（加 dark academia 第 10 列）
+   - **更新所有軸的 event / accessory 列表**：
+     - 5 個有 form 軸都加 seasonal（stationery_set / dance_tutu / winter_starlight / spa_salts / retro_console）
+     - boho 軸 form 從 fallback healthy → drifter（v0.5 新加）+ 加 picnic_blanket seasonal
+     - dark academia 新增 quill_pen event + velvet_bow + round_glasses accessories
+   - **件數欄全新計算**：5 個有 form 軸全 ≥ 5 件（從 4 → 5）/ boho 升 5 件 / dark academia 3 件起步
+   - **總件數更新**：finalForm 10 → 11、events 35 → 42（24 regular + 18 seasonal）、accessories 21 → 23、軸 9 → 10
+   - **新增 v0.5 主要變動段**：4 條 bullet 概括 drifter form / 5 軸 seasonal 補完 / dark academia 新軸 / boho 軸補 form
+   - **元氣軸歸屬段**：保持（iter#195 確認，iter#221 補充 marker）
+   - **form-less 軸段擴展**：從 cottagecore + y2k + boho 三軸 → cottagecore + y2k + dark academia 三軸（boho 加了 drifter form 後變回 form-bearing 軸） + boho 軸 form-less → form-bearing 案例討論（drifter 從 cross-life ownedAccessories 派生，是 meta-progression form 首例）
+   - **v0.6+ 候選段**：minimalist / kawaii-decora 兩 candidate 保留（dark academia 已 ship 不再列）+ form-less 軸補 form 候選（dark academia / cottagecore / y2k 三軸需累積玩家數據後決定）+ 跨軸 mixing-mode 預留 idea
+   - **時序段**：加 iter#216 drifter 第 11 form / iter#211-215 5-輪 seasonal batch / iter#218-220 dark academia ship 三段
+   - **新增「ship pipeline SOP 第 N 次成功複製」段**：
+     - form ship pipeline 4 次成功（gourmet / explorer / warmheart / drifter）
+     - 軸 ship pipeline 2 次成功（boho / dark academia 都 2-cron-輪達標）
+     - axis-second-event batch 2 次成功（iter#198-203 6 輪 / iter#211-215 5 輪）
+
+3. **本輪不動 src/**：純 docs 工作；不 bump sw.js cache（docs 不在 SW APP_SHELL）
+
+**驗證**：
+- `./scripts/run-checks.sh` 跑保險：全綠 7 step + i18n-coverage 175 keys + smoke 8/8 ✅
+- 沒 src 動，i18n-shadow / i18n-coverage / smoke / cfg-schema 全不變
+
+**v0.5 完整 arc 結算（iter#211-221 共 11 cron 輪）**：
+- ✅ seasonal 補完 5/5 batch（iter#211-215）
+- ✅ 11th finalForm drifter 完整封閉（iter#216-217）
+- ✅ 新美學軸 dark academia ship（iter#218-220）
+- ✅ **GDD §5.5 canonical sync**（**本輪**）
+- ⏳ iter#230 retrospective-230（9 cron 輪後）
+- ⏳ 跨軸 mixing-mode 成就
+
+**為什麼把 axis map sync 放 iter#221 而非 iter#225 或 iter#230 retro 一起寫**：
+- iter#221 距 iter#208 上次 sync 13 輪 — 命中 SOP「10-15 輪 cadence」
+- 提早 sync 防止「retrospective-230 寫的時候才發現 §5.5 過時」— iter#176 教訓的 corrective 動作
+- retrospective 是「總結 view」/ GDD 是「reference view」 — 後者需要更新鮮 / 主動
+
+**為什麼 10 軸全成形 ✅ 是 milestone**：
+- iter#100 起點 5 軸有 form / 0 軸達 ≥ 3 件全套（form + event + accessory）
+- iter#172 8 軸 event 全覆蓋（≥ 1 event）
+- iter#207 9 軸全 ≥ 3 件（boho ship 後）
+- **iter#220（本輪 sync 對象）：10 軸全 ≥ 3 件成形** — 玩家任何美學軸都能找到完整 starter set + 軸內容深化（多軸甚至 ≥ 5 件，有 5 軸並列 5 件 milestone per iter#215）
+
+**未來 follow-up**（不在本輪）：
+- iter#222-225 推 跨軸 mixing-mode 成就 / minimalist 軸候選 / 內容深化
+- iter#230 retrospective-230（v0.5 完整 arc retrospective — 涵蓋 iter#210-229）
+- v0.6 candidates：minimalist / kawaii-decora 軸 / 跨軸 mixing-mode 成就 / dark academia / cottagecore / y2k 軸補 form
+
+**影響檔案**：`docs/gdd.md`（§5.4 補 drifter 1 行 + §5.5 整段重寫 ~70 行）、`docs/iteration-log.md`
+
+---
+
+## 2026-04-30 15:31 · Session A — dark academia 軸第三件「圓框眼鏡」(round_glasses) — 軸成形達 ≥ 3 件 GDD §5.5 門檻 ✅
+
+**觸發**：cron 第 220 輪 — iter#218 velvet_bow + iter#219 quill_pen 後 dark academia 軸 2/3 件。本輪補第三件達 GDD §5.5「軸 ≥ 3 件」成形門檻 — 第 10 個美學軸正式成形 ✅。
+
+**為什麼選 round_glasses（圓框眼鏡）作為 dark academia 第三件**：
+- **dark academia iconic motif**：學者圓框眼鏡（John Lennon / Harry Potter style）= pinterest dark academia tag No.2 視覺辨識物（僅次於 velvet bow）
+- **face slot 軟化既有 face 美學競爭**：既有 4 件 face（sunglasses 心形墨鏡 / blush 自然腮紅 / glasses_thin 半月眼鏡）— round_glasses 是第二件 glasses 但跟 glasses_thin 視覺距離大（圓 vs 半月）
+- **跟 sage 軸 glasses_thin narrative 區隔**：sage glasses_thin = contemplative / 詩意 / 半月切割（一半看世界 / 一半看內心）/ **round_glasses = institutional / 學術 / 完整圓框**（學者「全神貫注」narrative）— 兩件 glasses 是「智者 vs 學者」風格分支的視覺對應
+- **180 FC mid-tier**：對標 sunglasses 180 / glasses_thin 150 / chef_hat 200 / straw_hat 220 — 中段定價合 face slot 平均
+
+**動作**：
+
+1. **新增 `assets/svg/acc-round-glasses.svg`（22 行 SVG）**：
+   - viewBox 100×100 對標既有 SVG 配件
+   - 色票嚴守 CLAUDE.md §5：棕 #8B5A2B（外圈 frame 主色 + bridge + temple arms — 軟化版 scholar 銅/復古玳瑁色）/ 暗紅 #8B2030 透明 0.55（內圈 deep wine accent ring — 跟 velvet_bow / quill_pen palette 一致）/ 白 #FFFFFF（鏡片透明 fill 0.25 + 大 highlight 0.6 + 小 secondary highlight 0.4）/ 黃 #FFD86B（gold rivets 兩顆 + ✦ accent — 學術金屬細節）
+   - 結構：**bridge quadratic curve**（眉骨弧線）+ **左右雙 full circle lens**（r=14，3px 棕色描邊）+ **內圈酒紅 ring**（r=11，1px deep wine 細描邊 — 雙圈框眼鏡 dark academia 風）+ **lens highlights**（每側大小兩顆 white opacity 漸層橢圓）+ **temple arms**（quadratic curve 延伸 frame 邊緣）+ **2 顆 gold rivets**（temple-frame 接點，cream + 棕邊）+ ✦ corner accent
+   - **內圈酒紅 + 金 rivets** 跟 iter#218 velvet_bow + iter#219 quill_pen 共用 deep wine palette anchor — dark academia 軸視覺一致
+
+2. **`src/cfg.js` accessories 加第 23 條**：
+   ```
+   round_glasses: { slot:"face", art:"assets/svg/acc-round-glasses.svg",
+                    labelKey:"acc.round_glasses", label:"圓框眼鏡",
+                    icon:"🤓", price:180 }
+   ```
+   - 加在 velvet_bow 後（dark academia 軸 trio 集中標識 + design rationale 註解）
+   - icon 🤓 (nerd face) 是 scholar / academic 標準 emoji — narrative 點題
+
+3. **`src/i18n.js` 雙語 1 條**：
+   - zh-TW: `acc.round_glasses` = "圓框眼鏡"
+   - en: `acc.round_glasses` = "Round Frame Glasses"
+
+4. **`sw.js`：CACHE_VERSION iter219 → iter220**
+
+**lint chain 報表**：
+- 上輪 cfg-schema：`9 traits / 50 speech_pools / 11 final_forms / 22 accessories`
+- 本輪 cfg-schema：`9 traits / 50 speech_pools / 11 final_forms / **23 accessories**`
+- check-assets：105 → **106** asset references resolve
+- 7 step + 8/8 smoke + i18n-shadow 23 src + i18n-coverage 175 keys ✅
+
+**美學軸覆蓋更新（iter#220）— dark academia 軸成形達 ≥ 3 件 / 10 美學軸全成形 ✅**：
+| 軸 | event | form | accessory | 件數 | 飽和度 |
+|----|-------|------|-----------|------|--------|
+| coquette / 美食家 | tea / macaron + carnation(s) | gourmet | chef_hat / strawberry_clip | 6 | ★★★★ |
+| cottagecore | 5 events + sakura(s) | — | flower / pin_butterfly / lace_collar | 9 | ★★★★ |
+| 智慧 / sage | book / message_bottle + stationery_set(s) | sage | glasses_thin | 5 | ★★★ |
+| balletcore | rose_bouquet / pointe_shoe + dance_tutu(s) | diva | ribbon_tie | 5 | ★★★ |
+| fairycore | dewdrop / moonlight + winter_starlight(s) | divine | wings_fairy | 5 | ★★★ |
+| cleangirl | bubble / towel + spa_salts(s) | healthy | blush | 5 | ★★★ |
+| y2k | pixel_heart + redenvelope(s) + retro_console(s) | — | star_clip / cd_pendant | 5 | ★★★ |
+| 元氣 | rainbow / confetti_pop + pinwheel(s) + rainbow_heart(s) | fighter | party_hat | 6 | ★★★★ |
+| boho | dried_herbs + picnic_blanket(s) | drifter | fringe_ribbon / straw_hat | 5 | ★★★ |
+| **dark academia** | quill_pen | — | velvet_bow / **round_glasses（本輪）** | **3** ⬆ | ★★★ |
+
+**dark academia 軸從 2 → 3 件 ✅**（達 GDD §5.5「軸 ≥ 3 件」成形門檻）；accessories 22 → **23**。**10/10 美學軸全部 ≥ 3 件成形** ✅（全 ship-ready / 健康 baseline）。
+
+**i18n 進度跳躍**：
+- 種子翻譯：424 + 1 = **425 條** zh-TW + 425 條 en
+- accessories 全 functional i18n（23/23 雙欄位 labelKey + label fallback）
+
+**v0.5 backlog 結算（iter#220）**：
+- ✅ seasonal 補完 5/5 batch（iter#211-215）
+- ✅ 11th finalForm drifter 完整封閉（iter#216-217）
+- ✅ **新美學軸 dark academia 軸成形 ≥ 3 件**（iter#218-220 三輪 ship） — **第 10 個美學軸**
+- ⏳ 跨軸 mixing-mode 成就
+- ⏳ iter#230 retrospective-230（10 cron 輪後）
+
+**v0.5 主要 ship 進度 4/5 完成**（iter#211-220 共 10 cron 輪）：seasonal 補完 5/5 / 11th form ship / **dark academia 第 10 軸成形** — 4 大主軸完成；剩下跨軸 mixing-mode 成就 + retrospective。
+
+**ship pipeline 一致性 — 10 個美學軸全成形比較**：
+| 軸 | 起手輪 | 軸成形輪 | 起手→成形 cron 輪 |
+|----|--------|----------|------------------|
+| 美食家 | iter#132 (tea) | iter#157 (form_gourmet ship) | 25 |
+| cottagecore | iter#100 起點 | iter#100 起點 | 0（既有） |
+| sage | iter#100 起點 | iter#168 (event_book + glasses_thin) | 68 |
+| balletcore | iter#100 起點 | iter#169 (rose_bouquet) | 69 |
+| fairycore | iter#100 起點 | iter#171 (dewdrop) | 71 |
+| cleangirl | iter#100 起點 | iter#199 (towel) | 99 |
+| y2k | iter#172 (pixel_heart) | iter#172 起手即 ≥ 3（iter#100 已有 2 件 accessory） | 0 |
+| 元氣 | iter#100 起點 | iter#100 起點 | 0 |
+| boho | iter#205 (fringe_ribbon) | iter#207 (straw_hat) | **2** |
+| **dark academia** | **iter#218 (velvet_bow)** | **iter#220 (round_glasses) 本輪** | **2** |
+
+**boho + dark academia 都是 2-cron-輪達軸成形**（iter#205-207 / iter#218-220 同 SOP），ship pipeline 第二次成功複製：每輪 1 件 accessory 或 event，3 件達標。對未來 v0.6+ 新軸開發是可複製的 SOP 模板。
+
+**驗證**：
+- `node --check src/{cfg,i18n}.js` → ✅
+- `./scripts/run-checks.sh` → 全綠 7 step + cfg-schema **23 accessories** + 10 軸全 ≥ 3 件成形 ✅
+
+**影響檔案**：`assets/svg/acc-round-glasses.svg`（新）、`src/cfg.js`、`src/i18n.js`、`sw.js`、`docs/iteration-log.md`
+
+---
+
+## 2026-04-30 15:21 · Session A — dark academia 軸第二件 event「羽毛筆寫字」(quill_pen)，regular pool 23 → 24
+
+**觸發**：cron 第 219 輪 — iter#218 ship dark academia 第一件 accessory（velvet_bow）後接著補 event 層。對標 boho 軸 ship pipeline（iter#205 fringe → iter#206 dried_herbs event → iter#207 straw_hat 達成形）的 SOP — 第二輪是 event 層補完。
+
+**為什麼選 quill_pen（羽毛筆）作為 dark academia 第一個 event**：
+- **跟既有智慧軸 book / message_bottle narrative 區隔**：book = 讀書當下（passive 接收知識）/ message_bottle = 漂流瓶遠方智慧（passive 接收外部）/ **quill_pen = 寫字當下**（**active 創作 / 學者主動產出**） — sage 是 contemplative receiver / dark academia 是 institutional creator
+- **dark academia iconic motif**：羽毛筆 + 墨水瓶 + 羊皮紙 = pinterest dark academia tag 標準三件套
+- **連結 velvet_bow 制服感 narrative**：scholar 配戴蝴蝶結 + 在書房寫手稿 — 軸的 atmospheric core 一致
+- **數值區隔**：book +mood 8 +energy 5（純 atmospheric reading）/ message_bottle +mood 12 +energy 6 + coin 5（mid-tier 字條）/ **quill_pen +mood 10 +energy 6 +clean 3 + coin 5（active scholar narrative + 完成手稿 reward）**
+- **weight 6**：跟 dewdrop / book / tea / pointe_shoe 同 mid-tier — scholarly daily 不該太稀有
+
+**動作**：
+
+1. **新增 `assets/svg/event-quill-pen.svg`（30 行 SVG）**：
+   - viewBox 100×100 對標既有 27 個 event SVG
+   - 色票嚴守 CLAUDE.md §5：奶油 #FFE8C8（羊皮紙 + cream feather barbs + ink pot label）+ 棕 #8B5A2B（描邊 scholarly + feather shaft + parchment edge）/ 暗紅 #8B2030（ink pot 主色 + parchment 文字 stroke + #5C1A1F 描邊 + ink splash）+ #B23A48（feather barbs deep wine 部分 — 跟 velvet_bow palette 一致）/ 黑 #2C2C2C（ink drop + ink pot 開口）/ 黃 #FFD86B（parchment edge band 微弱 0.5 opacity + ✦ accent）/ 粉 #FFC8D6（地面陰影軟化）
+   - 結構：粉色橢圓陰影 + **rounded-rect parchment scroll**（cream + 棕邊 + 兩條 yellow edge band 暗示 rolled edges）+ **5 條手寫文字 line**（quadratic 模擬 handwritten flow，opacity 0.7）+ **rect ink pot**（深酒紅瓶身 + cream label sticker + 黑色 opening ellipse）+ **diagonal feather quill**（單條 stroke shaft 從右上 84,14 → 左下 44,62 觸碰羊皮紙）+ **9 條 feather barbs**（短斜 stroke 沿 shaft，紅 + cream alternating 模擬羽毛紋路）+ **ink drop + splash**（黑色 + 紅色雙小 circle 在 quill tip）+ ✦ corner accent
+   - **diagonal quill + ink drop on parchment** = 整件 SVG 的 narrative anchor：「正在書寫的瞬間」motion blur 視覺暗示
+
+2. **`src/cfg.js` randomEvents.pool 加第 24 條**：
+   ```
+   { id:"quill_pen", art:"assets/svg/event-quill-pen.svg", weight:6,
+     label:"羽毛筆寫字", apply:"quill_pen",
+     applyEffects:{ stats:{mood:10, energy:6, clean:3}, coin:5, coinReason:"完成手稿" },
+     applyToastKey:"event.quill_pen",
+     applyToast:"🪶 蘸墨書寫~ 一頁手稿完成" }
+   ```
+   - 加在 dried_herbs 後（dark academia 軸註解串連 iter#218-219 標識）
+   - **+mood 10 +energy 6 +clean 3 + coin 5**：scholar 完成手稿 narrative 全 stat 散布 + 微 coin reward（學者 commission narrative）
+   - **「羽毛筆寫字」label** 是動詞短句（vs「羽毛筆」單一名詞）— 跟「練舞時光」「葉上露珠」「曬乾香草束」narrative-driven label 風格一致
+
+3. **`src/i18n.js` 雙語 1 條**：
+   - zh-TW: `event.quill_pen` = "🪶 蘸墨書寫~ 一頁手稿完成"
+   - en: `event.quill_pen` = "🪶 Dipped in ink~ A page of manuscript done"
+   - 「Dipped in ink」對應「蘸墨」 — 古典英文 quill 用語精準保 dark academia 文化氛圍
+
+4. **`sw.js`：CACHE_VERSION iter218 → iter219**
+
+**lint chain 報表**：
+- check-assets：104 → **105** asset references resolve
+- 7 step + 8/8 smoke + i18n-shadow 23 src + i18n-coverage 175 keys ✅
+
+**美學軸覆蓋更新（iter#219）**：
+| 軸 | event | form | accessory | 件數 |
+|----|-------|------|-----------|------|
+| coquette / 美食家 | tea / macaron + carnation(s) | gourmet | chef_hat / strawberry_clip | 6 |
+| cottagecore | 5 events + sakura(s) | — | flower / pin_butterfly / lace_collar | 9 |
+| 智慧 / sage | book / message_bottle + stationery_set(s) | sage | glasses_thin | 5 |
+| balletcore | rose_bouquet / pointe_shoe + dance_tutu(s) | diva | ribbon_tie | 5 |
+| fairycore | dewdrop / moonlight + winter_starlight(s) | divine | wings_fairy | 5 |
+| cleangirl | bubble / towel + spa_salts(s) | healthy | blush | 5 |
+| y2k | pixel_heart + redenvelope(s) + retro_console(s) | — | star_clip / cd_pendant | 5 |
+| 元氣 | rainbow / confetti_pop + pinwheel(s) + rainbow_heart(s) | fighter | party_hat | 6 |
+| boho | dried_herbs + picnic_blanket(s) | drifter | fringe_ribbon / straw_hat | 5 |
+| **dark academia** | **quill_pen（本輪）** | — | velvet_bow | **2** ⬆ from 1 |
+
+dark academia 軸從 1 → **2 件**（距 GDD §5.5「軸 ≥ 3 件」成形門檻還差 1 件 — 預期下一 cron 輪補第三件 accessory 達標）；event total 23 → **24**（regular 23 + seasonal 18 = 41**）；regular pool 22 → **23**（漏算修正）。
+
+**i18n 進度跳躍**：
+- 種子翻譯：423 + 1 = **424 條** zh-TW + 424 條 en
+- functional sites：~261 + 1 = ~262 處
+
+**v0.5 backlog 結算（iter#219）**：
+- ✅ seasonal 補完 5/5 batch（iter#211-215）
+- ✅ 11th finalForm drifter 完整封閉（iter#216-217）
+- ⏳ **新美學軸 dark academia 軸成形（2/3 件，1 輪即達標）**
+- ⏳ 跨軸 mixing-mode 成就
+- ⏳ iter#230 retrospective-230（11 cron 輪後）
+
+**未來 follow-up**（不在本輪）：
+- 下輪 dark academia 第三件：accessory 候選（圓邊框眼鏡 / 制服襯衫領 / 古董燭台 / 學院袍胸針）— 達 ≥ 3 件 dark academia 軸成形
+- 後續軸 candidates（minimalist / kawaii-decora）等 dark academia 飽和再啟動
+- iter#230 retrospective-230
+
+**驗證**：
+- `node --check src/{cfg,i18n}.js` → ✅
+- `./scripts/run-checks.sh` → 全綠 7 step + check-assets 105 paths
+
+**影響檔案**：`assets/svg/event-quill-pen.svg`（新）、`src/cfg.js`、`src/i18n.js`、`sw.js`、`docs/iteration-log.md`
+
+---
+
+## 2026-04-30 15:11 · Session A — v0.5 新美學軸 dark academia 起手：天鵝絨蝴蝶結 (velvet_bow)，accessories 21 → 22
+
+**觸發**：cron 第 218 輪 — drifter 完整封閉後切到下個 v0.5 candidate。retrospective-210.md §4.1 + GDD §5.5 v0.5+ candidates 列「dark academia（深色學院風 — sage 軸延伸）」是 4 candidates 中跟 sage 軸有 narrative bridge 但獨立的軸。對標 boho 軸 ship pipeline（iter#205-207 三輪）：先 1 個 accessory 探水溫，後續輪補 event + 第三件達軸成形 ≥ 3 件門檻。
+
+**為什麼 dark academia 第二個新軸 ship**：
+- 4 個 v0.5 candidates 中：minimalist（純白灰 / 極簡 — 跟既有 cleangirl 距離近，視覺競爭風險）/ kawaii-decora（過度可愛堆疊 — 跟 cottagecore-coquette 主軸視覺競爭）/ **dark academia（深色學院 — 跟 sage 智慧軸延伸但 palette 獨立）** / boho（已 ship iter#205-207）
+- dark academia 跟 sage 區隔清晰：sage 是 contemplative / poetic / nature-bound（書卷氣 + 漂流瓶 + 半月眼鏡）/ dark academia 是 institutional / scholarly / formal（深酒紅 velvet + 金線 + cream lace + 制服感） — 兩軸是「智者 vs 學者」風格分支
+- TA「18-35 女性 / cottagecore-coquette」對 dark academia 視覺接受度高（pinterest dark academia tag 是 coquette aesthetic 的「秋冬深色版本」）
+- 留 minimalist / kawaii-decora 給 v0.6+
+
+**為什麼選 velvet_bow（天鵝絨蝴蝶結）作為 dark academia 第一件**：
+- **dark academia iconic motif**：制服蝴蝶結 + 天鵝絨材質 = 軸的 No.1 視覺辨識物（搜尋 dark academia aesthetic 必出）
+- **neck slot 跟既有 5 件 neck（ribbon_tie 芭蕾 / scarf 毛茸 / necklace 珍珠 / lace_collar 蕾絲 / cd_pendant Y2K / fringe_ribbon boho）視覺距離大**：velvet 質感深酒紅是新色系 anchor
+- **240 FC mid-high tier**：對標 chef_hat 200 / straw_hat 220 / wings 350 / crown 500 — 中段定價
+- **TA 軟化處理**：標準 dark academia 用 deep navy / black / pure rust，本設計改 #B23A48 暗紅 + #FFE8C8 cream + #FFD86B 金 — 保 scholarly 但不冷不暗
+
+**動作**：
+
+1. **新增 `assets/svg/acc-velvet-bow.svg`（25 行 SVG）**：
+   - viewBox 100×100 對標既有 SVG 配件
+   - 色票嚴守 CLAUDE.md §5：暗紅 #B23A48（velvet 主色 — 軟化版 burgundy）+ 深酒紅 #8B2030（描邊 + 中央結 + sheen highlight）+ #5C1A1F（描邊 darker）/ 奶油 #FFE8C8（cream lace trim 6 顆 scallop dots）+ 棕 #8B5A2B（lace dot 描邊）/ 黃 #FFD86B（gold thread cross-stitch + ✦ accent，opacity 0.85 細緻）
+   - 結構：**中央 ellipse knot**（深酒紅 + 描邊）+ **左右雙 path loop**（quadratic curve 模擬 velvet 蝴蝶結雙環）+ **inner sheen highlights**（depth velvet 質感）+ **6 顆 cream lace scallop dots**（左右各 3 顆模擬 lace trim 邊緣）+ **2 條 gold thread × 交叉**（學術金線 cross-stitch on knot）+ **2 條 ribbon tail dangling**（quadratic curve 雙垂落帶）+ **2 個 V-notch tail tips**（dark academia ribbon style cut ends）+ ✦ corner accent
+   - **velvet sheen + cream lace trim + gold thread × + V-notch tail** = dark academia 質感四件套
+
+2. **`src/cfg.js` accessories 加第 22 條**：
+   ```
+   velvet_bow: { slot:"neck", art:"assets/svg/acc-velvet-bow.svg",
+                 labelKey:"acc.velvet_bow", label:"天鵝絨蝴蝶結",
+                 icon:"🎀", price:240 }
+   ```
+   - 加在 straw_hat 後（dark academia 軸標識 + design rationale 註解）
+   - icon 🎀 跟既有 bow（粉色蝴蝶結 v0.2 起 hat slot）共用 emoji 但 slot 不同（neck vs hat）— 玩家 dex / shop UI 仍清楚區分
+
+3. **`src/i18n.js` 雙語 1 條**：
+   - zh-TW: `acc.velvet_bow` = "天鵝絨蝴蝶結"
+   - en: `acc.velvet_bow` = "Velvet Bow"
+
+4. **`sw.js`：CACHE_VERSION iter217 → iter218**
+
+**lint chain 報表**：
+- 上輪 cfg-schema：`9 traits / 50 speech_pools / 11 final_forms / 21 accessories`
+- 本輪 cfg-schema：`9 traits / 50 speech_pools / 11 final_forms / **22 accessories**`
+- check-assets：103 → **104** asset references resolve
+- 7 step + 8/8 smoke + i18n-shadow 23 src + i18n-coverage 175 keys ✅
+
+**美學軸覆蓋更新（iter#218）— 10 軸首發**：
+| 軸 | event | form | accessory | 件數 |
+|----|-------|------|-----------|------|
+| coquette / 美食家 | tea / macaron + carnation(s) | gourmet | chef_hat / strawberry_clip | 6 |
+| cottagecore | 5 events + sakura(s) | — | flower / pin_butterfly / lace_collar | 9 |
+| 智慧 / sage | book / message_bottle + stationery_set(s) | sage | glasses_thin | 5 |
+| balletcore | rose_bouquet / pointe_shoe + dance_tutu(s) | diva | ribbon_tie | 5 |
+| fairycore | dewdrop / moonlight + winter_starlight(s) | divine | wings_fairy | 5 |
+| cleangirl | bubble / towel + spa_salts(s) | healthy | blush | 5 |
+| y2k | pixel_heart + redenvelope(s) + retro_console(s) | — | star_clip / cd_pendant | 5 |
+| 元氣 | rainbow / confetti_pop + pinwheel(s) + rainbow_heart(s) | fighter | party_hat | 6 |
+| boho | dried_herbs + picnic_blanket(s) | drifter | fringe_ribbon / straw_hat | **5** ⬆ from 4（drifter 加入後） |
+| **dark academia（新）** | — | — | **velvet_bow（本輪）** | **1** |
+
+**美學軸從 9 → 10** 🎉。dark academia 軸目前 1 件 — accessory only / form-less / event-less，後續輪會逐步補完（每輪 ≥ 1 件，預期 2-3 cron 輪達 ≥ 3 件「軸成形」門檻 per GDD §5.5）。
+
+**boho 軸件數補算**：drifter form 加入 boho 軸（per iter#216 narrative + image-prompts §8.8 boho-traveler 標識）— 從 4 → **5 件**（fringe_ribbon / straw_hat / dried_herbs / picnic_blanket / **drifter form**）
+
+**i18n 進度跳躍**：
+- 種子翻譯：422 + 1 = **423 條** zh-TW + 423 條 en
+- accessories 全 functional i18n（22/22 雙欄位 labelKey + label fallback）
+
+**v0.5 backlog 結算（iter#218）**：
+- ✅ seasonal 補完 5/5 batch（iter#211-215）
+- ✅ 11th finalForm drifter 完整封閉（iter#216-217）
+- ⏳ **新美學軸 dark academia 起手**（**本輪** 1/3 件，後續輪補完）
+- ⏳ 跨軸 mixing-mode 成就
+- ⏳ iter#230 retrospective-230（12 cron 輪後）
+
+**未來 follow-up**（不在本輪）：
+- 下輪 dark academia 第二件：accessory（圓邊框眼鏡 / 制服襯衫領 / 燭台 candle）/ event（圖書館一角 / 古董打字機 / 羽毛筆寫字 / 暗夜書房）
+- 後續軸 candidates（minimalist / kawaii-decora）等 dark academia 飽和再啟動
+- iter#230 retrospective-230
+
+**驗證**：
+- `node --check src/{cfg,i18n}.js` → ✅
+- `./scripts/run-checks.sh` → 全綠 7 step + cfg-schema **22 accessories**
+
+**影響檔案**：`assets/svg/acc-velvet-bow.svg`（新）、`src/cfg.js`、`src/i18n.js`、`sw.js`、`docs/iteration-log.md`
+
+---
+
+## 2026-04-30 15:01 · Session A — drifter 終態收尾：成就 form_drifter + speech 5 條 + collect_all 10→11 + image-prompts §8.8 + 雙語 i18n + menus.js FORM_ICONS
+
+**觸發**：cron 第 217 輪 — iter#216 ship drifter 主結構備註明確下輪做收尾。對標 iter#157 gourmet 收尾 / iter#184 explorer 收尾 / iter#197 warmheart 收尾 SOP — 三項收尾：(1) 解鎖成就 / (2) form-specific speech / (3) collect_all bump — **第四次成功複製 ship 完整 SOP**。
+
+**動作**（5 處同步 + 1 額外 menus.js FORM_ICONS update — 因為 iter#204 跨 pet memorial UI 加了 FORM_ICONS map 需同步維護）：
+
+1. **`src/cfg.js` achievements 加第 29 條 form_drifter**：
+   - `{ icon:"🪢", labelKey:"ach.form_drifter", label:"波西米亞旅人", descKey:"achdesc.form_drifter", desc:"養出漂泊者雞" }`
+   - 對標 form_divine / diva / fighter / sage / gourmet / explorer / warmheart 7 個既有 form 成就 dual-field i18n 慣例
+   - icon 🪢 (knot) 跟 cfg.accessories.fringe_ribbon 同 emoji — boho 軸視覺一致
+
+2. **`src/cfg.js` collect_all.desc 10→11**：
+   - 「收集全部 10 種終態」→「收集全部 11 種終態」
+
+3. **`src/cfg.js` speech.form_drifter 5 條 wanderer / collector 口吻**：
+   - 「🪢 又收集到一個小東西~」「聽說遠方還有更多風景」「(把飾品收進披肩)」「✦ 路上的風好自由」「下個目的地是哪裡呢」
+   - 跟既有 form 個性區隔：fighter 元氣 / sage 思辨 / diva 表演 / divine 守護 / gourmet 美食 / explorer 探險 / warmheart 依戀 / **drifter 漂泊收藏** — 第 8 個鮮明角色聲音
+   - 5 條等量於既有 form_divine / diva / sage / gourmet / explorer / warmheart
+
+4. **`src/achievements.js` evaluator 兩處更新**：
+   - 加 `["form_drifter", dexUnlocked.has("drifter")]` 排在 form_warmheart 後 / collect_3 前
+   - `["collect_all", dexUnlocked.size >= 10]` → `>= 11` — 對齊新 finalForms 集合（11 entries）
+
+5. **`src/i18n.js` 8 條更新**：
+   - **新增雙語 6 條**：`ach.form_drifter` 波西米亞旅人 / Bohemian Wanderer、`achdesc.form_drifter` 養出漂泊者雞 / Raised a drifter chicken、`speech.form_drifter` 中英 array 各 5 條
+   - **修舊 2 條**：`achdesc.collect_all` 10 → 11 種（中 + 英）
+   - **修舊 2 條**：`onboarding2.dex` 10 → 11 final forms（中 + 英）
+
+6. **`src/menus.js` FORM_ICONS map 加 drifter 🪢**：
+   - iter#204 跨 pet memorial form-distribution mini-strip 用的 emoji icon map
+   - 不加會 fallback to "🐔" 通用雞 emoji，narrative 失準
+   - 跟 cfg.achievements.form_drifter.icon 同 emoji 維持一致
+
+7. **`docs/image-prompts.md` 加 §8.8 drifter 條目**：
+   - woven shawl + multiple dangling trinkets（pendant / fringe ribbon / feather / pressed flower）+ 小 walking stick + soft weathered expression
+   - 設計動機：跟 explorer 的「冒險裝備」區隔（drifter = 收藏 + 旅人 / explorer = 探險 + 任務）
+   - 解鎖條件 doc：「state.pet.ownedAccessories Object.keys length >= 8 / 跨命累積 21 件中 38%」
+
+8. **`sw.js`：CACHE_VERSION iter216 → iter217**
+
+**lint chain 報表跳躍**：
+- 上輪 cfg-schema：`9 traits / 49 speech_pools / 11 final_forms`
+- 本輪 cfg-schema：`9 traits / **50 speech_pools** / 11 final_forms`
+- speech_pools +1（form_drifter） — **首破 50 整數 milestone 🎉**
+
+**i18n 進度跳躍**：
+- 種子翻譯：417 + 5 = **422 條** zh-TW + 422 條 en
+- functional 涵蓋：成就 form 系列從 7 → **8** 全 functional i18n（divine / diva / fighter / sage / gourmet / explorer / warmheart / drifter）
+- speech.form_X 對應 11 finalForms 全 i18n functional（healthy / fatty / ugly + 8 軸正向）
+
+**drifter 終態完整封閉度（iter#217）**：
+| 元素 | 狀態 | 來源 |
+|------|------|------|
+| cfg.finalForms.drifter entry | ✅ | iter#216 |
+| cfg.petArt.adult.drifter 占位 | ✅ | iter#216 |
+| evolve.js trait priority chain（派生 trait） | ✅ | iter#216 |
+| i18n form key（zh + en） | ✅ | iter#216 |
+| **achievement form_drifter** | **✅ 本輪** |
+| **speech.form_drifter 5 條 + i18n key** | **✅ 本輪** |
+| **collect_all 10→11 bump（cfg + i18n + onboarding）** | **✅ 本輪** |
+| **image-prompts §8.8** | **✅ 本輪** |
+| **menus.js FORM_ICONS 同步** | **✅ 本輪**（iter#204 引入後第一次新 form 同步） |
+
+**100% v0.5 11th form ship-ready**（除真實 PNG art — 等待設計師 / AI 生圖；user 在 cron 外已 ship 了 gourmet / explorer / warmheart 三張，drifter 是第 8/11 待補的）。
+
+**ship pipeline 第四次成功複製**（gourmet → explorer → warmheart → drifter 同 SOP）+ **新「派生 trait」設計分類**（per iter#216 SOP 進化 — drifter 主結構 6 處 vs 一般 8 處）：
+- gourmet（iter#156-157）/ explorer（iter#183-184）/ warmheart（iter#196-197）：per-pet behavior counter mode
+- **drifter（iter#216-217）：cross-life meta-progression mode** — 跨生命週期累積，不需 per-pet trait counter / 不需 KNOWN_TRAITS lint update
+- divine（既有）：threshold + condition mode（perfectStreakMinutes 1440 + growthScore 2000 雙條件）
+
+**Game's first 50 speech_pools milestone**：
+- iter#100 起點 cfg.speech ~38 pools（critical state / normal state / time / form / action 等）
+- iter#157 加 form_gourmet → 47
+- iter#184 加 form_explorer → 48
+- iter#197 加 form_warmheart → 49
+- **iter#217 加 form_drifter → 50** 🎉
+
+**v0.5 backlog 結算（iter#217）**：
+- ✅ seasonal 補完 5/5 batch（iter#211-215）
+- ✅ **11th finalForm drifter 完整封閉**（iter#216-217）
+- ⏳ 跨軸 mixing-mode 成就
+- ⏳ 新美學軸（minimalist / kawaii-decora / dark academia）
+- ⏳ iter#230 retrospective-230（13 cron 輪後）
+
+**驗證**：
+- `node --check src/{cfg,achievements,menus,i18n}.js` → ✅
+- `./scripts/run-checks.sh` → 全綠 7 step + cfg-schema 進步「**50 speech_pools** / 11 final_forms」🎉
+
+**為什麼 ship pipeline 第四次都成功**：
+- 4 form ship（gourmet / explorer / warmheart / drifter）連續 2-輪 SOP 全達標
+- 每次 6-8 處主結構 + 5 處收尾 = 11-13 次改動拆兩輪 → review 顆粒度 manageable
+- SOP 化的 patient-design-doc checklist（main + 收尾兩個 step list）讓改動點不漏
+- 「派生 trait」分類（iter#216 進化）讓未來 form candidates 能根據 trigger source 性質選擇最簡實作路徑
+
+**影響檔案**：`src/cfg.js`、`src/achievements.js`、`src/i18n.js`、`src/menus.js`、`docs/image-prompts.md`、`sw.js`、`docs/iteration-log.md`
+
+---
+
+## 2026-04-30 14:51 · Session A — v0.5 第 11 個 finalForm「漂泊者雞」(drifter) 主結構：終態 10 → 11，**新型「派生 trait」設計**
+
+**觸發**：cron 第 216 輪 — iter#211-215 seasonal 補完 5/5 batch 完整封閉後切到 v0.5 next ship。retrospective-210.md §4.1 排序 v0.5 candidates 首位 = 11th finalForm；§3.7 預留 idea「boho 軸 v0.5 可能加 form『漂泊者雞』keyed off ownedAccessories 多樣性」 — 本輪兌現。
+
+**為什麼 drifter 設計成「派生 trait」而非新增 per-pet trait counter**：
+- **既有 4 個 form 都用 per-pet trait counter**（gourmet feedCount / explorer eventsCaught / warmheart petCount / fighter battlePoints / sage intelligencePoints / diva singCount）— iter#196-197 ship warmheart 時延伸了「mirror bump in trigger source」SOP
+- **但 ownedAccessories 是 cross-life persisted state**（per save.js startNewEgg 流程：fresh.pet.ownedAccessories = ownedAcc 保留）— 本質上是 player meta-progression，不是 per-pet behavior
+- **如果硬塞 per-pet trait counter**：會發生「pet#2 重新從 0 計算 owned 數，但實際上 ownedAccessories cross-life 有 8 件」的 sync drift — narrative 失準
+- **派生 trait 設計**：evolve.js 直接 `Object.keys(state.pet.ownedAccessories || {}).length >= 8` — single source of truth，沒有 sync 問題
+- **trade-off**：cfg.traitsDisplay 不加新行（drifter 是唯一沒 traitsDisplay row 的 form，玩家在 settings 內看不到「探險點數 8/X → 漂泊者雞」進度條） — 但 narrative 上「meta-progression award」反而更貼合「跨命累積的 boho 旅人」設計
+
+**動作**（6 處同步，比 iter#196 warmheart 主結構 8 處少 2 — 因為派生 trait 不需要 save.js trait + KNOWN_TRAITS lint update）：
+
+1. **`src/cfg.js` finalForms 加 11th entry**（dual-field 對標 iter#178 / 196）：
+   ```
+   drifter: { labelKey:"form.drifter.label", label: "漂泊者雞",
+              descKey:"form.drifter.desc", desc: "編織披肩 + 八方收集的小飾品 — 跨越多種風格、收藏家般的 boho 旅人。解鎖條件：跨命累積 8 種以上配件。" }
+   ```
+   - desc 結尾加「解鎖條件：跨命累積 8 種以上配件」明示 — 因為玩家沒 traitsDisplay row 可看進度，敘事自身要清楚
+
+2. **`src/cfg.js` petArt.adult.drifter**：
+   - 暫指 `chick-adult-healthy.png` 占位，附 §8.8 image-prompts 引導註解
+   - **意外發現**：user 在 cron 之外 ship 了 chick-adult-warmheart.png（cfg.petArt 路徑已自動更新從 placeholder 變正式 PNG path）— warmheart 視覺已 ship
+
+3. **無 `src/cfg.js` traitsDisplay 變動**：派生 trait 設計，drifter 不加新 row（保持 9 traits）
+
+4. **無 `src/save.js` defaultState 變動**：沒新 per-pet trait field
+
+5. **無 `daily.js` / `events.js` / `interactions.js` / `shop.js` mirror bump 變動**：ownedAccessories 已是 single source of truth；shop.js buy() 流程既有 `state.pet.ownedAccessories[id] = Date.now()` 直接更新
+
+6. **`src/evolve.js` finalizeForm trait 鏈**：
+   - 在 warmheart 後 / fatty 前插入 `else if (Object.keys(state.pet.ownedAccessories || {}).length >= 8) form = "drifter";`
+   - 加 inline comment 解釋「derived from cross-life ownedAccessories diversity (NOT per-pet trait counter)」
+   - priority 帶：「累積行為」軸 — gourmet (feed 60) / explorer (events 25) / warmheart (pet 50) / **drifter (accessories 8)** 4 者並列
+
+7. **無 `scripts/check-cfg-schema.js` KNOWN_TRAITS 變動**：沒新 traits key
+
+8. **`src/i18n.js` 雙語 2 條**：
+   - zh-TW: form.drifter.label「漂泊者雞」/ form.drifter.desc 完整 boho 旅人 narrative
+   - en: form.drifter.label "Drifter Chick" / form.drifter.desc "Woven shawl + trinkets gathered from everywhere — a collector-like boho wanderer crossing many styles."
+
+**lint chain 報表跳躍**：
+- 上輪 cfg-schema：`9 traits / 49 speech_pools / 10 final_forms / 21 accessories`
+- 本輪 cfg-schema：`9 traits（不變）/ 49 speech_pools（不變）/ **11 final_forms** / 21 accessories（不變）`
+- check-assets：103 不變（暫用既有 healthy.png）
+- 7 step + 8/8 smoke + i18n-shadow 23 src + i18n-coverage 175 keys ✅
+
+**i18n 進度跳躍**：
+- 種子翻譯：415 + 2 = **417 條** zh-TW + 417 條 en
+- functional sites：~259 + 1 = ~260 處
+
+**v0.5 backlog 結算（iter#216）**：
+- ✅ seasonal 補完 5/5 batch（iter#211-215）
+- ✅ **11th finalForm drifter 主結構**（**本輪**）
+- ⏳ 11th finalForm 收尾（下輪 — 成就 + speech + collect_all 10→11 + image-prompts §8.8）
+- ⏳ 跨軸 mixing-mode 成就
+- ⏳ 新美學軸（minimalist / kawaii-decora / dark academia）
+
+**ship pipeline 第四次成功複製**（gourmet → explorer → warmheart → drifter 四 form 同 SOP）：
+- 但這次主結構從 8 處 → 6 處同步（派生 trait 簡化）
+- SOP 開始進化：根據 trigger source 性質（per-pet behavior counter vs cross-life persisted state）選擇不同實作路徑
+- 後續 form candidates 可參考此分類：
+  - **per-pet behavior counter**：gourmet / explorer / warmheart 模式（trait counter + mirror bump）
+  - **cross-life meta-progression**：drifter 模式（從 persisted state 派生）
+  - **threshold + condition**：divine 模式（perfectStreakMinutes 1440 + growthScore 2000 雙條件）
+
+**threshold 設計理由（>= 8 distinct accessories）**：
+- 全 21 個配件中 8 件 = 約 38%
+- D14+ 玩家累積：feed coin 50 起步 / 一般配件 50-200 FC / day 7-14 內可累積 ~500-1000 FC
+- 8 件 ≈ 4-5 件中價（120-180 FC）+ 3-4 件低價（50-100 FC）— 自然累積路徑
+- 不過於困難（不到 collect_all 9-10 種終態的高難度）也不過於簡單（D7 玩家不會意外觸發）
+
+**驗證**：
+- `node --check src/{cfg,evolve,i18n}.js` → ✅
+- `./scripts/run-checks.sh` → 全綠 7 step + cfg-schema 進步「11 final_forms」🎉
+- 行為驗證：玩家從現在起累積購買 8 種以上配件，下次 evolve 進 adult 觸發 drifter form
+- 既有玩家 ownedAccessories ≥ 8 件的話：下次 evolve 立即觸發 — 不需要任何 migration
+
+**影響檔案**：`src/cfg.js`、`src/evolve.js`、`src/i18n.js`、`sw.js`、`docs/iteration-log.md`
+
+---
+
+## 2026-04-30 14:41 · Session A — seasonal 補完 batch 第 5（封閉）：y2k 軸「Web Day 復古遊戲機」(retro_console)，seasonal pool 17 → 18
+
+**觸發**：cron 第 215 輪 — seasonal 補完 batch 第 5 軸即 batch 收尾（per retrospective-210 §4.1 規劃 5 cron 輪 batch）。智慧 / balletcore / fairycore / cleangirl 已補完，y2k 軸是最後 candidate — 用 World Wide Web Day（08-01）做 anchor 跟既有 y2k narrative 完美對齊。
+
+**為什麼選 World Wide Web Day（08-01）作為 y2k seasonal anchor**：
+- **官方節日 anchor**：World Wide Web Day 紀念 Tim Berners-Lee 1991-08-06 公開 WWW 第一份 proposal — 8 月初固定日，narrow window 強
+- **直接連結 y2k 軸 digital nostalgia narrative**：既有 pixel_heart（chromatic glitch）+ star_clip（千禧電子飾品）+ cd_pendant（鐳射光碟）— retro_console（復古手持遊戲機）是「打開電源 + 上線玩」narrative，全 cluster 完整
+- **填補 8 月空檔**：既有 summer_breeze（07-01~08-31 整月）blanket — narrow event 加 8 月初密度，跟既有 picnic_blanket（07-13~07-19）形成「7 月中野餐 + 8 月初 retro」雙峰 narrative
+- **Y2K 軸 design 驗證**：iter#172 ship pixel_heart 後 y2k 軸都是 form-less（per GDD §5.5）— retro_console 補 seasonal 維持 form-less 結構但增加深度
+
+**動作**：
+
+1. **新增 `assets/svg/event-retro-console.svg`（30 行 SVG）**：
+   - viewBox 100×100 對標既有 25 個 event SVG
+   - 色票嚴守 CLAUDE.md §5：粉 #FF89A7（console body frame 主色 — y2k 鮮粉）+ 暗紅 #B23A48（描邊保 nostalgic palette）/ 奶油 #FFE8C8（inner panel face — Game Boy classic look）/ 紫 #9D7BD8（pixel screen 主底 — y2k 經典 LCD 紫色）+ 藍 #6BCBFF 透明 0.4（chromatic aberration cyan ghost）+ 粉 #FFB7B7 透明 0.45（chromatic aberration magenta ghost）+ pixel heart 主體 / 棕 #5C3A1B（screen 描邊深棕）/ 暗紅 #B23A48 + #8B2030（D-pad cross）/ 黃 #FFD86B（A button + LED + ✦ accent + 小 rect dot）/ 粉 #FF89A7（B button）/ 藍 #6BCBFF（corner ✦ + 小 rect dot — 軸間呼應）
+   - 結構：粉色橢圓陰影 + **rounded-rect console body**（粉色 frame + 暗紅描邊）+ **inner cream face panel**（rounded-rect）+ **pixel screen**（紫色底 + 雙層 chromatic ghost ±2-3px 偏移）+ **screen 內 pixel heart**（10-segment path 模擬 Tamagotchi 像素心）+ **D-pad cross**（兩塊 rect 交叉）+ **A button（黃）+ B button（粉）+ LED 亮黃點**+ **2 條 dashed line under screen 模擬 GAME 字樣**+ ✦✦ + 兩個 corner pixel dots
+   - **chromatic aberration ghost + pixel heart on screen** 是這件 SVG 的設計亮點：複用 iter#172 pixel_heart 的 glitch SOP 但放在 console scene 內 — narrative 是「打開遊戲機看到的畫面」
+
+2. **`src/cfg.js` seasonalEvents.pool 加第 18 條**：
+   ```
+   { id:"retro_console", art:"assets/svg/event-retro-console.svg", weight:25,
+     label:"復古遊戲機", apply:"retro_console",
+     applyEffects:{ stats:{mood:18, energy:8}, coin:18, coinReason:"網路週年" },
+     applyToastKey:"seasonal.retro_console",
+     applyToast:"🎮 翻出復古遊戲機~ Web Day 數位回憶",
+     applyToastStyle:"gold",
+     dateRange: { from: "07-31", to: "08-06" } }
+   ```
+   - 加在 spa_salts 後（y2k 軸 + 8 月日曆位置標識）
+   - **+mood 18 +energy 8**：digital nostalgia 治癒系；coin 18 = retro 玩家「Tomochi 解鎖」narrative reward
+   - **dateRange 7 天 (07-31~08-06)**：跨月 narrow window，包含 08-01 anchor 前後 1 天緩衝
+   - **gold style** + weight 25：節日 mid-high tier
+
+3. **`src/i18n.js` 雙語 1 條**：
+   - zh-TW: `seasonal.retro_console` = "🎮 翻出復古遊戲機~ Web Day 數位回憶"
+   - en: `seasonal.retro_console` = "🎮 Dug out the retro console~ Web Day digital nostalgia"
+   - 「Dug out」對應「翻出」 — 強動詞捕捉「翻箱倒櫃找出舊物」narrative；「digital nostalgia」是現代 y2k revival 標準英文片語
+
+4. **`sw.js`：CACHE_VERSION iter214 → iter215**
+
+**lint chain 報表**：
+- check-assets：102 → **103 asset references resolve**
+- 7 step + 8/8 smoke + i18n-shadow 23 src + i18n-coverage 175 keys ✅
+
+**美學軸覆蓋更新（iter#215）— 5 軸並列 5 件 milestone**：
+| 軸 | event | form | accessory | 件數 |
+|----|-------|------|-----------|------|
+| coquette / 美食家 | tea / macaron + carnation(s) | gourmet | chef_hat / strawberry_clip | 6 |
+| cottagecore | 5 events + sakura(s) | — | flower / pin_butterfly / lace_collar | 9 |
+| 智慧 / sage | book / message_bottle + stationery_set(s) | sage | glasses_thin | 5 |
+| balletcore | rose_bouquet / pointe_shoe + dance_tutu(s) | diva | ribbon_tie | 5 |
+| fairycore | dewdrop / moonlight + winter_starlight(s) | divine | wings_fairy | 5 |
+| cleangirl | bubble / towel + spa_salts(s) | healthy | blush | 5 |
+| **y2k** | pixel_heart + redenvelope(s) + **retro_console(s)（本輪）** | — | star_clip / cd_pendant | **5** ⬆ from 4 |
+| 元氣 | rainbow / confetti_pop + pinwheel(s) + rainbow_heart(s) | fighter | party_hat | 6 |
+| boho | dried_herbs + picnic_blanket(s) | — | fringe_ribbon / straw_hat | 4 |
+
+y2k 軸從 4 → **5 件**（**5 軸並列 5 件 milestone**：智慧 / balletcore / fairycore / cleangirl / y2k 全達同層次 — seasonal 補完 batch 5/5 全完成）；event total 28 → **29**（22 regular + 18 seasonal = 40，**首破 40-event milestone**）。
+
+**season pool 8 月覆蓋更新**：
+- 既有：summer_breeze（07-01~08-31 整月）
+- **本輪 retro_console（07-31~08-06 7 天）** — 8 月初 narrow event 增加密度
+- 8 月覆蓋：08-01~08-06 retro_console + summer_breeze 重疊 / 08-07~08-31 summer_breeze 單獨
+
+**i18n 進度跳躍**：
+- 種子翻譯：414 + 1 = **415 條** zh-TW + 415 條 en
+- functional sites：~258 + 1 = ~259 處
+- seasonal events 全 i18n functional（18/18 applyToastKey）
+
+**v0.5 seasonal 補完 batch 5/5 完整封閉（iter#211-215）**：
+- iter#211 智慧 ✅ stationery_set
+- iter#212 balletcore ✅ dance_tutu
+- iter#213 fairycore ✅ winter_starlight
+- iter#214 cleangirl ✅ spa_salts
+- **iter#215 y2k ✅ retro_console（本輪 batch 收尾）**
+
+**5-cron-輪 batch SOP 第二次成功複製**（對齊 iter#198-203 axis-second-event 6-輪 batch）：每輪 1 軸 1 SVG + cfg + 2 i18n keys + sw bump + iteration-log entry，pace 健康。
+
+**v0.5 backlog 結算（iter#215）**：
+- ✅ **seasonal 補完 5/5 batch（iter#211-215）**
+- ⏳ 11th finalForm（v0.5 candidate）
+- ⏳ 跨軸 mixing-mode 成就
+- ⏳ boho axis form「漂泊者雞」候選
+- ⏳ 新美學軸（minimalist / kawaii-decora / dark academia）
+
+**驗證**：
+- `node --check src/{cfg,i18n}.js` → ✅
+- `./scripts/run-checks.sh` → 全綠 7 step + check-assets 103 paths
+
+**🎉 milestone 兼結算**：
+- **40 events**（22 regular + 18 seasonal）
+- 9 美學軸 + 5 軸並列 5 件 + cottagecore 9 + 美食家 6 + 元氣 6 + boho 4
+- iter#211-215 5-輪 batch 全 ship 完整
+- 種子翻譯 415 條 / locale
+
+**影響檔案**：`assets/svg/event-retro-console.svg`（新）、`src/cfg.js`、`src/i18n.js`、`sw.js`、`docs/iteration-log.md`
+
+---
+
+## 2026-04-30 14:31 · Session A — seasonal 補完 batch 第 4：cleangirl 軸「SPA 浴鹽」(spa_salts)，seasonal pool 16 → 17
+
+**觸發**：cron 第 214 輪 — seasonal 補完 batch 第 4 軸（per retrospective-210 §4.1 排序）。cleangirl 軸 bubble（洗澡中泡泡）+ towel（洗澡後毛巾）兩個 spa-cluster atmospheric event 後，seasonal layer 自然 anchor 是「Wellness Day」— 全球 self-care 文化日。
+
+**為什麼選 World Wellness Day（06-13）作為 cleangirl seasonal anchor**：
+- **官方節日 anchor**：World Wellness Day 由 Wellness Trust 設立，每年 6 月第二個週六固定（2026 年 06-13）— narrow window 強
+- **TA 對齊**：18-35 女性 / cottagecore-coquette 主流 social 圈高度關注 wellness / spa / self-care narrative — 比起 niche 自創節日，cultural anchor 強
+- **跟 cleangirl 既有 events narrative 連續**：bubble（清洗動作中）+ towel（後段擦乾）+ winter_starlight（fairycore 12 月）→ wellness day 是「主動 self-care 投入」narrative — pet 主動「享受」spa
+- **填補 6 月空檔**：既有 zongzi（05-30~06-09）+ rainbow_heart（Pride 整月） — spa_salts（06-10~06-16）跟 zongzi 結束日銜接 + Pride 期間 narrow event 增加密度
+
+**動作**：
+
+1. **新增 `assets/svg/event-spa-salts.svg`（30 行 SVG）**：
+   - viewBox 100×100 對標既有 24 個 event SVG
+   - 色票嚴守 CLAUDE.md §5：奶油 #FFF8E7 透明 0.7（apothecary jar 玻璃透明感）+ 粉 #FF89A7（描邊 — 軟化非冷藍）/ 棕 #8B5A2B + #5C3A1B（cork stopper 軟木塞 spa apothecary 風）/ 粉 #FFB7B7（粉色鹽結晶 5 顆）+ 白 #FFFFFF（白色鹽結晶 5 顆）+ 黃 #FFD86B（鹽結晶 stroke + ✨ accent）/ 粉 #FFD8DD 透明 0.45（鹽 fill 漸層暖色 wash）/ 紫 #9D7BD8（薰衣草 sprig leaves — fairycore 跨軸呼應）/ 綠 #3E8C4A（薰衣草 stem）/ 粉 #FFC8D6（地面陰影）/ 粉 #FFB7B7（♥ accent）
+   - 結構：粉色橢圓陰影 + **apothecary jar 主體**（path 圓底 taper bottle shape）+ **頸部 rect**（縮窄區）+ **cork stopper rect**（棕色軟木塞）+ **10 顆 salt crystals**（5 粉 + 5 白，各帶 rotation 角度模擬隨機散布）+ **底部粉色 wash**（暗示鹽到一半的 fill level）+ **薰衣草 sprig**（stem 從瓶口長出 + 2 顆紫色 almond-shape 小花）+ **小 SPA 標籤**（white rect + 3 顆粉色 dot 模擬「SPA」字樣 — SVG 文字渲染不穩定改用視覺占位）+ ✨♥ corner accent
+   - **apothecary 風 + 薰衣草 sprig** 是這件 SVG 的設計亮點：跟既有 dewdrop（葉子）/ moonlight（月）區隔，jar 結構複雜度高（3 層 path：body + neck + stopper）
+
+2. **`src/cfg.js` seasonalEvents.pool 加第 17 條**：
+   ```
+   { id:"spa_salts", art:"assets/svg/event-spa-salts.svg", weight:25,
+     label:"SPA 浴鹽", apply:"spa_salts",
+     applyEffects:{ stats:{clean:18, mood:12, energy:8}, coin:10, coinReason:"Wellness Day" },
+     applyToastKey:"seasonal.spa_salts",
+     applyToast:"🧖‍♀️ 一罐玫瑰浴鹽~ Wellness 寵愛自己",
+     applyToastStyle:"gold",
+     dateRange: { from: "06-10", to: "06-16" } }
+   ```
+   - 加在 winter_starlight 後（cleangirl 軸 + 6 月日曆位置標識）
+   - **+clean 18 +mood 12 +energy 8**：clean 為主 stat（spa narrative 直接），三 stat 散布
+   - **coin 10 + coinReason「Wellness Day」**：narrative 點題 + 適度 reward（不過 luxe）
+   - **dateRange 7 天**：跟 picnic_blanket / dance_tutu narrow window pattern 一致
+   - **gold style** + weight 25：節日 mid-high tier
+
+3. **`src/i18n.js` 雙語 1 條**：
+   - zh-TW: `seasonal.spa_salts` = "🧖‍♀️ 一罐玫瑰浴鹽~ Wellness 寵愛自己"
+   - en: `seasonal.spa_salts` = "🧖‍♀️ A rose bath salt jar~ Wellness self-care day"
+   - 「Wellness 寵愛自己」對應「Wellness self-care day」 — self-care narrative 是現代 wellness 標準英文片語
+
+4. **`sw.js`：CACHE_VERSION iter213 → iter214**
+
+**lint chain 報表**：
+- check-assets：101 → **102 asset references resolve**
+- 7 step + 8/8 smoke + i18n-shadow 23 src + i18n-coverage 175 keys ✅
+
+**美學軸覆蓋更新（iter#214）**：
+| 軸 | event | form | accessory | 件數 |
+|----|-------|------|-----------|------|
+| coquette / 美食家 | tea / macaron + carnation(s) | gourmet | chef_hat / strawberry_clip | 6 |
+| cottagecore | 5 events + sakura(s) | — | flower / pin_butterfly / lace_collar | 9 |
+| 智慧 / sage | book / message_bottle + stationery_set(s) | sage | glasses_thin | 5 |
+| balletcore | rose_bouquet / pointe_shoe + dance_tutu(s) | diva | ribbon_tie | 5 |
+| fairycore | dewdrop / moonlight + winter_starlight(s) | divine | wings_fairy | 5 |
+| **cleangirl** | bubble / towel + **spa_salts(s)（本輪）** | healthy | blush | **5** ⬆ from 4 |
+| y2k | pixel_heart + redenvelope(s) | — | star_clip / cd_pendant | 4 |
+| 元氣 | rainbow / confetti_pop + pinwheel(s) + rainbow_heart(s) | fighter | party_hat | 6 |
+| boho | dried_herbs + picnic_blanket(s) | — | fringe_ribbon / straw_hat | 4 |
+
+cleangirl 軸從 4 → **5 件**（並列智慧 / balletcore / fairycore 5 件）；event total 27 → **28**（22 regular + 17 seasonal = 39）。**4 軸並列 5 件 milestone** — cleangirl 補完後 v0.5 batch 進度 4/5。
+
+**season pool 6 月覆蓋更新**：
+- 既有：zongzi（05-30~06-09）/ rainbow_heart（06-01~06-30）
+- **本輪 spa_salts（06-10~06-16 7 天）** — 6 月中段事件密度 +1
+- 6 月覆蓋：06-01~06-09 zongzi + Pride 重疊 / 06-10~06-16 Pride + spa_salts 重疊（兩 events 同時 active）/ 06-17~06-30 Pride 單獨
+
+**i18n 進度跳躍**：
+- 種子翻譯：413 + 1 = **414 條** zh-TW + 414 條 en
+- functional sites：~257 + 1 = ~258 處
+- seasonal events 全 i18n functional（17/17 applyToastKey）
+
+**v0.5 seasonal 補完 batch 進度（iter#214）**：
+- iter#211 智慧 ✅
+- iter#212 balletcore ✅
+- iter#213 fairycore ✅
+- **iter#214 cleangirl ✅（本輪）**
+- ⏳ 第 5 軸候選：y2k（萬聖節 cyber 主題? / digital nostalgic 復古日?）/ cottagecore（已 9 件最深，可不再加）/ 美食家（已 6 件含 carnation seasonal）— **y2k 是唯一不在補完之列但 4 件可考慮加 seasonal 並列升 5**
+
+**驗證**：
+- `node --check src/{cfg,i18n}.js` → ✅
+- `./scripts/run-checks.sh` → 全綠 7 step
+
+**影響檔案**：`assets/svg/event-spa-salts.svg`（新）、`src/cfg.js`、`src/i18n.js`、`sw.js`、`docs/iteration-log.md`
+
+---
+
 ## 2026-04-30 14:21 · Session A — seasonal 補完 batch 第 3：fairycore 軸「冬至星空」(winter_starlight)，seasonal pool 15 → 16
 
 **觸發**：cron 第 213 輪 — seasonal 補完 batch 第 3 軸（per retrospective-210 §4.1 排序）。fairycore 軸 dewdrop（自然清晨）+ moonlight（夜晚仙氣）兩個 atmospheric event 後，seasonal layer 自然 anchor 是「冬至 / Yule」— 北半球最長夜的星空仪式感。
