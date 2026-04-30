@@ -35,7 +35,7 @@
         bornAt: now,
         growthScore: 0,
         stats: { hunger: 80, mood: 80, clean: 80, energy: 80 },
-        traits: { fatPoints: 0, battlePoints: 0, intelligencePoints: 0, singCount: 0, lowMoodMinutes: 0, perfectStreakMinutes: 0, feedCount: 0, eventsCaught: 0 },
+        traits: { fatPoints: 0, battlePoints: 0, intelligencePoints: 0, singCount: 0, lowMoodMinutes: 0, perfectStreakMinutes: 0, feedCount: 0, eventsCaught: 0, petCount: 0 },
         nameSet: false,
         want: null,                  // active want (see CFG.wants); null when none
         wantCooldownUntil: 0,        // ms timestamp; suppress new spawns before this

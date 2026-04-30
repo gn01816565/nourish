@@ -53,6 +53,7 @@
     else if (tr.battlePoints >= 30) form = "fighter";
     else if (tr.feedCount >= 60) form = "gourmet";
     else if (tr.eventsCaught >= 25) form = "explorer";
+    else if (tr.petCount >= 50) form = "warmheart";
     else if (tr.fatPoints >= 10) form = "fatty";
     else if (tr.lowMoodMinutes >= 720) form = "ugly";
     state.pet.finalForm = form;

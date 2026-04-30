@@ -48,6 +48,7 @@
       { key:"perfectStreakMinutes", icon:"✨", label:"幸福連續", cap:1440, form:"神雞",   round:true  },
       { key:"feedCount",            icon:"🍰", label:"美食點數", cap:60,   form:"美食家雞", round:false },
       { key:"eventsCaught",         icon:"🗺️", label:"探險點數", cap:25,   form:"探險家雞", round:false },
+      { key:"petCount",             icon:"🤍", label:"依戀點數", cap:50,   form:"暖心雞",   round:false },
     ],
     interactions: {
       feed_basic:  { hunger:+25, mood:+2,  clean:-3,  energy:0,   cost:0,  cd:30,  unlock:"egg",    labelKey:"interaction.feed_basic", label:"基礎飼料", icon:"🥣", free:true },
@@ -86,13 +87,14 @@
       streak_30:      { icon:"💎", labelKey:"ach.streak_30", label:"鐵粉",       descKey:"achdesc.streak_30", desc:"連續登入 30 天" },
       collect_3:      { icon:"📖", labelKey:"ach.collect_3", label:"圖鑑學徒",   descKey:"achdesc.collect_3", desc:"收集 3 種終態" },
       collect_5:      { icon:"📚", labelKey:"ach.collect_5", label:"圖鑑專家",   descKey:"achdesc.collect_5", desc:"收集 5 種終態" },
-      collect_all:    { icon:"🏆", labelKey:"ach.collect_all", label:"圖鑑大師",   descKey:"achdesc.collect_all", desc:"收集全部 9 種終態" },
+      collect_all:    { icon:"🏆", labelKey:"ach.collect_all", label:"圖鑑大師",   descKey:"achdesc.collect_all", desc:"收集全部 10 種終態" },
       form_divine:    { icon:"✨", labelKey:"ach.form_divine", label:"天使降臨",   descKey:"achdesc.form_divine", desc:"養出天使雞" },
       form_diva:      { icon:"🎤", labelKey:"ach.form_diva", label:"超新星",     descKey:"achdesc.form_diva", desc:"養出歌姬雞" },
       form_fighter:   { icon:"💪", labelKey:"ach.form_fighter", label:"元氣之星",   descKey:"achdesc.form_fighter", desc:"養出元氣雞" },
       form_sage:      { icon:"🧠", labelKey:"ach.form_sage", label:"智者",       descKey:"achdesc.form_sage", desc:"養出智慧雞" },
       form_gourmet:   { icon:"🍰", labelKey:"ach.form_gourmet", label:"美食評鑑家", descKey:"achdesc.form_gourmet", desc:"養出美食家雞" },
       form_explorer:  { icon:"🗺️", labelKey:"ach.form_explorer", label:"小小探險家", descKey:"achdesc.form_explorer", desc:"養出探險家雞" },
+      form_warmheart: { icon:"🤍", labelKey:"ach.form_warmheart", label:"暖心夥伴", descKey:"achdesc.form_warmheart", desc:"養出暖心雞" },
       star_caught:    { icon:"⭐", labelKey:"ach.star_caught", label:"幸運星",     descKey:"achdesc.star_caught", desc:"接住流星事件" },
       rich:           { icon:"💰", labelKey:"ach.rich", label:"小富翁",     descKey:"achdesc.rich", desc:"累積飼料幣 500" },
       perfect_day:    { icon:"🌟", labelKey:"ach.perfect_day", label:"完美的一天", descKey:"achdesc.perfect_day", desc:"四項數值同時 >70 持續 30 分" },
@@ -318,6 +320,10 @@
         { id:"dewdrop",   art:"assets/svg/event-dewdrop.svg",        weight:6,  label:"葉上露珠",   apply:"dewdrop",   applyEffects:{ stats:{mood:10, clean:8} },                                                          applyToastKey:"event.dewdrop",  applyToast:"💧 葉上一顆透亮露珠~" },
         // iter#172 y2k 軸 event 層落地（對標 star_clip / cd_pendant 既有配件）— 像素愛心 + chromatic glitch，digital nostalgia event；完成 8 美學軸 event 層全覆蓋
         { id:"pixel_heart",art:"assets/svg/event-pixel-heart.svg",   weight:5,  label:"像素愛心",   apply:"pixel_heart", applyEffects:{ stats:{mood:14}, coin:6, coinReason:"老遊戲機掉幣" },                              applyToastKey:"event.pixel_heart", applyToast:"💖 一顆閃亮的像素愛心~" },
+        // iter#198 cottagecore 補充：filler「種子粒」 — 小雞主場景的天然食物，跟 candy / mushroom 同 small-pickup 帶但語意更貼近寵物本體
+        { id:"seed",      art:"assets/svg/event-seed.svg",           weight:9,  label:"灑落的種子",  apply:"seed",       applyEffects:{ stats:{hunger:12, mood:4} },                                                       applyToastKey:"event.seed",        applyToast:"🌾 撿到散落的小米粒~" },
+        // iter#199 cleangirl 軸第二 event：軟綿綿毛巾 — 跟既有 bubble 區隔（bubble = 洗澡中泡泡 / towel = 洗完後的暖呼呼）
+        { id:"towel",     art:"assets/svg/event-towel.svg",          weight:7,  label:"軟綿綿毛巾",  apply:"towel",      applyEffects:{ stats:{clean:14, mood:6} },                                                        applyToastKey:"event.towel",       applyToast:"🛁 暖暖的乾毛巾~ 全身舒服" },
       ],
     },
     economy: { dailyLogin: 30, evolveReward: 100, streak7: 50, streak30: 200, firstHatchBonus: 60 },
@@ -361,6 +367,7 @@
       form_divine:  ["願平靜降臨於你", "(光暈閃爍)", "(羽毛微微發光)", "心如春日早晨~", "✦ 溫柔守護 ✦"],
       form_gourmet: ["今天的下午茶要配什麼呢？", "🍰 嗯～這個層次很有意思", "新菜單想試試看嗎？", "甜點要適量才優雅", "🥐 這個酥度剛剛好"],
       form_explorer:["今天去哪裡探險呢？", "🗺️ 角落還有沒撿過的小驚喜", "(整理背包中)", "✨ 看！我撿到的~", "外面的世界好大~"],
+      form_warmheart:["再摸一下嘛~", "🤍 蜷在你身邊就好", "(輕輕靠著)", "今天也想要抱抱", "就這樣賴著不動 zzz~"],
       wantNag:     ["主人有看到我的願望嗎？", "拜託啦~", "求求你嘛", "(用期待的眼神看著主人)"],
       rich:        ["錢好像變多了~", "覺得我們可以買點什麼了！"],
       quirk:       ["(發呆)", "(整理羽毛)", "(看天空)", "(踱步)", "♪"],
@@ -398,22 +405,22 @@
       wings:       { slot:"wing", art:"assets/images/acc-wings-angel.png", labelKey:"acc.wings", label:"夢幻翅膀", icon:"🪽", price:350 },
       wings_fairy: { slot:"wing", art:"assets/images/acc-wings-fairy.png", labelKey:"acc.wings_fairy", label:"彩虹翅膀", icon:"🌈", price:480 },
       // v0.3 cottagecore × coquette mix-and-match additions (iter#102):
-      pin_butterfly: { slot:"hat",  art:"assets/svg/acc-pin-butterfly.svg", labelKey:"acc.pin_butterfly", label:"蝴蝶髮夾", icon:"🦋", price:90  },
+      pin_butterfly: { slot:"hat",  art:"assets/images/acc-pin-butterfly.png", labelKey:"acc.pin_butterfly", label:"蝴蝶髮夾", icon:"🦋", price:90  },
       lace_collar:   { slot:"neck", art:"assets/svg/acc-lace-collar.svg",   labelKey:"acc.lace_collar", label:"蕾絲領片", icon:"🌷", price:140 },
       // v0.3 cleangirl axis (iter#103): minimal aesthetic, soft natural look.
-      blush:         { slot:"face", art:"assets/svg/acc-blush.svg",         labelKey:"acc.blush", label:"自然腮紅", icon:"🌸", price:60  },
+      blush:         { slot:"face", art:"assets/images/acc-blush.png",       labelKey:"acc.blush", label:"自然腮紅", icon:"🌸", price:60  },
       // v0.3 balletcore axis (iter#110): ribbon under collar, ballet leotard vibe.
       ribbon_tie:    { slot:"neck", art:"assets/svg/acc-ribbon-tie.svg",    labelKey:"acc.ribbon_tie", label:"芭蕾蝴蝶結", icon:"🩰", price:110 },
       // v0.3 fairycore axis (iter#116): glittery star clip, dreamy whimsy vibe.
       star_clip:     { slot:"hat",  art:"assets/svg/acc-star-clip.svg",     labelKey:"acc.star_clip", label:"星星髮夾",   icon:"⭐", price:80  },
       // v0.3 y2k axis (iter#119): iridescent CD pendant, 2000s holographic vibe.
-      cd_pendant:    { slot:"neck", art:"assets/svg/acc-cd-pendant.svg",    labelKey:"acc.cd_pendant", label:"鐳射光碟墜飾", icon:"💿", price:160 },
+      cd_pendant:    { slot:"neck", art:"assets/images/acc-cd-pendant.png",  labelKey:"acc.cd_pendant", label:"鐳射光碟墜飾", icon:"💿", price:160 },
       // iter#159 美食家軸：呼應 gourmet 終態 + iter#132「下午茶」隨機事件
-      chef_hat:      { slot:"hat",  art:"assets/svg/acc-chef-hat.svg",      labelKey:"acc.chef_hat", label:"粉粉廚師帽", icon:"👨‍🍳", price:200 },
+      chef_hat:      { slot:"hat",  art:"assets/images/acc-chef-hat.png",    labelKey:"acc.chef_hat", label:"粉粉廚師帽", icon:"👨‍🍳", price:200 },
       // iter#167 美食家軸續作：與 chef_hat 對偶的小品髮夾，cottagecore 草莓 motif
       strawberry_clip: { slot:"hat", art:"assets/svg/acc-strawberry-clip.svg", labelKey:"acc.strawberry_clip", label:"草莓髮夾", icon:"🍓", price:130 },
       // iter#168 智慧軸 accessory 層落地：sage 形容是「半月眼鏡」— 拆出來成獨立配件讓任何 form 都能戴
-      glasses_thin:    { slot:"face", art:"assets/svg/acc-glasses-thin.svg",   labelKey:"acc.glasses_thin",   label:"半月眼鏡", icon:"👓", price:150 },
+      glasses_thin:    { slot:"face", art:"assets/images/acc-glasses-thin.png", labelKey:"acc.glasses_thin",   label:"半月眼鏡", icon:"👓", price:150 },
     },
     // Stage display labels (egg / chick / junior / adult).
     stageLabels: { egg: "蛋", chick: "雛雞", junior: "幼雞", adult: "成雞" },
@@ -429,6 +436,7 @@
       divine:  { labelKey:"form.divine.label",  label: "天使雞",   descKey:"form.divine.desc",  desc: "粉金光環、純白羽毛，傳說中的天使存在。" },
       gourmet: { labelKey:"form.gourmet.label", label: "美食家雞", descKey:"form.gourmet.desc", desc: "戴著粉色廚師帽，對美食有獨到品味，從餵食累積中走出的下午茶系成雞。" },
       explorer:{ labelKey:"form.explorer.label", label: "探險家雞", descKey:"form.explorer.desc", desc: "好奇心爆棚！背包裡裝滿到處撿來的小蘑菇、花瓣、星星 — 是這片世界的小探險家。" },
+      warmheart:{ labelKey:"form.warmheart.label", label: "暖心雞", descKey:"form.warmheart.desc", desc: "蜷在主人身邊就是最幸福的午後，有點懶懶的、總是想被摸頭 — 從互動累積中自然走出的暖心系。" },
     },
     petArt: {
       egg:    "assets/images/egg.png",
@@ -445,6 +453,7 @@
         diva:    "assets/images/chick-adult-diva.png",
         gourmet: "assets/images/chick-adult-gourmet.png",
         explorer:"assets/images/chick-adult-explorer.png",
+        warmheart:"assets/images/chick-adult-warmheart.png",
       },
     },
     moodArt: {

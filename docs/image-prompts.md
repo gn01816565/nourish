@@ -113,6 +113,20 @@ sides. Sparkles ✦ and stars around. Serene smile, eyes gently closed or radian
 white feather highlights. Background remains transparent except for the soft glow.
 ```
 
+## 8.7 暖心雞（chick-adult-warmheart.png）  *iter#196 v0.4 第 10 個進化分支 — 待生圖補上，目前 cfg.petArt 暫指 healthy 占位*
+```
+[全域風格]
+Subject: a cuddly affectionate chicken. Soft yellow body in standard chick-adult proportions,
+slightly more rounded / plumper than baseline (suggesting cozy contentment, but not fatty —
+distinct from chick-adult-fat). Half-closed contented eyes (◡‿◡), soft blush cheeks, tiny
+peaceful smile. Wearing a small pink scarf or cozy knit shawl draped over the shoulders.
+Optional: tiny heart 🤍 floating nearby. Pose: leaning slightly to one side as if resting
+against an unseen master. Background transparent. Mood: cottagecore-cozy / lazy afternoon /
+tender intimacy. Soft pastel palette, never sharp / aggressive lines. Avoid drowsy (use
+sleeping form for that) — eyes are gently lidded but awake.
+```
+**為什麼這個設計**：呼應 warmheart 解鎖路徑（pet_head + pet_belly + talk 累計 50 次） — pose 設計暗示「依偎」narrative，scarf / shawl 強化 cozy domesticity；blush + 🤍 軟化「清涼 / 距離感」常見問題；鏡頭框架感「靠著主人」是 GDD §10.3 elder companion narrative 的視覺對應。**解鎖條件**：state.pet.traits.petCount >= 50（累計摸頭 / 摸肚 / 對話 50 次後解鎖，~1-2 週日常養成達標）。
+
 ## 8.6 探險家雞（chick-adult-explorer.png）  *iter#183 v0.3 第 9 個進化分支 — 待生圖補上，目前 cfg.petArt 暫指 healthy 占位*
 ```
 [全域風格]

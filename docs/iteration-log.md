@@ -4,6 +4,247 @@
 
 ---
 
+## 2026-04-30 11:51 · Session A — 新隨機事件「灑落的種子」(seed)：cottagecore 補充 filler，regular pool 16 → 17
+
+**觸發**：cron 第 198 輪 — iter#196-197 完整 ship warmheart（v0.4 第 10 form）後切回 content 變化（rotation 健康，2 ship 輪後該換手）。retrospective-190.md §4.2 列「新隨機事件 batch」是 v0.4 候選 — 本輪起手第一條，加最自然的 cottagecore 補充。
+
+**為什麼選種子粒（seed）作為第 17 個 regular event**：
+- **小雞主場景的天然食物**：cottagecore 軸已有 mushroom / petal / butterfly / herb 4 個 atmospheric event，但都是「外來元素」— seed 是**寵物本體最直接相關**的 motif（雞吃米嘛）— 增加 narrative immersion
+- **填補 weight 9 small-pickup tier 空缺**：bubble 9 是清潔軸 / candy 8 / petal 8 — seed 9 落在中等頻率帶
+- **設計區隔現有 events**：tea / macaron / candy 是「人類甜點」；seed 是 bird-food authentic — 視覺辨識度（米粒形狀 vs 圓糖果 vs 馬卡龍三層）
+- **數值設計**：+hunger 12 / +mood 4 — 中等飽腹 + 微愉悅，sub feed_basic（25 hunger）一截但 free，跟 mushroom（mood 10 + energy 5）+ candy（mood 18 + hunger 8）區隔
+
+**動作**：
+
+1. **新增 `assets/svg/event-seed.svg`（17 行 SVG）**：
+   - viewBox 100×100 對標既有 13 個 event SVG
+   - 色票嚴守 CLAUDE.md §5：黃 #FFD86B / 橘 #FF9F43（米粒漸層 — 4 黃 + 4 橘交錯）/ 棕 #8B5A2B（米粒描邊 — 標準小麥色）/ 粉 #FFC8D6（地面陰影 / 軟化）/ 黃 #FFD86B（✨ accent）/ 粉 #FFB7B7（· accent dot）
+   - 結構：粉色橢圓地面陰影 + **8 顆 almond-shaped 米粒**散布（path quadratic curve 形狀，4 上排 / 4 下排，大小+位置略微錯落呈現自然散落感）+ 2 個 corner accent
+   - 米粒 path 用 `q` 二次曲線描繪 almond 形狀 — `M x y q 0 -7 5 -8 q 5 1 5 8 q 0 5 -5 6 q -5 -1 -5 -6 z` 是緊湊 6-segment closed path
+   - 色票黃橘交錯產生「成熟米粒 / 未成熟米粒」自然多樣感
+
+2. **`src/cfg.js` randomEvents.pool 加第 17 條**：
+   ```
+   { id:"seed", art:"assets/svg/event-seed.svg", weight:9,
+     label:"灑落的種子", apply:"seed",
+     applyEffects:{ stats:{hunger:12, mood:4} },
+     applyToastKey:"event.seed",
+     applyToast:"🌾 撿到散落的小米粒~" }
+   ```
+   - 加在 pixel_heart 後（cottagecore filler 註解串連 iter#198 標識）
+   - **無 coin**：authentic 自然食物，pet 撿來吃，不該帶錢（對標 dewdrop / petal / herb 純自然 atmospheric event）
+   - **applyToastKey** 直接走 cfg-level i18n SOP — events.js iter#180 patch 自動支持 dual-field
+
+3. **`src/i18n.js` 雙語 1 條**：
+   - zh-TW: `event.seed` = "🌾 撿到散落的小米粒~"
+   - en: `event.seed` = "🌾 Found scattered millet grains~"
+   - 「millet」（小米）比「seed」具體 — 雞吃米的真實食物指向，narrative 更貼
+
+4. **`sw.js`：CACHE_VERSION iter197 → iter198**
+
+**lint chain 報表**：
+- check-assets：87 → **88** asset references resolve
+- 6 step + 8/8 smoke + i18n-shadow 23 src + i18n-coverage 175 keys ✅
+
+**美學軸覆蓋更新（iter#198）**：
+| 軸 | event | form | accessory | 件數 |
+|----|-------|------|-----------|------|
+| coquette / 美食家 | tea / macaron | gourmet | chef_hat / strawberry_clip | 5 |
+| **cottagecore** | butterfly / mushroom / petal / herb / **seed（本輪）** | — | flower / pin_butterfly / lace_collar | **8** ⬆ from 7 |
+| 智慧 / sage | book | sage | glasses_thin | 3 |
+| balletcore | rose_bouquet | diva | ribbon_tie | 3 |
+| fairycore | dewdrop | divine | wings_fairy | 3 |
+| cleangirl | bubble | healthy | blush | 3 |
+| y2k | pixel_heart | — | star_clip / cd_pendant | 3 |
+| 元氣 | rainbow | fighter | party_hat | 3 |
+
+cottagecore 軸從 7 → **8 件**（本 arc 最廣軸 + 1）；event total 16 → **17**。
+
+**i18n 進度跳躍**：
+- 種子翻譯：400 + 1 = **401 條** zh-TW + 401 條 en
+- functional sites：~245 + 1 = ~246 處
+
+**未來 follow-up**（不在本輪）：
+- 下個 event candidate：cleangirl / 智慧 / balletcore / fairycore 軸補第二件 event
+- 跨 pet memorial 進階 UI（v0.4 backlog）
+- 新美學軸開發（boho / minimalist / kawaii-decora / dark academia）
+- iter#210 retrospective-210（12 cron 輪後）
+
+**影響檔案**：`assets/svg/event-seed.svg`（新）、`src/cfg.js`、`src/i18n.js`、`sw.js`、`docs/iteration-log.md`
+
+---
+
+## 2026-04-30 11:41 · Session A — warmheart 終態收尾：成就 form_warmheart + speech 5 條 + collect_all 9→10 + image-prompts §8.7 + 雙語 i18n
+
+**觸發**：cron 第 197 輪 — iter#196 ship warmheart 主結構備註明確下輪做收尾。對標 iter#157 gourmet 收尾 / iter#184 explorer 收尾 SOP — 三項收尾：(1) 解鎖成就 / (2) form-specific speech / (3) collect_all bump — 第三次成功複製 ship 完整 SOP。
+
+**動作**（5 處同步）：
+
+1. **`src/cfg.js` achievements 加第 28 條 form_warmheart**：
+   - `{ icon:"🤍", labelKey:"ach.form_warmheart", label:"暖心夥伴", descKey:"achdesc.form_warmheart", desc:"養出暖心雞" }`
+   - 對標 form_divine / diva / fighter / sage / gourmet / explorer 6 個既有 form 成就 dual-field i18n 慣例
+
+2. **`src/cfg.js` collect_all.desc 9→10**：
+   - 「收集全部 9 種終態」→「收集全部 10 種終態」
+
+3. **`src/cfg.js` speech.form_warmheart 5 條 cuddly / lazy / affectionate 口吻**：
+   - 「再摸一下嘛~」「🤍 蜷在你身邊就好」「(輕輕靠著)」「今天也想要抱抱」「就這樣賴著不動 zzz~」
+   - 跟既有 form 個性區隔：fighter 元氣 / sage 思辨 / diva 表演 / divine 守護 / gourmet 美食 / explorer 探險 / **warmheart 依戀** — 第 7 個鮮明角色聲音
+   - 5 條等量於既有 form_divine / diva / sage / gourmet / explorer
+
+4. **`src/achievements.js` evaluator 兩處更新**：
+   - 加 `["form_warmheart", dexUnlocked.has("warmheart")]` 排在 form_explorer 後 / collect_3 前
+   - `["collect_all", dexUnlocked.size >= 9]` → `>= 10` — 對齊新 finalForms 集合（10 entries）
+
+5. **`src/i18n.js` 8 條更新**：
+   - **新增雙語 6 條**：`ach.form_warmheart` 暖心夥伴 / Warmheart Companion、`achdesc.form_warmheart` 養出暖心雞 / Raised a warmheart chicken、`speech.form_warmheart` 中英 array 各 5 條（「再摸一下嘛」/ "One more pat please" 等）
+   - **修舊 2 條**：`achdesc.collect_all` 9 → 10 種（中 + 英）
+   - **修舊 2 條**：`onboarding2.dex` 9 → 10 final forms（中 + 英）
+
+6. **`docs/image-prompts.md` 加 §8.7 warmheart 條目**：
+   - cuddly / cozy 設計：rounded body（區隔 fatty 圓潤 vs warmheart 慵懶圓潤）、half-closed contented eyes、blush + scarf / knit shawl、lean to one side（暗示靠在主人身邊）、🤍 floating heart accent
+   - 設計動機 + 解鎖條件「state.pet.traits.petCount >= 50」doc + 跟 form_fatty / mood-sleeping 視覺區隔說明
+
+7. **`sw.js`：CACHE_VERSION iter196 → iter197**
+
+**lint chain 報表跳躍**：
+- 上輪 cfg-schema：`9 traits / 48 speech_pools / 10 final_forms`
+- 本輪 cfg-schema：`9 traits / **49 speech_pools** / 10 final_forms`
+- speech_pools +1（form_warmheart）
+
+**i18n 進度跳躍**：
+- 種子翻譯：395 + 5 = **400 條** zh-TW + 400 條 en（**首破 400 條 milestone**）
+- functional 涵蓋：成就 form 系列從 6 → **7** 全 functional i18n（divine / diva / fighter / sage / gourmet / explorer / warmheart）
+- speech.form_X 對應 9 finalForms × 5 條 = 45 條 i18n functional（healthy / fatty / ugly + 6 軸正向）
+
+**warmheart 終態完整封閉度（iter#197）**：
+| 元素 | 狀態 | 來源 |
+|------|------|------|
+| cfg.finalForms.warmheart entry | ✅ | iter#196 |
+| cfg.petArt.adult.warmheart 占位 | ✅ | iter#196 |
+| cfg.traitsDisplay.petCount | ✅ | iter#196 |
+| save.js defaultState pet.traits.petCount | ✅ | iter#196 |
+| daily.js mirror bump（pet_head/belly/talk → traits.petCount） | ✅ | iter#196 |
+| evolve.js trait priority chain | ✅ | iter#196 |
+| KNOWN_TRAITS lint | ✅ | iter#196 |
+| i18n form key（zh + en） | ✅ | iter#196 |
+| **achievement form_warmheart** | **✅ 本輪** |
+| **speech.form_warmheart 5 條 + i18n key** | **✅ 本輪** |
+| **collect_all 9→10 bump（cfg + i18n + onboarding）** | **✅ 本輪** |
+| **image-prompts §8.7** | **✅ 本輪** |
+
+**100% v0.4 10th form ship-ready**（除真實 PNG art — 等待設計師 / AI 生圖；user 在 cron 外已 ship 了 gourmet + explorer 兩張，warmheart 是第 8/10 待補的）— 對標 gourmet（iter#156-157）/ explorer（iter#183-184）兩輪 ship 完整 SOP **第三次成功複製**。
+
+**Game's first 400-seed-translation milestone**：
+- iter#100 起點 i18n.js seed 12 條 → iter#197 = **400 條 zh-TW + 400 條 en = 800 i18n.js 條目**
+- 跨 97 cron 輪累計 +388 條 / locale = 平均每輪 +4 條
+- 主要批次：iter#127-141 圖鑑 / 設定 / 玩具 + iter#177-193 cfg-level i18n batch（11 batches × 平均 21 條）+ form-specific（10 forms × 兩個 helper 平均 4 條）
+
+**v0.4 backlog（iter#197）**：
+- ✅ 10th finalForm warmheart 完整封閉（iter#196-197）
+- ⏳ 跨 pet memorial 進階 UI
+- ⏳ 新美學軸開發（boho / minimalist / kawaii-decora / dark academia）
+- ⏳ 新隨機事件 batch
+- ⏳ accessories label fallback i18n（v0.5 海外 prerequisite）
+- ⏳ iter#210 retrospective-210（13 cron 輪後）
+
+**驗證**：
+- `node --check src/{cfg,achievements,i18n}.js` → ✅
+- `./scripts/run-checks.sh` → 全綠 7 step + cfg-schema 進步「9 traits / 49 speech_pools / 10 final_forms」
+- i18n-shadow + i18n-coverage（175 keys 不變因為 form-specific 都是 cfg-driven dynamic-key path）+ smoke 8/8 全綠
+
+**為什麼第三次 ship pipeline 第三次都成功**：
+- gourmet（iter#156-157）+ explorer（iter#183-184）+ warmheart（iter#196-197）三次連續 2-輪 ship form pipeline
+- 每次 8 處主結構 sync + 5 處收尾 sync = 13 次改動拆兩輪 → review 顆粒度 manageable
+- SOP 化的 patient-design-doc 表格（main + 收尾兩個 checklist）讓改動點不漏 — 每個 form 都對標 KNOWN_TRAITS / cfg.finalForms / save.js defaultState / evolve.js chain / 成就 / speech / collect_all / onboarding / image-prompts 9 + 4 個 sync points
+
+**影響檔案**：`src/cfg.js`、`src/achievements.js`、`src/i18n.js`、`docs/image-prompts.md`、`sw.js`、`docs/iteration-log.md`
+
+---
+
+## 2026-04-30 11:31 · Session A — v0.4 第 10 個 finalForm「暖心雞」(warmheart) 主結構：終態 9 → 10、新 trait petCount
+
+**觸發**：cron 第 196 輪 — v0.3 全部封閉（iter#195 元氣軸 GDD 釐清）後切到 v0.4 開新。retrospective-190.md §4.2 列「10th finalForm」是 v0.4 候選首位；對標 iter#156-157 gourmet / iter#183-184 explorer 的 2-輪 ship SOP — 本輪主結構 / 下輪收尾。
+
+**為什麼選 warmheart**：
+- **TA 親密敘事缺口**：既有 9 form 涵蓋 healthy / divine / diva / sage / fighter / gourmet / explorer / fatty / ugly — 沒有純粹「依戀 / 摸頭累積」軸，但 GDD 主軸是「關係建立」（cottagecore-coquette TA 18-35F 偏好）— 這軸非有不可
+- **trait 維度直接複用**：petCount 已存在於 state.history（pet_head + pet_belly + talk 互動累計），daily.js bumpHistory 內既有 callsite — 加 mirror bump 到 state.pet.traits.petCount 即可，不創新 trigger source
+- **threshold 50** = 約 1-2 週日常摸頭（5-8 互動/天）— 比 gourmet 60 / explorer 25 中等難度，跟 sage 30 / fighter 30 同帶
+- **narrative**：「蜷在主人身邊就是最幸福的午後」是 cottagecore TA 經典「relaxed afternoon」意象
+
+**動作**（8 處同步，per gourmet/explorer SOP）：
+
+1. **`src/cfg.js` traitsDisplay 加第 9 條**：
+   - `{ key:"petCount", icon:"🤍", label:"依戀點數", cap:50, form:"暖心雞", round:false }`
+
+2. **`src/cfg.js` finalForms 加 10th entry**（dual-field 對標 iter#178）：
+   ```
+   warmheart:{ labelKey:"form.warmheart.label", label: "暖心雞",
+               descKey:"form.warmheart.desc", desc: "蜷在主人身邊就是最幸福的午後，有點懶懶的、總是想被摸頭 — 從互動累積中自然走出的暖心系。" }
+   ```
+
+3. **`src/cfg.js` petArt.adult.warmheart**：
+   - 暫指 `assets/images/chick-adult-healthy.png` 占位（cfg-schema invariant 7.5 雙向 key 同步必須）
+   - 註解引導 `docs/image-prompts.md §8.7` 待補
+   - **意外收穫**：iter#196 過程中發現 user 已在 cron 之外 ship 了 chick-adult-gourmet.png + chick-adult-explorer.png 兩張圖（既有 placeholder 路徑改成正式 PNG path）— gourmet / explorer 視覺已 ship
+
+4. **`src/save.js` defaultState pet.traits**：
+   - 加 `petCount: 0` 第 9 個維度
+   - migration via deepMerge 自動補舊存檔
+
+5. **`src/daily.js` bumpHistory**：
+   - pet_head / pet_belly / talk 互動 case 從原 1 行 (h.petCount += 1) 升級成 block：mirror bump `state.pet.traits.petCount = (state.pet.traits.petCount || 0) + 1`
+   - per-pet 累計，跟 history.petCount 跨生命週期不同層級（同 iter#183 explorer 的 events.js mirror SOP）
+
+6. **`src/evolve.js` finalizeForm trait 鏈**：
+   - 在 explorer 後 / fatty 前插入 `else if (tr.petCount >= 50) form = "warmheart";`
+   - priority 帶：「累積行為」軸 — gourmet（feed 60）/ explorer（events 25）/ warmheart（pet 50）三者同帶
+
+7. **`scripts/check-cfg-schema.js` KNOWN_TRAITS**：
+   - 加 `"petCount"`，否則 traitsDisplay 第 9 條被 lint 標未知 key
+
+8. **`src/i18n.js` 雙語 2 條**：
+   - zh-TW: form.warmheart.label「暖心雞」/ form.warmheart.desc「蜷在主人身邊...」narrative
+   - en: form.warmheart.label "Warmheart Chick" / form.warmheart.desc "Curling up beside master is the happiest afternoon — a little lazy, always wanting head pats. The cuddly path of accumulated affection."
+
+**lint chain 報表跳躍**：
+- 上輪 cfg-schema：`8 traits / 48 speech_pools / 9 final_forms`
+- 本輪 cfg-schema：`**9 traits** / 48 speech_pools / **10 final_forms**`
+- check-assets：85 → 87（先前 user ship 了 gourmet + explorer PNG，自動 +2 paths）
+- 6 step + 8/8 smoke + i18n-shadow 23 src + i18n-coverage 175 keys ✅
+
+**i18n 進度**：
+- 種子翻譯：393 + 2 = **395 條** zh-TW + 395 條 en
+- functional sites：~244 + 1 = ~245 處
+- 注意 i18n-coverage 仍 175（form.warmheart.* 是 dual-field cfg-driven、非 callsite 直接呼叫 — formLabel(form) helper 透過 cfg.labelKey 資料驅動，不被 t() callsite scan 捕捉，但兩 locale 都有定義）
+
+**finalForms 第 10 個 milestone**：
+- iter#100 起點 7 forms → iter#156 gourmet（v0.2）= 8 → iter#183 explorer（v0.3）= 9 → **iter#196 warmheart（v0.4）= 10**
+- Game's first **10-form** milestone 🎉
+- 對標 Tamagotchi（原版 6 forms）/ Pou（4 stages × 變化）/ Adopt Me（多 species 但無 form 進化）— ChickaDay 在 form 維度上是 cottagecore 細粒度設計
+
+**為什麼這輪不一次 ship 完整收尾**：
+- 對標 iter#156 gourmet ship 經驗 + iter#183 explorer：13 處改動 review 失焦風險
+- 本輪 8 處同步主結構紮實
+- **下輪收尾 5 個小項**：成就 form_warmheart + speech.form_warmheart 5 條 + achievements.js evaluator + collect_all 9→10 + onboarding text bump + image-prompts §8.7
+
+**v0.4 backlog（iter#196）**：
+- ⏳ 10th finalForm 收尾（下輪）
+- ⏳ 跨 pet memorial 進階 UI
+- ⏳ 新美學軸開發（boho / minimalist / kawaii-decora / dark academia）
+- ⏳ 新隨機事件 batch
+- ⏳ accessories label fallback 19 / interactions label fallback 14 / wants text fallback 14 / achievements label/desc fallback 52 — cfg-level i18n cleanup（已有 functional via key，fallback 補完是 v0.5 海外發行 prerequisite）
+
+**驗證**：
+- `node --check src/{cfg,save,daily,evolve,i18n}.js` → ✅
+- `./scripts/run-checks.sh` → 全綠 7 step + cfg-schema 進步到「9 traits / 10 final_forms」
+- 行為驗證：玩家從現在起 pet_head / pet_belly / talk 互動 → state.pet.traits.petCount 累計 → 達 50 進 adult 觸發 warmheart form
+- migration：deepMerge 把舊存檔的 traits 自動補 petCount: 0 — 零 production risk
+
+**影響檔案**：`src/cfg.js`、`src/save.js`、`src/daily.js`、`src/evolve.js`、`scripts/check-cfg-schema.js`、`src/i18n.js`、`sw.js`、`docs/iteration-log.md`
+
+---
+
 ## 2026-04-30 11:21 · Session A — GDD §5.5 美學軸 8-axis 地圖 + 元氣軸釐清（v0.3 唯一 backlog 封閉）
 
 **觸發**：cron 第 195 輪 — iter#194 i18n-coverage lint 後切到 docs / 企劃延伸變化。retrospective-190.md §4.3 + iter#194 收尾「元氣軸 GDD 釐清」是 v0.3 backlog 唯一沒做的純 docs 項目，連續 backlog 約 25 輪，本輪兌現。

@@ -69,8 +69,11 @@
     }
     else if (interactionKey === "bath")                h.bathCount = (h.bathCount || 0) + 1;
     else if (interactionKey.startsWith("play_"))       h.playCount = (h.playCount || 0) + 1;
-    else if (interactionKey.startsWith("pet_") || interactionKey === "talk")
-                                                       h.petCount  = (h.petCount  || 0) + 1;
+    else if (interactionKey.startsWith("pet_") || interactionKey === "talk") {
+      h.petCount  = (h.petCount  || 0) + 1;
+      // Mirror to per-pet trait counter so finalForm "warmheart" path can resolve.
+      if (state.pet.traits) state.pet.traits.petCount = (state.pet.traits.petCount || 0) + 1;
+    }
   }
 
   function trackTask(interactionKey) {

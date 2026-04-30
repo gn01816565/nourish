@@ -182,7 +182,7 @@ for (const [k, def] of Object.entries(CFG.finalForms || {})) {
 const KNOWN_TRAITS = new Set([
   "fatPoints", "battlePoints", "intelligencePoints",
   "singCount", "lowMoodMinutes", "perfectStreakMinutes",
-  "feedCount", "eventsCaught",
+  "feedCount", "eventsCaught", "petCount",
 ]);
 for (const d of CFG.traitsDisplay || []) {
   if (!KNOWN_TRAITS.has(d.key)) {
