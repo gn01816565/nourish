@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <!-- Boho axis 2nd content: hanging dried herb bouquet on string.
+       Earth-tone palette + cottagecore softening per CLAUDE.md TA. -->
+  <!-- Hanging string (top to herb tie point) -->
+  <line x1="50" y1="6" x2="50" y2="22" stroke="#8B5A2B" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- Wrapping twine knot at top of bouquet -->
+  <ellipse cx="50" cy="24" rx="6" ry="2.5" fill="#FFE8C8" stroke="#8B5A2B" stroke-width="1.5"/>
+  <!-- Herb stems fanning down — 5 stems with slight outward tilt -->
+  <g stroke="#6BCB77" stroke-width="2" stroke-linecap="round">
+    <line x1="50" y1="26" x2="34" y2="74"/>
+    <line x1="50" y1="26" x2="42" y2="78"/>
+    <line x1="50" y1="26" x2="50" y2="80"/>
+    <line x1="50" y1="26" x2="58" y2="78"/>
+    <line x1="50" y1="26" x2="66" y2="74"/>
+  </g>
+  <!-- Sage / lavender tip leaves on each stem (almond-shape leaves) -->
+  <g stroke="#3E8C4A" stroke-width="1.2" stroke-linejoin="round">
+    <!-- Leftmost stem (sage green) -->
+    <path d="M 32 50 q -4 -2 -2 -6 q 4 -2 6 2 q 0 4 -4 4 z" fill="#6BCB77"/>
+    <path d="M 30 64 q -3 -2 -1 -5 q 3 -1 5 2 q 0 3 -4 3 z" fill="#6BCB77"/>
+    <path d="M 33 76 q -2 1 -1 4" fill="none" stroke-width="1"/>
+    <!-- Stem 2 (sage with purple tip — lavender hint) -->
+    <path d="M 41 50 q -3 -2 -1 -5 q 3 -1 5 2 q 0 3 -4 3 z" fill="#9D7BD8"/>
+    <path d="M 40 64 q -3 -2 -1 -5 q 3 -1 5 2 q 0 3 -4 3 z" fill="#6BCB77"/>
+    <!-- Center stem (mixed green) -->
+    <path d="M 49 46 q -3 -2 -1 -5 q 3 -1 5 2 q 0 3 -4 3 z" fill="#9D7BD8"/>
+    <path d="M 49 60 q -3 -2 -1 -5 q 3 -1 5 2 q 0 3 -4 3 z" fill="#6BCB77"/>
+    <path d="M 49 74 q -3 -2 -1 -5 q 3 -1 5 2 q 0 3 -4 3 z" fill="#6BCB77"/>
+    <!-- Stem 4 (sage with rust tip) -->
+    <path d="M 57 50 q -3 -2 -1 -5 q 3 -1 5 2 q 0 3 -4 3 z" fill="#FFB7B7"/>
+    <path d="M 58 64 q -3 -2 -1 -5 q 3 -1 5 2 q 0 3 -4 3 z" fill="#6BCB77"/>
+    <!-- Rightmost stem -->
+    <path d="M 65 52 q -3 -2 -1 -5 q 3 -1 5 2 q 0 3 -4 3 z" fill="#6BCB77"/>
+    <path d="M 67 66 q -3 -2 -1 -5 q 3 -1 5 2 q 0 3 -4 3 z" fill="#9D7BD8"/>
+  </g>
+  <!-- Tie loop at top -->
+  <circle cx="50" cy="6" r="2" fill="none" stroke="#8B5A2B" stroke-width="1.5"/>
+  <!-- Sparkle accents -->
+  <text x="78" y="22" font-size="9" fill="#FFD86B">✨</text>
+  <text x="14" y="64" font-size="7" fill="#FFB7B7">✿</text>
+</svg>

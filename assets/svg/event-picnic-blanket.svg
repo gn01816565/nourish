@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <!-- Boho seasonal: summer picnic blanket spread + woven basket + tiny pastry.
+       Earth-tone palette + cottagecore softening per CLAUDE.md TA. -->
+  <!-- Soft pink ground shadow -->
+  <ellipse cx="50" cy="86" rx="38" ry="4" fill="#FFC8D6" opacity="0.5"/>
+  <!-- Picnic blanket base — diamond-perspective tilted square (red/cream gingham) -->
+  <path d="M 14 70 L 50 56 L 86 70 L 50 84 Z"
+        fill="#FFE8C8" stroke="#8B5A2B" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Gingham check pattern: diagonal lines following blanket perspective -->
+  <g stroke="#B23A48" stroke-width="0.9" opacity="0.55">
+    <line x1="26" y1="66" x2="62" y2="80"/>
+    <line x1="38" y1="61" x2="74" y2="75"/>
+    <line x1="38" y1="80" x2="74" y2="66"/>
+    <line x1="26" y1="74" x2="62" y2="60"/>
+  </g>
+  <!-- Tiny rust dots at line intersections (gingham nodes) -->
+  <circle cx="38" cy="71" r="1.2" fill="#B23A48"/>
+  <circle cx="50" cy="76" r="1.2" fill="#B23A48"/>
+  <circle cx="62" cy="71" r="1.2" fill="#B23A48"/>
+  <circle cx="50" cy="65" r="1.2" fill="#B23A48"/>
+  <!-- Woven picnic basket on left side of blanket -->
+  <ellipse cx="32" cy="56" rx="9" ry="3" fill="#FF9F43" stroke="#8B5A2B" stroke-width="1.5"/>
+  <path d="M 23 56 L 25 46 Q 32 42 39 46 L 41 56 Z" fill="#FFE8C8" stroke="#8B5A2B" stroke-width="1.5" stroke-linejoin="round"/>
+  <!-- Basket weave detail -->
+  <line x1="25" y1="50" x2="39" y2="50" stroke="#8B5A2B" stroke-width="0.7" opacity="0.7"/>
+  <line x1="25" y1="53" x2="39" y2="53" stroke="#8B5A2B" stroke-width="0.7" opacity="0.7"/>
+  <!-- Basket handle arc -->
+  <path d="M 25 46 Q 32 36 39 46" fill="none" stroke="#8B5A2B" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- Tiny apple peeking from basket -->
+  <circle cx="32" cy="44" r="3" fill="#B23A48" stroke="#8B2030" stroke-width="0.8"/>
+  <line x1="32" y1="40" x2="33" y2="38" stroke="#3E8C4A" stroke-width="1.2" stroke-linecap="round"/>
+  <!-- Tiny pastry / sandwich wedge on right side of blanket -->
+  <path d="M 60 64 L 72 64 L 66 56 Z" fill="#FFD86B" stroke="#8B5A2B" stroke-width="1.2" stroke-linejoin="round"/>
+  <!-- Sparkle accents -->
+  <text x="78" y="22" font-size="10" fill="#FFD86B">✨</text>
+  <text x="14" y="22" font-size="9" fill="#FFB7B7">♥</text>
+</svg>

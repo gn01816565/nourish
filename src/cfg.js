@@ -289,6 +289,20 @@
           applyToastStyle:"gold",
           dateRange: { from: "04-01", to: "04-05" },
         },
+        // iter#209 boho seasonal — 夏日野餐墊（boho 軸首 seasonal，7 月 narrow window；既有 summer_breeze 涵蓋整 7-8 月但不點題）
+        // 野餐 motif 是 cottagecore-boho 主流 pinterest aesthetic（gingham 紅白格紋 + 編織籃 + 戶外用餐）
+        {
+          id:"picnic_blanket",
+          art:"assets/svg/event-picnic-blanket.svg",
+          weight:25,
+          label:"夏日野餐墊",
+          apply:"picnic_blanket",
+          applyEffects:{ stats:{mood:20, hunger:12, energy:5}, coin:15, coinReason:"夏日野餐" },
+          applyToastKey:"seasonal.picnic_blanket",
+          applyToast:"🧺 攤開野餐墊~ 夏日午後好滿足",
+          applyToastStyle:"gold",
+          dateRange: { from: "07-13", to: "07-19" },
+        },
       ],
     },
     randomEvents: {
@@ -332,6 +346,8 @@
         { id:"moonlight", art:"assets/svg/event-moonlight.svg",          weight:6, label:"月光灑落", apply:"moonlight",   applyEffects:{ stats:{mood:14, clean:5, energy:5} },                                              applyToastKey:"event.moonlight",       applyToast:"🌙 月光灑下~ 啾啾被柔光擁抱" },
         // iter#203 元氣軸第二 event：彩帶煙火 — 跟既有 rainbow 區隔（rainbow = 廣域 atmospheric / confetti_pop = 慶祝動感 burst）；coin 7 暗示「派對小費」
         { id:"confetti_pop", art:"assets/svg/event-confetti-pop.svg",    weight:5, label:"彩帶煙火", apply:"confetti_pop", applyEffects:{ stats:{mood:18, energy:6}, coin:7, coinReason:"派對驚喜" },                       applyToastKey:"event.confetti_pop",   applyToast:"🎉 砰！彩帶煙火爆出~" },
+        // iter#206 boho 軸第二件（首 event）：曬乾香草束 — 對齊 fringe_ribbon (iter#205) earth-tone + handmade craft narrative；無 coin 純 atmospheric drying-rack 場景
+        { id:"dried_herbs",  art:"assets/svg/event-dried-herbs.svg",     weight:7, label:"曬乾香草束", apply:"dried_herbs",   applyEffects:{ stats:{mood:10, clean:6, energy:4} },                                            applyToastKey:"event.dried_herbs",     applyToast:"🌿 風乾的香草束散發著療癒香氣~" },
       ],
     },
     economy: { dailyLogin: 30, evolveReward: 100, streak7: 50, streak30: 200, firstHatchBonus: 60 },
@@ -429,6 +445,10 @@
       strawberry_clip: { slot:"hat", art:"assets/svg/acc-strawberry-clip.svg", labelKey:"acc.strawberry_clip", label:"草莓髮夾", icon:"🍓", price:130 },
       // iter#168 智慧軸 accessory 層落地：sage 形容是「半月眼鏡」— 拆出來成獨立配件讓任何 form 都能戴
       glasses_thin:    { slot:"face", art:"assets/images/acc-glasses-thin.png", labelKey:"acc.glasses_thin",   label:"半月眼鏡", icon:"👓", price:150 },
+      // iter#205 v0.4 新美學軸 boho 起手第一件：流蘇緞帶 — 編織 + 大地色 + 粉色軟化（per CLAUDE.md TA「avoid 過冷 / 過男性化」）
+      fringe_ribbon:   { slot:"neck", art:"assets/svg/acc-fringe-ribbon.svg",  labelKey:"acc.fringe_ribbon",  label:"流蘇緞帶", icon:"🪢", price:170 },
+      // iter#207 boho 軸第三件 — 草帽 + rust 帽帶 + 小雛菊；達 GDD §5.5 「軸 ≥ 3 件」成形門檻
+      straw_hat:       { slot:"hat",  art:"assets/svg/acc-straw-hat.svg",      labelKey:"acc.straw_hat",      label:"波西米亞草帽", icon:"👒", price:220 },
     },
     // Stage display labels (egg / chick / junior / adult).
     stageLabels: { egg: "蛋", chick: "雛雞", junior: "幼雞", adult: "成雞" },

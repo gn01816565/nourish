@@ -4,6 +4,472 @@
 
 ---
 
+## 2026-04-30 13:31 · Session A — GDD §5.5 美學軸地圖 sync：v0.4 ship 完整反映（warmheart / 6 axis-second-events / boho 軸）
+
+**觸發**：cron 第 208 輪 — iter#207 boho 軸成形達標後，retrospective 與 GDD canonical 文件之間 12 cron 輪累積差異（iter#196-207 期間 ship 1 個 form + 6 events + 3 boho items）。retrospective-190 §3.4 教訓「retrospective 過時 risk」需要主動 corrective — 本輪兌現對 GDD §5.5 axis map 同步。3 連 boho ship 後切到 docs work 是健康 rotation。
+
+**為什麼 GDD §5.5 sync 是 P1 而非 P2**：
+- §5.5 axis map 是團隊 / 後續 contributor 的 **canonical reference**（iter#195 寫的 axis 對應表）
+- 不 sync 的話，iter#208+ 後的 contributor 看到 §5.5 寫「8 軸」就會以為 boho 不存在 → 連帶誤判 backlog（「v0.4 backlog 還有 boho」實際早 ship）
+- retrospective 過時可以靠 grep 補（per iter#176 corrective），但 GDD canonical 過時是 documentation drift — 應該主動 sync 不靠 grep
+
+**動作**：
+
+1. **`docs/gdd.md` §5.4 加 warmheart form 視覺描述**：
+   - 補一行：「暖心雞（v0.4 新加）：圓潤體型 + 半閉眼睛 + 粉色圍巾 / 披肩 + 🤍 浮動小心 + 略向側傾『靠著主人』姿勢（cottagecore-cuddly 依戀軸）」
+   - 跟既有 9 form 視覺描述格式一致（form 名 + (版本) + 視覺特徵 + 軸所屬）
+
+2. **`docs/gdd.md` §5.5 整段 axis map 重寫**（iter#195 → iter#208 sync）：
+   - **9 列 axis table**（iter#195 是 8 列，本輪加 boho 第 9 列）
+   - **更新所有軸的 event 列表**：
+     - cottagecore 加 seed
+     - 智慧 加 message_bottle
+     - balletcore 加 pointe_shoe
+     - fairycore 加 moonlight
+     - cleangirl 加 towel
+     - 元氣 加 confetti_pop
+   - **件數欄全新計算**：cottagecore 9（+1 seed）/ 元氣 6（+1 confetti_pop + 既有 4）/ 7 個有 form 軸全 ≥ 4 件
+   - **飽和度欄重評**：6/9 軸達 ★★★（4 件含 form）/ 2 軸 ★★★★（5+ 件含 form 或 form-less 8+ 件）/ boho ★★★（剛達標）
+   - **新增 v0.4 主要變動段**：3 條 bullet 概括 warmheart form / 6 axis-second-event / boho ship
+   - **元氣軸歸屬段更新**：rainbow + confetti_pop 雙 atmospheric / kinetic burst 模式說明（取代舊的單一「motivational uplift」narrative）
+   - **form-less 軸段擴展**：從 cottagecore + y2k 兩軸 → cottagecore + y2k + boho 三軸；加 v0.5 預留 idea（boho 軸 v0.5 可能加 form「漂泊者雞」keyed off ownedAccessories 多樣性）
+   - **時序段**：加 iter#196 warmheart 第 10 form / iter#198-203 6-輪 axis-second-event batch / iter#205-207 boho ship
+   - **v0.5+ 候選段**：保留 minimalist / kawaii-decora / dark academia 三 candidates（boho 已 ship 不再列）+ 補強重點改為 seasonal 補完 vs 內容深化（form-less 軸補 form）vs 跨軸 mixing-mode 預留 idea
+
+3. **本輪不動 src/**：純 docs 工作；不 bump sw.js cache（docs 不在 SW APP_SHELL）
+
+**驗證**：
+- `./scripts/run-checks.sh` 跑保險：全綠 7 step + i18n-coverage 175 keys + smoke 8/8 ✅
+- 沒 src 動，i18n-shadow / i18n-coverage / smoke / cfg-schema 全不變
+
+**v0.4 完整 arc 結算（iter#196-208 共 13 cron 輪）**：
+- ✅ 10th finalForm warmheart 完整封閉（iter#196-197）
+- ✅ axis-second-event 6 軸補完（iter#198-203）
+- ✅ 跨 pet memorial 進階 UI（iter#204）
+- ✅ 新美學軸 boho ship（iter#205-207）
+- ✅ **GDD §5.5 canonical sync**（**本輪**）
+- ⏳ iter#210 retrospective-210（2 cron 輪後）
+
+**為什麼把 GDD §5.5 放 §5 而非新章節**：
+- §5「成長階段與進化分支」是 form-related 章節，axis map 是 form 的延伸 metadata
+- iter#195 起手已決定放 §5 — 本輪保持架構，僅內容 sync
+- 相比之下 §10「MVP 範圍 vs 後續擴充」是 roadmap 章節，不適合 reference table
+
+**為什麼 9 軸全 ≥ 3 件 milestone 重要**：
+- iter#100 起點 5 軸有 form / 0 軸達 ≥ 3 件全套（form + event + accessory）
+- iter#172 8 軸 event 全覆蓋（≥ 1 event）
+- iter#207（本輪 sync 對象）：**9/9 軸 ≥ 3 件成形** — 這個 milestone 是「玩家任何美學軸都能找到完整 starter set」的承諾兌現
+- v0.5 新軸開發起點是「全 9 軸都成形」的健康 baseline，不是「補洞」狀態
+
+**未來 follow-up**（不在本輪）：
+- iter#209 推 boho event 第二件 / 新美學軸 candidate / UI 優化
+- iter#210 retrospective-210（v0.4 完整 arc retrospective — 涵蓋 iter#190-209）
+- v0.5 candidates：minimalist / kawaii-decora / dark academia 軸 / 跨軸 mixing-mode 成就 / cottagecore + y2k + boho 軸補 form
+
+**影響檔案**：`docs/gdd.md`（§5.4 加 1 行 + §5.5 整段重寫 ~50 行）、`docs/iteration-log.md`
+
+---
+
+## 2026-04-30 13:21 · Session A — boho 軸第三件「波西米亞草帽」(straw_hat) — 軸成形達 ≥ 3 件 GDD §5.5 門檻 ✅
+
+**觸發**：cron 第 207 輪 — iter#205 fringe_ribbon + iter#206 dried_herbs 後 boho 軸 2/3 件。本輪補第三件 — 達 GDD §5.5「軸 ≥ 3 件」成形門檻，跟既有 8 軸並列，成為**正式第 9 個美學軸**。
+
+**為什麼選 straw_hat（波西米亞草帽）作為 boho 第三件**：
+- **boho aesthetic iconic motif**：boho hat 是大眾印象中 boho 風格的 No.1 視覺辨識物（ahead of fringe / dreamcatcher / 蕾絲）
+- **hat slot 軟化既有 hat 美學競爭**：既有 7 件 hat（party_hat / headband / bow / flower / crown / pin_butterfly / star_clip / chef_hat / strawberry_clip）多偏 cute / coquette aesthetic — 草帽是第一件 boho earth-tone hat
+- **220 FC mid-high tier**：高於 chef_hat 200 / 低於 crown 500 / wings 350 — boho 草帽是「日常標配 + 質感投資」定位
+- **完整 boho axis trio**：fringe_ribbon (neck) + dried_herbs (event) + straw_hat (hat) — 三件分屬 3 個 cfg structure，narrative 立體
+
+**動作**：
+
+1. **新增 `assets/svg/acc-straw-hat.svg`（28 行 SVG）**：
+   - viewBox 100×100 對標既有 SVG 配件
+   - 色票嚴守 CLAUDE.md §5：奶油 #FFE8C8（草帽主色 — 大地色軟化避純棕）+ 棕 #8B5A2B（描邊保 boho earth tone）/ 橘 #FF9F43（編織紋 + brim shadow，opacity 0.4-0.55 漸層）/ 暗紅 #B23A48（rust 帽帶 — boho earth-tone band）+ #8B2030（描邊）/ 白 #FFFFFF（雛菊花瓣 4 片）/ 黃 #FFD86B（雛菊中心 + ✨ accent）/ 粉 #FFB7B7（雛菊花瓣描邊軟化）
+   - 結構：**ellipse 寬 brim**（38×8 橢圓，cream + 棕邊）+ **brim shadow stripe**（quadratic curve under-brim 加深感）+ **crown dome**（quadratic curve 4-segment closed path 模擬 pinched dome）+ **草編紋細節**（2 條 brim quadratic curve + 3 條 vertical 草編線，opacity 0.4-0.45 微妙）+ **rust ribbon hatband**（path 圍著 crown 底部）+ tiny side knot ellipse + **nested daisy**（5 個 circle 模擬 4 花瓣 + 中心，translate group 化）+ ✨
+   - **草編紋 + crown weave detail** 是這件 SVG 的設計亮點：跟既有 chef_hat（puffy）+ party_hat（硬挺）+ flower（花環）視覺距離大
+
+2. **`src/cfg.js` accessories 加第 21 條**：
+   ```
+   straw_hat: { slot:"hat", art:"assets/svg/acc-straw-hat.svg",
+                labelKey:"acc.straw_hat", label:"波西米亞草帽",
+                icon:"👒", price:220 }
+   ```
+   - 加在 fringe_ribbon 後（boho 軸 trio 集中標識 + design rationale 註解）
+   - icon 👒 是 hat-with-brim 標準 emoji，bochemian / sun hat 類別 universal
+
+3. **`src/i18n.js` 雙語 1 條**：
+   - zh-TW: `acc.straw_hat` = "波西米亞草帽"
+   - en: `acc.straw_hat` = "Boho Straw Hat"
+   - 中文用「波西米亞」全稱比「波希米」常見 — 跟 cottagecore TA 18-35F 中文社群常見用詞對齊
+
+4. **`sw.js`：CACHE_VERSION iter206 → iter207**
+
+**lint chain 報表**：
+- 上輪 cfg-schema：`9 traits / 49 speech_pools / 10 final_forms / 20 accessories`
+- 本輪 cfg-schema：`9 traits / 49 speech_pools / 10 final_forms / **21 accessories**`
+- check-assets：96 → **97** asset references resolve
+- 7 step + 8/8 smoke + i18n-shadow 23 src + i18n-coverage 175 keys ✅
+
+**美學軸覆蓋更新（iter#207）— boho 軸成形達 ≥ 3 件**：
+| 軸 | event | form | accessory | 件數 | 飽和度 |
+|----|-------|------|-----------|------|--------|
+| coquette / 美食家 | tea / macaron | gourmet | chef_hat / strawberry_clip | 5 | ★★★★ |
+| cottagecore | butterfly / mushroom / petal / herb / seed | — | flower / pin_butterfly / lace_collar | 8 | ★★★★ |
+| 智慧 / sage | book / message_bottle | sage | glasses_thin | 4 | ★★★ |
+| balletcore | rose_bouquet / pointe_shoe | diva | ribbon_tie | 4 | ★★★ |
+| fairycore | dewdrop / moonlight | divine | wings_fairy | 4 | ★★★ |
+| cleangirl | bubble / towel | healthy | blush | 4 | ★★★ |
+| y2k | pixel_heart | — | star_clip / cd_pendant | 3 | ★★ |
+| 元氣 | rainbow / confetti_pop | fighter | party_hat | 4 | ★★★ |
+| **boho** | dried_herbs | — | fringe_ribbon / **straw_hat（本輪）** | **3** ⬆ | ★★★ |
+
+**boho 軸從 2 → 3 件 ✅**（達 GDD §5.5「軸 ≥ 3 件」成形門檻）；accessories 20 → **21**。**9 美學軸全部 ≥ 3 件**（除 form-less 軸的 form 缺失外，內容深度健康）。
+
+**i18n 進度跳躍**：
+- 種子翻譯：408 + 1 = **409 條** zh-TW + 409 條 en
+- accessories 全 functional i18n（21/21 雙欄位 labelKey + label fallback）
+
+**v0.4 backlog 結算（iter#207）**：
+- ✅ 10th finalForm warmheart 完整封閉（iter#196-197）
+- ✅ axis-second-event 6 軸補完（iter#198-203）
+- ✅ 跨 pet memorial 進階 UI（iter#204）
+- ✅ **新美學軸 boho 軸成形 ≥ 3 件**（iter#205-207 三輪 ship）
+- ⏳ iter#210 retrospective-210（3 cron 輪後）
+- ⏳ 後續軸 candidates（minimalist / kawaii-decora / dark academia）— 等 v0.5 / 海外發行後再開
+
+**v0.4 主要 ship 完成（iter#196-207 共 12 cron 輪）**：第 10 form / axis-event 補完 / 跨 pet memorial 進階 / 新軸 boho 完整 — 4 大主軸。
+
+**未來 follow-up**（不在本輪）：
+- iter#208-209 可推進 boho event 第二件（細粒度補強）、新美學軸 candidate、UI 優化、performance
+- iter#210 retrospective-210（v0.4 完整 arc retrospective — 涵蓋 iter#190-209）
+
+**驗證**：
+- `node --check src/{cfg,i18n}.js` → ✅
+- `./scripts/run-checks.sh` → 全綠 7 step + cfg-schema **21 accessories**
+
+**影響檔案**：`assets/svg/acc-straw-hat.svg`（新）、`src/cfg.js`、`src/i18n.js`、`sw.js`、`docs/iteration-log.md`
+
+---
+
+## 2026-04-30 13:11 · Session A — boho 軸第二件（首 event）「曬乾香草束」(dried_herbs)，regular pool 22 → 23
+
+**觸發**：cron 第 206 輪 — iter#205 ship boho 軸第一件 accessory（fringe_ribbon）後接著補 event 層。對標既有 8 軸的 ship pipeline：accessory + event 雙基底建立後，軸 narrative 就能彈性延伸（玩家任何 form 戴 fringe_ribbon + catch dried_herbs event = 完整 boho 體驗）。
+
+**為什麼選 dried_herbs（曬乾香草束）作為 boho 第一個 event**：
+- **跟既有 cottagecore mushroom / petal / herb 視覺區隔**：既有 cottagecore-herb 是綠色草藥單片 bottle / boho dried_herbs 是 hanging bouquet 風乾架（手工 craft narrative）— 兩者 SVG 結構與場景距離大
+- **boho narrative anchor**：earth tones（cream + 棕 stem + sage green leaves with lavender / rust accents）+ handmade craft（風乾架 / herbal medicine 居家自製）= 軸的 atmospheric core
+- **數值區隔**：純 atmospheric event（無 coin），mood 10 / clean 6 / energy 4 — 香氣療癒 narrative 三 stat 散布
+- **weight 7**：跟 mushroom / book / dewdrop 同 mid-tier — boho aesthetics 是 daily 居家氛圍，不該太稀有
+
+**動作**：
+
+1. **新增 `assets/svg/event-dried-herbs.svg`（30 行 SVG）**：
+   - viewBox 100×100 對標既有 19 個 event SVG
+   - 色票嚴守 CLAUDE.md §5：奶油 #FFE8C8（twine wrap）+ 棕 #8B5A2B（hanging string + 描邊）/ 綠 #6BCB77 + #3E8C4A（sage stems + leaves 主色）/ 紫 #9D7BD8（lavender accent leaves — fits boho herbal medicine palette）/ 粉 #FFB7B7（rust pink leaf accent — 粉化軟化）/ 黃 #FFD86B（✨ accent）
+   - 結構：頂部 hanging string + 小圓 tie loop + **twine wrap knot ellipse**（cream + 棕邊）+ **5 stems 扇形展開**（中央垂直 + 左右各 2 條 outward tilt 模擬「自然懸掛」）+ **每 stem 2-3 顆 almond-shape leaves**（quadratic curve path，混合 sage green / lavender / rust pink — 多樣藥草視覺暗示）+ ✨ + ✿ corner accent
+   - **5 stems 不對稱扇形 + 多顏色 leaves** = boho aesthetic 招牌「不規則 / 手作 / 多種混合」visual language
+
+2. **`src/cfg.js` randomEvents.pool 加第 23 條**：
+   ```
+   { id:"dried_herbs", art:"assets/svg/event-dried-herbs.svg", weight:7,
+     label:"曬乾香草束", apply:"dried_herbs",
+     applyEffects:{ stats:{mood:10, clean:6, energy:4} },
+     applyToastKey:"event.dried_herbs",
+     applyToast:"🌿 風乾的香草束散發著療癒香氣~" }
+   ```
+   - 加在 confetti_pop 後（boho 軸註解串連 iter#205-206 標識）
+   - **無 coin**：atmospheric event，跟 dewdrop / petal / bubble / towel / moonlight 純自然 atmospheric 一致
+
+3. **`src/i18n.js` 雙語 1 條**：
+   - zh-TW: `event.dried_herbs` = "🌿 風乾的香草束散發著療癒香氣~"
+   - en: `event.dried_herbs` = "🌿 Dried herb bundles release a soothing scent~"
+   - 「soothing scent」對應「療癒香氣」— aromatherapy boho narrative 精準翻譯
+
+4. **`sw.js`：CACHE_VERSION iter205 → iter206**
+
+**lint chain 報表**：
+- check-assets：95 → **96** asset references resolve
+- 7 step + 8/8 smoke + i18n-shadow 23 src + i18n-coverage 175 keys ✅
+
+**美學軸覆蓋更新（iter#206）**：
+| 軸 | event | form | accessory | 件數 |
+|----|-------|------|-----------|------|
+| coquette / 美食家 | tea / macaron | gourmet | chef_hat / strawberry_clip | 5 |
+| cottagecore | butterfly / mushroom / petal / herb / seed | — | flower / pin_butterfly / lace_collar | 8 |
+| 智慧 / sage | book / message_bottle | sage | glasses_thin | 4 |
+| balletcore | rose_bouquet / pointe_shoe | diva | ribbon_tie | 4 |
+| fairycore | dewdrop / moonlight | divine | wings_fairy | 4 |
+| cleangirl | bubble / towel | healthy | blush | 4 |
+| y2k | pixel_heart | — | star_clip / cd_pendant | 3 |
+| 元氣 | rainbow / confetti_pop | fighter | party_hat | 4 |
+| **boho（新軸 v0.4）** | **dried_herbs（本輪）** | — | fringe_ribbon | **2** ⬆ from 1 |
+
+boho 軸從 1 → **2 件**，距 GDD §5.5 「軸 ≥ 3 件」成形門檻還差 1 件 — 預期下一 cron 輪補第二配件達標。event total 22 → **23**。
+
+**i18n 進度跳躍**：
+- 種子翻譯：407 + 1 = **408 條** zh-TW + 408 條 en
+- functional sites：~252 + 1 = ~253 處
+
+**v0.4 backlog 結算（iter#206）**：
+- ✅ 10th finalForm warmheart 完整封閉（iter#196-197）
+- ✅ axis-second-event 6 軸補完（iter#198-203）
+- ✅ 跨 pet memorial 進階 UI（iter#204）
+- ⏳ **新美學軸 boho 軸成形（2/3 件，1 輪即達標）**
+- ⏳ iter#210 retrospective-210（4 cron 輪後）
+
+**未來 follow-up**（不在本輪）：
+- 下輪 boho 第三件：accessory 候選（草帽 / 蕾絲頭巾 / dreamcatcher 髮飾）— 達 ≥ 3 件 boho 軸成形
+- 後續軸 candidates（minimalist / kawaii-decora / dark academia）等 boho 飽和再啟動
+- iter#210 retrospective-210
+
+**驗證**：
+- `node --check src/{cfg,i18n}.js` → ✅
+- `./scripts/run-checks.sh` → 全綠 7 step
+
+**影響檔案**：`assets/svg/event-dried-herbs.svg`（新）、`src/cfg.js`、`src/i18n.js`、`sw.js`、`docs/iteration-log.md`
+
+---
+
+## 2026-04-30 13:01 · Session A — v0.4 新美學軸 boho 起手：流蘇緞帶 (fringe_ribbon)，accessories 19 → 20
+
+**觸發**：cron 第 205 輪 — retrospective-190 §4.2 + GDD §5.5 美學軸地圖列「v0.4+ 新軸 candidate：boho / minimalist / kawaii-decora / dark academia」是最後 v0.4 main backlog item。本輪起手 boho — 對標 7 個既有軸的 ship pipeline：先 1 個 accessory 探水溫，後續輪補 event + form。
+
+**為什麼 boho 第一個 ship**：
+- 4 個 candidate 中 boho 跟 cottagecore 美學距離最近（earth tones + handmade craft + 自然 motif）— TA 接受度最高
+- minimalist（純白灰 / 極簡）跟既有 cleangirl 軸太接近
+- kawaii-decora（過度可愛堆疊）跟 cottagecore-coquette 軸視覺競爭
+- dark academia（深色學院 / sage 軸延伸）容易跟既有智慧軸混淆 — 留 v0.5 等 sage 累積夠多再分軸
+
+**為什麼選 fringe_ribbon 作為 boho 第一個 accessory**：
+- 軸 anchor motif 確立：流蘇 / 編織 / 大地色 — fringe 是 boho aesthetic 最 iconic 視覺語
+- neck slot 還算空（既有 ribbon_tie / scarf / necklace / lace_collar / cd_pendant 5 件）— 玩家有 slot 可選
+- 跟既有 ribbon_tie（balletcore 緞帶）視覺距離大：ribbon_tie 是 sleek bow / fringe_ribbon 是 woven cross-stitch + tassel — 兩個 ribbon 是不同 aesthetic
+- 170 FC mid-tier：高於 lace_collar 140 / 低於 cd_pendant 160 / chef_hat 200 — 中段定價讓 D7-D14 玩家可達
+
+**動作**：
+
+1. **新增 `assets/svg/acc-fringe-ribbon.svg`（30 行 SVG）**：
+   - viewBox 100×100 對標既有 SVG 配件
+   - 色票嚴守 CLAUDE.md §5：奶油 #FFE8C8（main band 主色 — 大地色軟化版，不純棕避免冷）+ 棕 #8B5A2B（描邊保 boho earth tone）/ 暗紅 #B23A48（cross-stitch V 圖案 + 部分 fringe — 大地紅）/ 粉 #FFB7B7（部分 fringe + 軟化）/ 黃 #FFD86B（boho beads + ✨ accent）
+   - 結構：**rounded-rect main band**（cream 主體 + 棕色描邊）+ **3 個 V-shape cross-stitch pattern**（path 模擬編織）+ 2 顆中間 boho beads（cream dot + 棕邊）+ **11 條 fringe tassel hanging**（不同長度 + 交錯三色：cream / rust pink / dark rust，模擬手工不規則感）+ 2 顆 fringe tip beads（懸掛底部 — 重點放重色 fringe 上）+ 兩端 tie ribbon ends（短斜線延伸）+ 右上 ✨
+   - **11 條交錯不規則 fringe** 是 boho aesthetic 的關鍵視覺語：完美對稱會像 industrial / 不規則才像 handmade
+
+2. **`src/cfg.js` accessories 加第 20 條**：
+   ```
+   fringe_ribbon: { slot:"neck", art:"assets/svg/acc-fringe-ribbon.svg",
+                    labelKey:"acc.fringe_ribbon", label:"流蘇緞帶",
+                    icon:"🪢", price:170 }
+   ```
+   - 加在 glasses_thin 後（boho 軸標識 + design rationale 註解）
+   - icon 🪢 (knot) 是 boho 編織 narrative — 比一般 ribbon emoji 更 axis-fitting
+
+3. **`src/i18n.js` 雙語 1 條**：
+   - zh-TW: `acc.fringe_ribbon` = "流蘇緞帶"
+   - en: `acc.fringe_ribbon` = "Fringe Ribbon"
+   - 「Fringe」是 boho aesthetic 標準英文詞 — accessibility 高
+
+4. **`sw.js`：CACHE_VERSION iter204 → iter205**
+
+**lint chain 報表**：
+- 上輪 cfg-schema：`9 traits / 49 speech_pools / 10 final_forms / 19 accessories`
+- 本輪 cfg-schema：`9 traits / 49 speech_pools / 10 final_forms / **20 accessories**`
+- check-assets：94 → **95** asset references resolve
+- 7 step + 8/8 smoke + i18n-shadow 23 src + i18n-coverage 175 keys ✅
+
+**美學軸覆蓋更新（iter#205）— 9 軸首發**：
+| 軸 | event | form | accessory | 件數 |
+|----|-------|------|-----------|------|
+| coquette / 美食家 | tea / macaron | gourmet | chef_hat / strawberry_clip | 5 |
+| cottagecore | butterfly / mushroom / petal / herb / seed | — | flower / pin_butterfly / lace_collar | 8 |
+| 智慧 / sage | book / message_bottle | sage | glasses_thin | 4 |
+| balletcore | rose_bouquet / pointe_shoe | diva | ribbon_tie | 4 |
+| fairycore | dewdrop / moonlight | divine | wings_fairy | 4 |
+| cleangirl | bubble / towel | healthy | blush | 4 |
+| y2k | pixel_heart | — | star_clip / cd_pendant | 3 |
+| 元氣 | rainbow / confetti_pop | fighter | party_hat | 4 |
+| **boho（新）** | — | — | **fringe_ribbon（本輪）** | **1** |
+
+**美學軸從 8 → 9** 🎉。boho 軸目前 1 件 — accessory only / form-less / event-less，後續輪會逐步補完（每輪 ≥ 1 + 件，預期 3-4 cron 輪達 ≥ 3 件「軸成形」門檻 per GDD §5.5「軸 ≥ 3 件」設計準則）。
+
+**i18n 進度跳躍**：
+- 種子翻譯：406 + 1 = **407 條** zh-TW + 407 條 en
+- accessories 全 functional i18n（20/20 雙欄位 labelKey + label fallback）
+- y2k 軸刻意保留 3 件（per iter#203 決議 — form-less 軸 design 飽和）— **不再 push 第二 event**
+
+**v0.4 backlog 結算（iter#205）**：
+- ✅ 10th finalForm warmheart 完整封閉（iter#196-197）
+- ✅ axis-second-event 6 軸補完（iter#198-203）
+- ✅ 跨 pet memorial 進階 UI（iter#204）
+- ✅ **新美學軸 boho 起手 accessory**（**本輪**）
+- ⏳ boho 軸補完（event + 後續配件 → 軸成形 3+ 件）
+- ⏳ iter#210 retrospective-210（5 cron 輪後）
+
+**未來 follow-up**（不在本輪）：
+- 下輪 boho 第二件：accessory（boho hat / 草帽 / 蕾絲頭巾） / event（曬乾的香草束 / 編織小魚簍 etc）
+- 後續軸 candidates（minimalist / kawaii-decora / dark academia）— 等 boho 軸成形再啟動
+- iter#210 retrospective-210
+
+**驗證**：
+- `node --check src/{cfg,i18n}.js` → ✅
+- `./scripts/run-checks.sh` → 全綠 7 step + cfg-schema **20 accessories**
+
+**影響檔案**：`assets/svg/acc-fringe-ribbon.svg`（新）、`src/cfg.js`、`src/i18n.js`、`sw.js`、`docs/iteration-log.md`
+
+---
+
+## 2026-04-30 12:51 · Session A — 跨 pet memorial 進階 UI：openDex form-distribution mini-strip（v0.4 backlog 推進）
+
+**觸發**：cron 第 204 輪 — 連續 6 輪 axis-second-event content 後切到 v0.4 backlog 變化。retrospective-190.md §4.2 列「跨 pet memorial 進階 UI」是 v0.4 候選；iter#179 加的 cross-pet bondSummary（累計天數 + 隻數）是 1-line aggregate，本輪推進到第二層 — **form-distribution「養過幾隻 X 終態」visible artifact**，建立玩家累積成就的視覺記憶感。
+
+**為什麼選 form-distribution 作為下一步進階**：
+- iter#179 bondSummary 是「總體量」aggregate（天數 + 隻數）— 量化感強但敘事弱
+- form-distribution 是「身分多樣性」breakdown（養過 3 隻 healthy / 2 隻 fighter / 1 隻 sage）— 顯示**玩家在不同養成路線上的投入**，narrative 比量化感更深刻
+- 對標長線玩家（D14+）：累積 5+ 隻歷代後，看到「我養過這些 form」的 strip 是 retention 的 emotional payoff
+- D1-D7 玩家看不到（formStripHTML 條件渲染）— 不污染新手體驗
+
+**動作**：
+
+1. **`src/menus.js` openDex 加 form-distribution 計算 + render**：
+   - **計算邏輯**（reduce）：`fullPastForBond.reduce((acc, p) => { acc[p.finalForm] = (acc[...] || 0) + 1; return acc; }, {})` — 把過去寵物的 finalForm 聚成 `{healthy: 3, fighter: 2, sage: 1}` map
+   - **FORM_ICONS map**：10 個 finalForm 對應 emoji（healthy 🐤 / fatty 🥯 / ugly 😆 / fighter 💪 / sage 🧠 / diva 🎤 / divine ✨ / gourmet 🍰 / explorer 🗺️ / warmheart 🤍）
+   - **render**：依 count 降序排，每 form 顯示 emoji + formLabel（cfg-driven，i18n functional）+ ×N
+   - **條件渲染**：`fullPastForBond.length === 0` 時返回空 string — D1 玩家不會看到
+
+2. **`src/menus.js` openDex modal body 插入位置**：
+   - 在既有 bondSummary（累計陪伴 X 天 / 跨 N 隻）後面 / 終態收集 grid 前面
+   - bondSummary 的 margin-bottom 從 8px → 4px（視覺壓縮，formStrip 接後 + 自帶 8px margin）
+   - HTML 結構：`<p class="muted center" style="margin:0 0 8px;font-size:12px;line-height:1.6;">...form chips...</p>`
+   - chip 樣式：`<span style="margin:0 4px;white-space:nowrap;">` 防 emoji + 文字斷行
+
+3. **無新 i18n key**：複用 cfg-driven `A.formLabel(form)` helper — 已在 iter#178 dual-field i18n functional，切英文時自動「3× Healthy Chick / 2× Spirited Chick」
+
+4. **無新 SVG / 無新 cfg entry**：純 UI 強化，0 新 asset、0 新 i18n key
+
+5. **`sw.js`：CACHE_VERSION iter203 → iter204**
+
+**lint chain 報表**：
+- check-assets：94 不變（純 UI 邏輯，無新 asset）
+- 7 step + 8/8 smoke + i18n-shadow 23 src + i18n-coverage 175 keys ✅
+
+**範例 render 輸出**（玩家養 3 healthy + 2 fighter + 1 sage 後打開 dex）：
+```
+💝 累計陪伴 56 天 · 跨 7 隻小雞
+🐤 健康成雞 ×3   💪 元氣雞 ×2   🧠 智慧雞 ×1
+[終態收集 3/10]
+[歷代小雞 list]
+```
+
+**設計準則**：
+- **降序排序**：玩家最常養的 form 優先顯示（cluster 最強的 narrative）
+- **`white-space:nowrap`**：防 emoji + label + ×N 三段被瀏覽器斷行
+- **font-size: 12px / line-height: 1.6**：跟 bondSummary 13px 略低 — 視覺 hierarchy 是 secondary detail
+
+**v0.4 backlog 結算（iter#204）**：
+- ✅ 10th finalForm warmheart 完整封閉（iter#196-197）
+- ✅ axis-second-event 6 軸補完（iter#198-203）
+- ✅ **跨 pet memorial 進階 UI 第二層**（form-distribution / 本輪）
+- ⏳ 新美學軸開發（boho / minimalist / kawaii-decora / dark academia）
+- ⏳ y2k 軸第二 event（design 已飽和，刻意保留）
+- ⏳ iter#210 retrospective-210（6 cron 輪後）
+
+**未來 follow-up**（不在本輪）：
+- pet timeline visualization（更進階 — 用 SVG 畫時間軸 / 跨年 timeline）
+- form-distribution 加跨 pet memory thread（每 form 顯示「最近一隻 = pet name X」）
+- 新美學軸 candidate ship
+
+**驗證**：
+- `node --check src/menus.js` → ✅
+- `./scripts/run-checks.sh` → 全綠 7 step
+- 行為驗證：D1 玩家（dex.completedPets.length = 0）→ formStripHTML = "" → 不渲染 / 玩家養完 1 隻後 → strip 出現「🐤 健康成雞 ×1」
+- formLabel(form) 會走 cfg.finalForms.X.labelKey → i18n functional，切英文時自動本地化
+
+**影響檔案**：`src/menus.js`、`sw.js`、`docs/iteration-log.md`
+
+---
+
+## 2026-04-30 12:41 · Session A — 新隨機事件「彩帶煙火」(confetti_pop)：元氣軸第二 event，regular pool 21 → 22
+
+**觸發**：cron 第 203 輪 — 連續 axis-second-event content rotation 第 6 輪（iter#198-202 已 cottagecore / cleangirl / 智慧 / balletcore / fairycore 全補完）。本輪挑元氣軸補完 — 7/8 軸達 ≥ 4 件後，剩 y2k 一軸 3 件（form-less 軸 design 已飽和，pixel_heart event + 2 accessories 對 retention 足夠，不必強推第二 event）。
+
+**為什麼選 confetti_pop（彩帶煙火）作為元氣軸第二 event**：
+- **跟既有 rainbow 視覺 / 敘事區隔**：rainbow = 廣域 atmospheric（天空整片彩虹）/ confetti_pop = 局部慶祝爆發（小範圍動感 burst）— 兩 event 串起完整元氣 narrative arc（atmospheric uplift → punctuated celebration）
+- **連結 fighter form + party_hat 配件**：fighter speech「再蹦一下！」「活力 max！」+ accessories.party_hat「派對帽」— confetti_pop 是 party 場景的 kinetic action，narrative 三件全 cluster
+- **數值區隔**：rainbow +mood 12 +hunger/clean/energy 各 5（廣域分散加成 — 全身充滿希望）/ confetti_pop +mood 18 +energy 6 + coin 7（emotional peak burst — 派對驚喜 narrative）
+- **weight 5**：跟 rose_bouquet / pixel_heart / message_bottle 同 low-tier — 慶祝爆發應該稀有
+
+**動作**：
+
+1. **新增 `assets/svg/event-confetti-pop.svg`（22 行 SVG）**：
+   - viewBox 100×100 對標既有 18 個 event SVG
+   - 色票嚴守 CLAUDE.md §5：粉 #FF89A7（cone popper 主色 — 鮮明派對紅）+ #B23A48（描邊）/ 黃 #FFD86B（cone band stripes + middle streamer + 2 confetti dots + ✨ accent）/ 粉 #FFB7B7（left streamer + 2 dots）/ 藍 #6BCBFF（right streamer + 2 dots — 軸間呼應）/ 粉 #FFC8D6（地面陰影）
+   - 結構：粉色橢圓地面陰影 + **倒三角 cone popper**（path L 三點：左上 + 右上 + 下尖端）+ 兩條 yellow stripe band + **3 條 streamer ribbon**（quadratic curves 從 cone 尖端向上散射，三色 = 粉 / 黃 / 藍 對標 8 軸 palette）+ **9 顆 confetti**（混合 rect + circle 形狀 + 不同 rotation 角度模擬「飛舞中」）+ ✨ corner accent
+   - **倒三角 + 上射 streamer** 是 confetti popper 的 iconic 視覺語：跟 rainbow 的 horizontal sweep 形成「垂直爆發」對比 — 視覺辨識區隔
+
+2. **`src/cfg.js` randomEvents.pool 加第 22 條**：
+   ```
+   { id:"confetti_pop", art:"assets/svg/event-confetti-pop.svg", weight:5,
+     label:"彩帶煙火", apply:"confetti_pop",
+     applyEffects:{ stats:{mood:18, energy:6}, coin:7, coinReason:"派對驚喜" },
+     applyToastKey:"event.confetti_pop",
+     applyToast:"🎉 砰！彩帶煙火爆出~" }
+   ```
+   - 加在 moonlight 後（元氣軸註解串連 iter#203 標識）
+   - **coin 7 + coinReason「派對驚喜」**：narrative 點題 — 慶祝是「分享」帶 coin reward（pet 收到禮物）
+
+3. **`src/i18n.js` 雙語 1 條**：
+   - zh-TW: `event.confetti_pop` = "🎉 砰！彩帶煙火爆出~"
+   - en: `event.confetti_pop` = "🎉 Pop! Confetti bursts out~"
+   - 「Pop!」對應「砰！」 — onomatopoeia 跨語言通用，保 burst kinetic feel
+
+4. **`sw.js`：CACHE_VERSION iter202 → iter203**
+
+**lint chain 報表**：
+- check-assets：93 → **94** asset references resolve
+- 7 step + 8/8 smoke + i18n-shadow 23 src + i18n-coverage 175 keys ✅
+
+**美學軸覆蓋更新（iter#203）**：
+| 軸 | event | form | accessory | 件數 |
+|----|-------|------|-----------|------|
+| coquette / 美食家 | tea / macaron | gourmet | chef_hat / strawberry_clip | 5 |
+| cottagecore | butterfly / mushroom / petal / herb / seed | — | flower / pin_butterfly / lace_collar | 8 |
+| 智慧 / sage | book / message_bottle | sage | glasses_thin | 4 |
+| balletcore | rose_bouquet / pointe_shoe | diva | ribbon_tie | 4 |
+| fairycore | dewdrop / moonlight | divine | wings_fairy | 4 |
+| cleangirl | bubble / towel | healthy | blush | 4 |
+| y2k | pixel_heart | — | star_clip / cd_pendant | 3 |
+| **元氣** | rainbow / **confetti_pop（本輪）** | fighter | party_hat | **4** ⬆ from 3 |
+
+元氣軸從 3 → **4 件**（並列 智慧 / balletcore / fairycore / cleangirl / 美食家 5 為次深軸）；event total 21 → **22**。**7/8 美學軸達 ≥ 4 件**（剩 y2k 1 軸 3 件，但 design 已飽和：form-less 軸 + pixel_heart event + 2 accessories 對 retention 足夠）。
+
+**i18n 進度跳躍**：
+- 種子翻譯：405 + 1 = **406 條** zh-TW + 406 條 en
+- functional sites：~250 + 1 = ~251 處
+
+**axis-second-event 6 輪 batch 結算（iter#198-203）**：
+- iter#198 cottagecore（5 → 8 累計）
+- iter#199 cleangirl（3 → 4）
+- iter#200 智慧（3 → 4）
+- iter#201 balletcore（3 → 4）
+- iter#202 fairycore（3 → 4）
+- iter#203 元氣（3 → 4）— 本輪
+- regular pool: 16 → 22（6 輪 +6 events）
+- **6/8 軸補完 axis-second-event** — y2k 軸刻意保留 3 件（design rationale 上方 §觸發說明）
+
+**為什麼 y2k 軸不強推第二 event**：
+- 既有 pixel_heart 已 chromatic glitch 視覺 + Y2K nostalgia narrative + 2 accessories（star_clip / cd_pendant）對 retention 足夠
+- y2k 軸是 form-less by design（per GDD §5.5）— 環境 / 風格 atmosphere 軸不需要過度堆量
+- 強加 cyber butterfly / VHS static 等 candidate 容易視覺重疊或失 cottagecore TA 軟化原則
+- 留空間給 v0.4+ 真正需要時再補（如海外發行新增地區性節日 / 新美學軸開發時）
+
+**未來 follow-up**（不在本輪）：
+- 跨 pet memorial 進階 UI（v0.4 backlog）
+- 新美學軸開發（boho / minimalist / kawaii-decora / dark academia）
+- iter#210 retrospective-210（7 cron 輪後）
+
+**影響檔案**：`assets/svg/event-confetti-pop.svg`（新）、`src/cfg.js`、`src/i18n.js`、`sw.js`、`docs/iteration-log.md`
+
+---
+
 ## 2026-04-30 12:31 · Session A — 新隨機事件「月光灑落」(moonlight)：fairycore 軸第二 event，regular pool 20 → 21
 
 **觸發**：cron 第 202 輪 — 連續 axis-second-event content rotation 第 5 輪（iter#198 cottagecore seed / iter#199 cleangirl towel / iter#200 智慧 message_bottle / iter#201 balletcore pointe_shoe）。本輪挑 fairycore 軸補完 — 是「次薄軸第二 event」最後一個（剩 y2k / 元氣 兩軸 3 件 但有 fighter form / 配件 2 件支撐已較完整）。

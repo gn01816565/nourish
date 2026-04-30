@@ -256,44 +256,55 @@
   - 歌姬：麥克風、彩虹尾羽
   - 美食家雞（v0.2 新加）：粉色廚師帽、小圍裙、🍰 motif（cottagecore-coquette 軸）
   - 探險家雞（v0.3 新加）：背包 + 粉色 bandana + 地圖 / 指南針（cottagecore-adventure 軸）
+  - 暖心雞（v0.4 新加）：圓潤體型 + 半閉眼睛 + 粉色圍巾 / 披肩 + 🤍 浮動小心 + 略向側傾「靠著主人」姿勢（cottagecore-cuddly 依戀軸）
 
-### 5.5 美學軸地圖（iter#195 釐清，封閉 v0.3 元氣軸 backlog）
+### 5.5 美學軸地圖（iter#208 sync，含 v0.4 ship 更新）
 
-GDD 設計 9 個 finalForm + 27 events + 19 accessories，內部依 8 個美學軸組織，每軸至少 form / event / accessory ≥ 1 件以對齊 TA「choose your aesthetic axis」承諾：
+GDD 設計 10 個 finalForm + 35 events（22 regular + 12 seasonal）+ 21 accessories，內部依 9 個美學軸組織。每軸至少 form / event / accessory ≥ 3 件對齊 TA「choose your aesthetic axis」承諾。
 
 | 美學軸 | finalForm | regular event | seasonal event | accessory | 件數 | 飽和度 |
 |-------|----------|---------------|---------------|----------|------|--------|
 | **coquette / 美食家** | gourmet | tea / macaron | carnation（母親節）| chef_hat / strawberry_clip | 6 | ★★★★ |
-| **cottagecore** | （fallback to healthy） | butterfly / mushroom / petal / herb | sakura（春日）| flower / pin_butterfly / lace_collar | 8 | ★★★★ |
-| **智慧 / sage** | sage | book | — | glasses_thin | 3 | ★★ |
-| **balletcore** | diva | rose_bouquet | — | ribbon_tie | 3 | ★★ |
-| **fairycore** | divine | dewdrop | — | wings_fairy | 3 | ★★ |
-| **cleangirl** | healthy | bubble | — | blush | 3 | ★★ |
-| **y2k / digital nostalgia** | （fallback to healthy） | pixel_heart | redenvelope（春節）| star_clip / cd_pendant | 5 | ★★ |
-| **元氣 / 運動感** | fighter | rainbow | pinwheel（兒童節） / rainbow_heart（Pride 月） | party_hat | 4 | ★★ |
+| **cottagecore** | （fallback to healthy） | butterfly / mushroom / petal / herb / **seed** | sakura（春日）| flower / pin_butterfly / lace_collar | 9 | ★★★★ |
+| **智慧 / sage** | sage | book / **message_bottle** | — | glasses_thin | 4 | ★★★ |
+| **balletcore** | diva | rose_bouquet / **pointe_shoe** | — | ribbon_tie | 4 | ★★★ |
+| **fairycore** | divine | dewdrop / **moonlight** | — | wings_fairy | 4 | ★★★ |
+| **cleangirl** | healthy | bubble / **towel** | — | blush | 4 | ★★★ |
+| **y2k / digital nostalgia** | （fallback to healthy） | pixel_heart | redenvelope（春節）| star_clip / cd_pendant | 4 | ★★★ |
+| **元氣 / 運動感** | fighter | rainbow / **confetti_pop** | pinwheel（兒童節）/ rainbow_heart（Pride 月）| party_hat | 6 | ★★★★ |
+| **boho（v0.4 新軸）** | （fallback to healthy）| **dried_herbs** | — | **fringe_ribbon / straw_hat** | 3 | ★★★ |
+
+**v0.4 主要變動**（iter#196-207）：
+- **+ warmheart form 第 10 個 finalForm**（per-pet petCount >= 50，cottagecore 依戀軸 — 玩家 pet_head/belly/talk 累積路徑）
+- **+ 6 個 axis-second-event**（iter#198-203）：seed / towel / message_bottle / pointe_shoe / moonlight / confetti_pop — 把 7 個次薄軸從 3 件提升到 4 件
+- **+ boho 軸完整 ship**（iter#205-207）：fringe_ribbon / dried_herbs / straw_hat 達 GDD §5.5 軸成形 ≥ 3 件門檻
+- **9/9 美學軸全部 ≥ 3 件 ✅**
 
 **元氣軸歸屬釐清**（iter#195 確認）：
 - **fighter form** = 元氣軸主 form（CLAUDE.md TA 軟化策略：「戰鬥雞」改稱「元氣雞」/「Spirited Chick」/「活力 max」/「跳跳活蹦」）
 - **party_hat** = 元氣軸 accessory（生日派對 / 慶祝 narrative，跟 fighter 元氣高頻情境合）
-- **rainbow（regular event）** = 元氣軸 atmospheric — 「彩虹出現！全身充滿希望」narrative 是 motivational uplift
-- **pinwheel（兒童節 seasonal）** = 元氣軸童玩 — narrative 對齊 fighter 的「跳跳活蹦」運動感
-- **rainbow_heart（Pride seasonal）** = 元氣軸延伸 — Pride 多元接納 narrative 跟 fighter「活力 max / 心情明亮亮」的 inclusive joy 合
-- **這軸暫不再加 form**（fighter 已是核心代表）— 元氣軸跟 cottagecore 不同：cottagecore 是廣度橫向（事件 + 配件 = 7 件但無 form 主代表），元氣軸是深度縱向（form 主導 + 4 件支援）
+- **rainbow + confetti_pop（regular events）** = 元氣軸 atmospheric uplift / kinetic burst 雙模 — narrative arc 完整
+- **pinwheel + rainbow_heart（seasonal）** = 元氣軸節日延伸 — 兒童節童玩 + Pride Month 多元接納
+- **這軸暫不再加 form**（fighter 已是核心代表）— 元氣軸跟 cottagecore 不同：cottagecore 是廣度橫向（事件 + 配件 = 9 件無 form 主代表），元氣軸是深度縱向（form 主導 + 6 件支援）
 
-**form-less 軸的設計選擇**：
-- **cottagecore** + **y2k** 兩軸刻意 form-less — 它們是「環境 / 風格 atmosphere」軸，不該綁特定終態
-- 玩家任何 form（healthy / fighter / sage etc）都能透過配件 + 事件感受 cottagecore 或 y2k 氛圍 — 軸是「玩法 path」而非「進化結果」
+**form-less 軸的設計選擇**（cottagecore / y2k / boho 三軸）：
+- 三軸刻意 form-less — 它們是「環境 / 風格 atmosphere」軸，不該綁特定終態
+- 玩家任何 form 都能透過配件 + 事件感受該軸氛圍 — 軸是「玩法 path」而非「進化結果」
 - 對齊 GDD §5.5 設計哲學：**form = 角色身份（識別感）/ axis = 美學選擇（自由度）**
+- 注意 boho 軸 v0.4 ship 後同樣 form-less 起手 — 等玩家累積後 v0.5 可考慮追加 form（如「漂泊者雞」keyed off ownedAccessories 多樣性）
 
-**8 軸覆蓋演進時序**（per iter logs）：
+**9 軸覆蓋演進時序**（per iter logs）：
 - iter#100 起點：5 軸有 form（healthy / fighter / sage / diva / divine）+ fatty / ugly 兩個失衡軸
 - iter#132（下午茶）→ iter#172（pixel_heart）：補完 8 軸 event 全覆蓋
-- iter#156（gourmet）→ iter#183（explorer）：v0.2/v0.3 form 擴充至 9
+- iter#156（gourmet）→ iter#183（explorer）→ **iter#196（warmheart）**：v0.2/v0.3/v0.4 form 擴充至 10
 - iter#185（pinwheel）：12 個月 seasonal 全覆蓋
+- **iter#198-203（6 輪 axis-second-event batch）**：所有有 form 軸都達 ≥ 4 件
+- **iter#205-207（boho 軸 ship）**：第 9 軸完整成形
 
-**v0.4+ 美學軸候選方向**：
-- **新軸 candidate**：boho（流蘇 / 編織）/ minimalist（極簡 / 灰白）/ kawaii-decora（過度可愛堆疊）/ dark academia（深色學院風 — sage 軸延伸）
-- **既有軸補強**：智慧 / balletcore / fairycore 補 seasonal event（避免 cottagecore-coquette 飽和度過於主導）
+**v0.5+ 美學軸候選方向**：
+- **新軸 candidate**：minimalist（極簡 / 灰白）/ kawaii-decora（過度可愛堆疊）/ dark academia（深色學院風 — sage 軸延伸） — 等 v0.4 飽和度測試 + 玩家行為數據後再啟動
+- **既有軸補強**：所有軸都達 ≥ 3 件成形，後續軸補強重點 = seasonal 補完（智慧 / balletcore / fairycore / cleangirl / boho 仍缺 seasonal event）vs 內容深化（form-less 軸補 form？）
+- **跨軸 mixing-mode** v0.5 預留 idea：玩家配戴超過 1 軸 accessory + 觸發超過 1 軸 event → 解鎖「跨軸混搭成就」（acrosshatch achievement system）— 強化「choose your aesthetic axis」承諾的彈性面
 
 ---
 

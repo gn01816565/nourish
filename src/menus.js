@@ -44,6 +44,26 @@
     const currentBond = Math.max(0, Math.floor((Date.now() - state.pet.bornAt) / 86400000));
     const totalBondDays = pastBondTotal + currentBond;
     const totalPets = fullPastForBond.length + 1; // +1 for current alive pet
+    // iter#204 — Form distribution mini-strip: visible "I've raised these" history.
+    // Counts each finalForm across past pets; renders as compact emoji-icon chips.
+    // Only shown when at least 1 past pet exists (skipped on D1 fresh save).
+    const formCounts = fullPastForBond.reduce((acc, p) => {
+      const f = p.finalForm || "healthy";
+      acc[f] = (acc[f] || 0) + 1;
+      return acc;
+    }, {});
+    const FORM_ICONS = {
+      healthy: "🐤", fatty: "🥯", ugly: "😆",
+      fighter: "💪", sage: "🧠", diva: "🎤",
+      divine: "✨", gourmet: "🍰", explorer: "🗺️", warmheart: "🤍",
+    };
+    const formStripHTML = fullPastForBond.length === 0 ? "" : `
+      <p class="muted center" style="margin:0 0 8px;font-size:12px;line-height:1.6;">
+        ${Object.entries(formCounts)
+          .sort((a, b) => b[1] - a[1])
+          .map(([form, n]) => `<span style="margin:0 4px;white-space:nowrap;">${FORM_ICONS[form] || "🐔"} ${A.formLabel(form)} ×${n}</span>`)
+          .join("")}
+      </p>`;
     const pastHTML = past.length === 0
       ? `<p class="muted center" style="padding:6px 0;">尚未養成任何小雞</p>`
       : past.map((p, idx) => {
@@ -64,7 +84,8 @@
     ui().showModal({
       title: t("modal.dex.title"),
       body: `
-        <p class="muted center" style="margin:2px 0 8px;font-size:13px;">${t("modal.dex.bondSummary", { days: totalBondDays, pets: totalPets })}</p>
+        <p class="muted center" style="margin:2px 0 4px;font-size:13px;">${t("modal.dex.bondSummary", { days: totalBondDays, pets: totalPets })}</p>
+        ${formStripHTML}
         <div class="modal-title" style="font-size:14px;margin:6px 0 4px;">終態收集 ${unlocked.size} / ${allForms.length}</div>
         <div class="modal-list">${formsHTML}</div>
         <div class="modal-title" style="font-size:14px;margin:14px 0 4px;">歷代小雞</div>
