@@ -14,7 +14,35 @@
   <link rel="icon" type="image/svg+xml" href="assets/svg/chick-baby.svg">
   <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon.png">
   <link rel="manifest" href="manifest.json">
+  <!-- canonical: update to deployed URL once GitHub Pages is live -->
+  <link rel="canonical" href="https://gn01816465.github.io/nourish/">
   <link rel="stylesheet" href="src/style.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "VideoGame",
+    "name": "啾啾日常 ChickaDay",
+    "alternateName": ["啾啾日常", "ChickaDay"],
+    "description": "純瀏覽器養成小雞，零下載、零帳號、女性向粉嫩風。蛋孵化、餵食、玩耍、進化 7 種終態，9 件飾品自由搭配。",
+    "url": "https://gn01816465.github.io/nourish/",
+    "image": "https://gn01816465.github.io/nourish/assets/images/og-image.png",
+    "genre": ["Pet Simulation", "Casual", "Idle"],
+    "applicationCategory": "GameApplication",
+    "operatingSystem": "Web Browser, iOS, Android",
+    "browserRequirements": "Requires JavaScript. Requires HTML5.",
+    "inLanguage": "zh-TW",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "TWD",
+      "availability": "https://schema.org/InStock"
+    },
+    "author": {
+      "@type": "Organization",
+      "name": "ChickaDay"
+    }
+  }
+  </script>
 
   <meta property="og:type" content="website">
   <meta property="og:title" content="啾啾日常 ChickaDay">
@@ -37,35 +65,35 @@
         <span class="version">v0.1</span>
       </div>
       <div class="header-actions">
-        <button id="btn-shop" class="icon-btn" title="裝扮商店" aria-label="裝扮商店">🎀</button>
-        <button id="btn-ach" class="icon-btn" title="成就" aria-label="成就">🏅</button>
-        <button id="btn-dex" class="icon-btn" title="圖鑑" aria-label="圖鑑">📖</button>
-        <button id="btn-settings" class="icon-btn" title="設定" aria-label="設定">⚙️</button>
+        <button id="btn-shop" class="icon-btn" title="裝扮商店" aria-label="裝扮商店" data-i18n-title="header.shop" data-i18n-aria="header.shop">🎀</button>
+        <button id="btn-ach" class="icon-btn" title="成就" aria-label="成就" data-i18n-title="header.ach" data-i18n-aria="header.ach">🏅</button>
+        <button id="btn-dex" class="icon-btn" title="圖鑑" aria-label="圖鑑" data-i18n-title="header.dex" data-i18n-aria="header.dex">📖</button>
+        <button id="btn-settings" class="icon-btn" title="設定" aria-label="設定" data-i18n-title="header.settings" data-i18n-aria="header.settings">⚙️</button>
       </div>
     </header>
 
     <section class="stats-bar">
       <div class="stat" data-stat="hunger">
         <span class="stat-icon">🍗</span>
-        <span class="stat-label">飢餓</span>
+        <span class="stat-label" data-i18n="stat.hunger">飢餓</span>
         <div class="bar"><div class="bar-fill" id="bar-hunger"></div></div>
         <span class="stat-value" id="val-hunger">--</span>
       </div>
       <div class="stat" data-stat="mood">
         <span class="stat-icon">💖</span>
-        <span class="stat-label">心情</span>
+        <span class="stat-label" data-i18n="stat.mood">心情</span>
         <div class="bar"><div class="bar-fill" id="bar-mood"></div></div>
         <span class="stat-value" id="val-mood">--</span>
       </div>
       <div class="stat" data-stat="clean">
         <span class="stat-icon">🛁</span>
-        <span class="stat-label">清潔</span>
+        <span class="stat-label" data-i18n="stat.clean">清潔</span>
         <div class="bar"><div class="bar-fill" id="bar-clean"></div></div>
         <span class="stat-value" id="val-clean">--</span>
       </div>
       <div class="stat" data-stat="energy">
         <span class="stat-icon">🌙</span>
-        <span class="stat-label">體力</span>
+        <span class="stat-label" data-i18n="stat.energy">體力</span>
         <div class="bar"><div class="bar-fill" id="bar-energy"></div></div>
         <span class="stat-value" id="val-energy">--</span>
       </div>
@@ -77,7 +105,7 @@
     <section class="stage" id="stage">
       <div class="stage-bg" id="stage-bg"></div>
       <div class="pet-shadow"></div>
-      <button class="pet-wrapper" id="pet-wrapper" type="button" aria-label="輕觸啾啾摸頭">
+      <button class="pet-wrapper" id="pet-wrapper" type="button" aria-label="輕觸啾啾摸頭" data-i18n-aria="pet.tap">
         <img class="accessory wing" id="acc-wing" src="" alt="" hidden>
         <img class="pet" id="pet-img" src="assets/svg/egg.svg" alt="寵物">
         <img class="accessory face" id="acc-face" src="" alt="" hidden>
@@ -95,27 +123,27 @@
       <div class="stage-hint" id="stage-hint" hidden></div>
     </section>
 
-    <nav class="action-bar" aria-label="互動操作">
-      <button class="action-btn" id="btn-feed" aria-label="餵食">
+    <nav class="action-bar" aria-label="互動操作" data-i18n-aria="actionbar.aria">
+      <button class="action-btn" id="btn-feed" aria-label="餵食" data-i18n-aria="help.feed">
         <span class="action-icon" aria-hidden="true">🍗</span>
-        <span class="action-label">餵食</span>
+        <span class="action-label" data-i18n="help.feed">餵食</span>
       </button>
-      <button class="action-btn" id="btn-play" aria-label="玩耍">
+      <button class="action-btn" id="btn-play" aria-label="玩耍" data-i18n-aria="help.play">
         <span class="action-icon" aria-hidden="true">🎮</span>
-        <span class="action-label">玩耍</span>
+        <span class="action-label" data-i18n="help.play">玩耍</span>
       </button>
-      <button class="action-btn" id="btn-bath" aria-label="洗澡">
+      <button class="action-btn" id="btn-bath" aria-label="洗澡" data-i18n-aria="help.bath">
         <span class="action-icon" aria-hidden="true">🛁</span>
-        <span class="action-label">洗澡</span>
+        <span class="action-label" data-i18n="help.bath">洗澡</span>
         <span class="cd" id="cd-bath" hidden></span>
       </button>
-      <button class="action-btn" id="btn-sleep" aria-label="睡眠">
+      <button class="action-btn" id="btn-sleep" aria-label="睡眠" data-i18n-aria="help.sleep">
         <span class="action-icon" aria-hidden="true">😴</span>
-        <span class="action-label" id="sleep-label">睡眠</span>
+        <span class="action-label" id="sleep-label" data-i18n="help.sleep">睡眠</span>
       </button>
-      <button class="action-btn" id="btn-pet" aria-label="愛撫">
+      <button class="action-btn" id="btn-pet" aria-label="愛撫" data-i18n-aria="help.pet">
         <span class="action-icon" aria-hidden="true">💝</span>
-        <span class="action-label">愛撫</span>
+        <span class="action-label" data-i18n="help.pet">愛撫</span>
       </button>
     </nav>
 
@@ -123,6 +151,13 @@
       <span id="task-text">每日任務：載入中…</span>
       <span id="streak">🔥 連續登入 0 天</span>
     </footer>
+
+    <div class="install-banner" id="install-banner" hidden role="region" aria-label="安裝到主畫面" data-i18n-aria="install.title">
+      <span class="install-banner-icon" aria-hidden="true">📲</span>
+      <span class="install-banner-text" data-i18n="install.title">把啾啾裝到主畫面，一鍵就能照顧～</span>
+      <button class="install-banner-yes" id="install-banner-yes" type="button" data-i18n="install.btn.yes">安裝</button>
+      <button class="install-banner-no" id="install-banner-no" type="button" aria-label="關閉橫幅" data-i18n-aria="install.btn.no">×</button>
+    </div>
   </div>
 
   <div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="modal-card">
@@ -133,11 +168,27 @@
   <div class="toast-container" id="toast-container" aria-live="polite"></div>
 
   <script src="src/cfg.js"></script>
+  <script src="src/i18n.js"></script>
+  <script src="src/utils.js"></script>
+  <script src="src/animations.js"></script>
+  <script src="src/notifications.js"></script>
   <script src="src/ui.js"></script>
   <script src="src/dex.js"></script>
   <script src="src/achievements.js"></script>
   <script src="src/audio.js"></script>
   <script src="src/share.js"></script>
+  <script src="src/wants.js"></script>
+  <script src="src/events.js"></script>
+  <script src="src/daily.js"></script>
+  <script src="src/idle.js"></script>
+  <script src="src/evolve.js"></script>
+  <script src="src/shop.js"></script>
+  <script src="src/save.js"></script>
+  <script src="src/tick.js"></script>
+  <script src="src/interactions.js"></script>
+  <script src="src/menus.js"></script>
+  <script src="src/settings.js"></script>
+  <script src="src/render.js"></script>
   <script src="src/game.js"></script>
   <script>
     // PWA registration. Silent on failure — game still works without offline.

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <!-- Pink trim band (base) -->
+  <rect x="22" y="62" width="56" height="13" rx="3" fill="#FFB7B7" stroke="#2C2C2C" stroke-width="2"/>
+  <!-- Toque main puff: cluster of overlapping rounded shapes for cloud-like silhouette -->
+  <ellipse cx="50" cy="46" rx="30" ry="20" fill="#FFF8E7" stroke="#2C2C2C" stroke-width="2"/>
+  <circle cx="32" cy="38" r="14" fill="#FFF8E7" stroke="#2C2C2C" stroke-width="1.8"/>
+  <circle cx="68" cy="38" r="14" fill="#FFF8E7" stroke="#2C2C2C" stroke-width="1.8"/>
+  <circle cx="50" cy="30" r="16" fill="#FFF8E7" stroke="#2C2C2C" stroke-width="1.8"/>
+  <!-- Inner shading dots to give the toque a soft puffy texture -->
+  <circle cx="42" cy="44" r="2" fill="#FFE8C8" opacity="0.7"/>
+  <circle cx="58" cy="40" r="2" fill="#FFE8C8" opacity="0.7"/>
+  <!-- Tiny strawberry decoration on right side of band -->
+  <path d="M 64 66 q 0 5 3 6 q 3 -1 3 -6 z" fill="#B23A48" stroke="#2C2C2C" stroke-width="1"/>
+  <path d="M 65 65 l 3 -3" stroke="#6BCB77" stroke-width="1.5" stroke-linecap="round"/>
+  <circle cx="65" cy="68" r="0.7" fill="#FFD86B"/>
+  <circle cx="68" cy="69" r="0.7" fill="#FFD86B"/>
+</svg>

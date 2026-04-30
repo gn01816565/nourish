@@ -1,0 +1,22 @@
+# 啾啾日常 ChickaDay — robots.txt
+# 允許所有搜尋引擎完整索引，指向 sitemap 加速收錄。
+
+User-agent: *
+Allow: /
+
+# Block bot wastage on internal task files (not user-facing).
+Disallow: /docs/iteration-log.md
+Disallow: /docs/session-b-tasks.md
+Disallow: /docs/multipet-plan.md
+Disallow: /docs/retrospective-50.md
+Disallow: /docs/review.md
+Disallow: /docs/review-v2.md
+Disallow: /docs/launch-plan.md
+Disallow: /docs/launch-tiktok-prompts.md
+Disallow: /docs/retrospective-100.md
+Disallow: /docs/r1-plan.md
+Disallow: /docs/og-image-update.md
+Disallow: /docs/retrospective-130.md
+
+# Sitemap location — update host if deploying to custom domain.
+Sitemap: https://gn01816465.github.io/nourish/sitemap.xml

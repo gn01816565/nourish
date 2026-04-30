@@ -41,15 +41,33 @@ nourish/
 ├── src/
 │   ├── style.css                ← 所有樣式
 │   ├── cfg.js                   ← 純資料（CFG 物件）→ window.NourishCFG
-│   └── game.js                  ← 遊戲邏輯（IIFE，從 window.NourishCFG 讀 config）
-├── assets/svg/                  ← 19 張 SVG（pet + mood + food + bg）
+│   ├── i18n.js                  ← t(key, opts) 翻譯 + 雙語 dict → window.NourishI18n
+│   ├── utils.js                 ← 通用 helper（deepMerge / cryptoRandomId）→ window.NourishUtils
+│   ├── animations.js            ← DOM 動畫 helpers（pulseEvolve / particles / floatEmoji）→ window.NourishAnim
+│   ├── notifications.js         ← Notification API wrapper + critical stat alert → window.NourishNotify
+│   ├── ui.js                    ← Modal / toast / speak / onboarding（IIFE）
+│   ├── dex.js                   ← 圖鑑 localStorage 模組
+│   ├── achievements.js          ← 成就 evaluate（純函式）
+│   ├── audio.js                 ← Web Audio API SFX（程序合成）
+│   ├── share.js                 ← Canvas 720×1280 分享卡
+│   └── game.js                  ← 遊戲邏輯（IIFE，最後載入）
+├── assets/svg/                  ← SVG 占位圖（pet + mood + food + bg + accessory）
 ├── docs/
 │   ├── gdd.md                   ← 完整 Game Design Document（核心參考）
 │   ├── character-sheet.md       ← 角色設定書（生圖前必讀，gating factor）
 │   ├── market-research.md       ← 市場調查
 │   ├── image-prompts.md         ← AI 生圖 prompt 清單（必須先讀 character-sheet）
 │   ├── review.md                ← Code review 紀錄（P0/P1/P2）
+│   ├── deploy.md                ← 部署 + Search Console SOP
+│   ├── launch-plan.md           ← 30 天 launch playbook（W1-W4 短片內容 / KOL / KPI）
 │   └── iteration-log.md         ← 自動循環日誌（雙 session 交接介面，§6）
+├── scripts/
+│   ├── run-checks.sh            ← 一鍵 deploy gate（7 檔 syntax + 3 lint，set -e）
+│   ├── check-sw-shell.js        ← 防 sw.js / index.html script 飄移（iter#66 教訓）
+│   ├── check-assets.js          ← 驗證所有 assets/ 路徑檔案實存（防 typo / 漏檔）
+│   ├── check-cfg-schema.js      ← 驗 cfg.js 內部 cross-ref（menu / wants / slot / stage）
+│   ├── check-render-smoke.js    ← vm sandbox 跑 init/render 8 scenarios 抓 runtime bug
+│   └── locale-coverage.js       ← i18n 進度報表（manual-only，非 deploy gate）
 └── tests/                       ← 預留，目前空
 ```
 
@@ -78,10 +96,24 @@ nourish/
 ### 程式碼
 - ES2020+ 純 JS，無 transpile
 - 無 import：用 `<script>` 載入順序當依賴鏈（`cfg.js` 先，`game.js` 後）
-- 數值與互動表全部在 `src/cfg.js` 的 CFG 物件，**改數值只動 cfg.js，不要散落**
-- `randomEvents.pool[].apply` 用 string id（純資料），實作在 `game.js` 的 `RANDOM_EVENT_APPLIES` dispatch 表
+- **數值與設定一律住 cfg.js**，改數值只動 cfg.js（CLAUDE.md 全域指引「改數值只動 cfg.js」）
 - `state` 是唯一可變物件，每次 mutation 後呼叫 `save() + render()`
 - 拆檔 R-1 進度：step 1 已完（CFG 抽出），step 2-4（render / interactions / events / modal）未做
+
+### Cfg-driven 架構（iter#73-90 形成）
+**12 個結構化資料 block 都住 cfg.js**，game.js 只放邏輯：
+- `interactions` / `interactionMenus`（iter#73）/ `stages` / `stageLabels`（iter#87）
+- `wants.pool` / `accessories` / `achievements`
+- `speech` (46 pools) / `randomEvents.pool` / `seasonalEvents.pool`
+- `traitsDisplay`（iter#82，trait → form 進化條件）/ `finalForms`（iter#87，label + desc）
+
+**新增事件 / 進化分支等內容只動 cfg.js**：
+- `randomEvents.pool` 加 entry（含 `applyEffects: { stats, coin?, coinReason? }` + `applyToast` + 可選 `applyToastStyle`）— `runEventApply(def)` 自動處理（iter#90）
+- 加新終態：cfg.finalForms + cfg.petArt.adult 兩處同步（cfg-schema invariant 7.5 雙向守）
+- 加新進化分支判定：game.js maybeEvolve / finalizeForm 仍需動（邏輯不可避免）
+- Session B 加新配件：cfg.accessories 加 entry，零 game.js 風險
+
+**`RANDOM_EVENT_APPLIES` dispatch 表**保留給「非典型」邏輯（如 coin_drop 隨機金額），多數事件走 cfg.applyEffects 路徑。
 
 ### CSS
 - 色票定義在 `:root`（`--c-yellow` `--c-orange` …），**不要新增硬編碼色**
@@ -94,9 +126,21 @@ nourish/
 - 命名：`<category>-<variant>.svg`（`chick-adult-fighter.svg` `food-seed.svg`）
 
 ### 驗證
-- 改完 `src/game.js` 後跑 `node --check src/game.js`（語法 lint）
+- 改完任一 `src/*.js` 後跑 `./scripts/run-checks.sh`（一鍵：7 檔 syntax + sw.js + 3 lint，set -e fail-fast）
+- 個別除錯：`node --check src/<file>.js` 看單檔語法
 - 改完 `index.html` 後 `curl -s http://localhost:8765/index.html | head` 確認沒爛
-- 沒有 unit test 框架，依靠手動測 + lint
+- 改完 cfg.js（任何 entry / 數值）後，`run-checks.sh` 跑 `check-cfg-schema.js` 守 13 條 invariant：
+  - 1-5 cross-ref（menu/items / interactions/unlock / accessories/slot / wants/needs+stage / stages/next）
+  - 6 traitsDisplay key + cap
+  - 7 speech pool 非空字串陣列
+  - 7.2 thresholds 排序 + 0-100 範圍
+  - 7.3 economy 全正數
+  - 7.4 events.pool weight + apply + applyEffects/applyToast 結構
+  - 7.5 finalForms ↔ petArt.adult 雙向同步
+  - 7.6 accessories.price 正數
+  - 8 traitsDisplay key 對 KNOWN_TRAITS
+- 改完 cfg.js 新增配件 / 事件後，`check-assets.js` 會驗 path 實存
+- 沒有 unit test 框架，依靠手動測 + lint chain
 
 ---
 
@@ -171,9 +215,9 @@ lsof -i :8765 >/dev/null 2>&1 || (python3 -m http.server 8765 > /tmp/nourish-ser
 ls assets/svg/
 ```
 
-### 驗證 game.js
+### 驗證所有檢查（push 前用）
 ```bash
-node --check src/game.js
+./scripts/run-checks.sh
 ```
 
 ### 開除錯模式（瀏覽器）

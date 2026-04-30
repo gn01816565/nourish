@@ -6,7 +6,7 @@
  *
  * Versioning: bump CACHE_VERSION on any shipped change so old caches purge.
  */
-const CACHE_VERSION = "chickaday-v1-2026-04-28";
+const CACHE_VERSION = "chickaday-v1-2026-04-30-iter194";
 
 // What gets pre-fetched on install — keep tight to the app shell so first
 // install is fast. Other assets fall through to runtime caching below.
@@ -15,8 +15,27 @@ const APP_SHELL = [
   "./index.html",
   "./manifest.json",
   "./src/cfg.js",
+  "./src/i18n.js",
+  "./src/utils.js",
+  "./src/animations.js",
+  "./src/notifications.js",
+  "./src/ui.js",
   "./src/dex.js",
+  "./src/achievements.js",
+  "./src/audio.js",
   "./src/share.js",
+  "./src/wants.js",
+  "./src/events.js",
+  "./src/daily.js",
+  "./src/idle.js",
+  "./src/evolve.js",
+  "./src/shop.js",
+  "./src/save.js",
+  "./src/tick.js",
+  "./src/interactions.js",
+  "./src/menus.js",
+  "./src/settings.js",
+  "./src/render.js",
   "./src/game.js",
   "./src/style.css",
 ];

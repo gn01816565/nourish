@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <!-- Wrap paper / cone (pastel pink, behind blooms) -->
+  <path d="M 28 60 L 50 88 L 72 60 Z"
+        fill="#FFC8D6" stroke="#FF89A7" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Wrap paper inner fold highlight -->
+  <line x1="50" y1="62" x2="50" y2="88" stroke="#FF89A7" stroke-width="1.5" opacity="0.6"/>
+  <!-- Three rose blooms (clustered top) -->
+  <!-- Rose 1: left, slightly lower -->
+  <circle cx="34" cy="42" r="11" fill="#B23A48" stroke="#8B2030" stroke-width="2"/>
+  <circle cx="34" cy="42" r="6" fill="#FFB7B7" opacity="0.7"/>
+  <circle cx="34" cy="42" r="2.5" fill="#FFFFFF" opacity="0.8"/>
+  <!-- Rose 2: center, top -->
+  <circle cx="50" cy="32" r="13" fill="#B23A48" stroke="#8B2030" stroke-width="2"/>
+  <circle cx="50" cy="32" r="7" fill="#FFB7B7" opacity="0.7"/>
+  <circle cx="50" cy="32" r="3" fill="#FFFFFF" opacity="0.8"/>
+  <!-- Rose 3: right, slightly lower -->
+  <circle cx="66" cy="42" r="11" fill="#B23A48" stroke="#8B2030" stroke-width="2"/>
+  <circle cx="66" cy="42" r="6" fill="#FFB7B7" opacity="0.7"/>
+  <circle cx="66" cy="42" r="2.5" fill="#FFFFFF" opacity="0.8"/>
+  <!-- Two leaves peeking from cluster sides -->
+  <path d="M 22 50 Q 14 46 16 36 Q 24 40 28 50 Z" fill="#6BCB77" stroke="#3E8C4A" stroke-width="1.5" stroke-linejoin="round"/>
+  <path d="M 78 50 Q 86 46 84 36 Q 76 40 72 50 Z" fill="#6BCB77" stroke="#3E8C4A" stroke-width="1.5" stroke-linejoin="round"/>
+  <!-- Ribbon tie at base of cone -->
+  <ellipse cx="50" cy="62" rx="8" ry="3" fill="#FFD86B" stroke="#8B5A2B" stroke-width="1.5"/>
+  <path d="M 42 62 L 36 70" stroke="#FFD86B" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M 58 62 L 64 70" stroke="#FFD86B" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- Stage applause sparkle -->
+  <text x="78" y="20" font-size="10" fill="#FFD86B">✨</text>
+  <text x="14" y="22" font-size="9" fill="#FFB7B7">♥</text>
+</svg>

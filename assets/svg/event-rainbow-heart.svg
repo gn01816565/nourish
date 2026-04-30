@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <defs>
+    <!-- Heart-shaped clipping path: smooth round-lobed silhouette -->
+    <clipPath id="rh-heart">
+      <path d="M 50 32 Q 38 14 22 22 Q 8 32 14 50 Q 22 70 50 86 Q 78 70 86 50 Q 92 32 78 22 Q 62 14 50 32 Z"/>
+    </clipPath>
+  </defs>
+  <!-- Rainbow stripes inside heart clip — softened pastel palette to fit
+       the project's TA constraint (CLAUDE.md §1: 粉嫩優先, 避免過冷/過男性化) -->
+  <g clip-path="url(#rh-heart)">
+    <rect x="0" y="0"  width="100" height="11" fill="#FFB7B7"/>
+    <rect x="0" y="11" width="100" height="11" fill="#FF9F43"/>
+    <rect x="0" y="22" width="100" height="11" fill="#FFD86B"/>
+    <rect x="0" y="33" width="100" height="11" fill="#6BCB77"/>
+    <rect x="0" y="44" width="100" height="11" fill="#6BCBFF"/>
+    <rect x="0" y="55" width="100" height="11" fill="#9D7BD8"/>
+    <rect x="0" y="66" width="100" height="11" fill="#FF89A7"/>
+    <rect x="0" y="77" width="100" height="11" fill="#FFB7B7"/>
+  </g>
+  <!-- Heart outline (drawn after clip so the dark border reads cleanly) -->
+  <path d="M 50 32 Q 38 14 22 22 Q 8 32 14 50 Q 22 70 50 86 Q 78 70 86 50 Q 92 32 78 22 Q 62 14 50 32 Z"
+        fill="none" stroke="#B23A48" stroke-width="2.5" stroke-linejoin="round"/>
+  <!-- Soft white highlight on top-left lobe (gives a glossy 3D feel) -->
+  <ellipse cx="32" cy="32" rx="6" ry="4" fill="#FFFFFF" opacity="0.55"/>
+  <!-- Pride sparkle accents -->
+  <text x="78" y="20" font-size="11" fill="#FFD86B">✦</text>
+  <text x="14" y="22" font-size="9" fill="#FFB7B7">♥</text>
+  <circle cx="86" cy="76" r="1.6" fill="#FFD86B"/>
+  <circle cx="12" cy="74" r="1.6" fill="#FF89A7"/>
+</svg>

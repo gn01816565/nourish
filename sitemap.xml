@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  啾啾日常 ChickaDay — sitemap.xml
+  Single-page PWA, only one canonical URL. Update <loc> if deployed to a
+  custom domain. Update <lastmod> on each shipped iteration.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://gn01816465.github.io/nourish/</loc>
+    <lastmod>2026-04-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+</urlset>

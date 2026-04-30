@@ -17,6 +17,10 @@
   const CFG = window.NourishCFG;
   if (!CFG) throw new Error("share.js: NourishCFG missing — load cfg.js first");
 
+  // i18n thin wrapper — lazy access to window.NourishI18n (loaded earlier in
+  // script order). Falls back to literal key if i18n missing. iter#121.
+  const t = (key, opts) => window.NourishI18n ? window.NourishI18n.t(key, opts) : key;
+
   // Game-side bridge. Lazy: NourishAPI is populated when game.js's IIFE runs,
   // which happens after this script. Calls below dereference at use time.
   function api() {
@@ -95,7 +99,7 @@
     ctx.fillStyle = "#2C2C2C";
     ctx.textAlign = "center";
     ctx.font = "bold 64px sans-serif";
-    ctx.fillText(isMemorial ? "✨ 紀念冊 ✨" : "啾啾日常", W / 2, 160);
+    ctx.fillText(isMemorial ? t("share.title.mem") : t("share.title.live"), W / 2, 160);
     ctx.font = "24px sans-serif";
     ctx.fillStyle = "#8B5A2B";
     ctx.fillText(isMemorial ? "ChickaDay · Memory" : "ChickaDay · v0.1", W / 2, 195);
@@ -183,21 +187,21 @@
       // signature
       ctx.font = "24px sans-serif";
       ctx.fillStyle = "#8B5A2B";
-      ctx.fillText("永遠記得你 💕", W / 2, 1080);
+      ctx.fillText(t("share.tagline.mem"), W / 2, 1080);
       ctx.font = "22px sans-serif";
       ctx.fillStyle = "#8B5A2B";
-      ctx.fillText("我和啾啾的回憶", W / 2, 1180);
+      ctx.fillText(t("share.subtitle.mem"), W / 2, 1180);
       ctx.font = "18px sans-serif";
       ctx.fillStyle = "#B23A48";
-      ctx.fillText("ChickaDay · 啾啾日常", W / 2, 1210);
+      ctx.fillText(t("share.footer"), W / 2, 1210);
     } else {
       // Live layout (current pet) — 4 stat bars + counters
       const stats = state.pet.stats;
       const labels = [
-        { k: "hunger", l: "🍗 飢餓" },
-        { k: "mood",   l: "💖 心情" },
-        { k: "clean",  l: "🛁 清潔" },
-        { k: "energy", l: "🌙 體力" },
+        { k: "hunger", l: t("share.stat.hunger") },
+        { k: "mood",   l: t("share.stat.mood") },
+        { k: "clean",  l: t("share.stat.clean") },
+        { k: "energy", l: t("share.stat.energy") },
       ];
       const baseY = 800;
       labels.forEach((s, i) => {
@@ -225,10 +229,10 @@
       ctx.fillText(`🏅 成就 ${achCount}/${achTotal}    📖 圖鑑 ${dexCount}/7`, W / 2, 1130);
       ctx.font = "22px sans-serif";
       ctx.fillStyle = "#8B5A2B";
-      ctx.fillText("一起來養屬於你的小雞~", W / 2, 1180);
+      ctx.fillText(t("share.cta"), W / 2, 1180);
       ctx.font = "18px sans-serif";
       ctx.fillStyle = "#B23A48";
-      ctx.fillText("ChickaDay · 啾啾日常", W / 2, 1210);
+      ctx.fillText(t("share.footer"), W / 2, 1210);
     }
 
     return new Promise((resolve, reject) =>
@@ -259,26 +263,24 @@
         ? `chickaday-memory-${name || "chick"}.png`
         : `chickaday-${name || "chick"}.png`;
       const file = new File([blob], filename, { type: "image/png" });
-      const shareText = past ? `紀念我養過的 ${name || "啾啾"} 💕` : "看我養的小雞~";
+      const shareText = past
+        ? t("share.text.mem", { name: name || t("share.default.name") })
+        : t("share.text.live");
 
       // Path 1: native share sheet (Android Chrome, modern Safari)
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        await navigator.share({ files: [file], title: "啾啾日常", text: shareText });
-        A.toast("分享完成！", "good");
+        await navigator.share({ files: [file], title: t("share.dialog.title"), text: shareText });
+        A.toast(t("share.toast.done"), "good");
         return;
       }
 
       // Path 2: iOS Safari standalone PWA — "long press to save" preview modal
-      // (download attribute is a no-op, native share unavailable)
+      // (download attribute is a no-op, native share unavailable). UI module
+      // owns the overlay; share.js just supplies the blob URL + cleanup.
       if (isIOSStandalone()) {
         const url = URL.createObjectURL(blob);
         const cleanup = () => setTimeout(() => URL.revokeObjectURL(url), 60 * 1000);
-        if (window.NourishUI && window.NourishUI.showImagePreview) {
-          window.NourishUI.showImagePreview(url, past ? "紀念卡" : "分享卡", cleanup);
-        } else {
-          // Fallback: build inline modal here (UI module not yet split)
-          showIOSPreview(url, past ? "✨ 紀念卡" : "📸 分享卡", cleanup);
-        }
+        window.NourishUI.showImagePreview(url, past ? "✨ 紀念卡" : "📸 分享卡", cleanup);
         return;
       }
 
@@ -294,33 +296,6 @@
     }
   }
 
-  // Inline iOS preview modal — renders image full-bleed with hint to long-press.
-  // Lives here (not in game.js) so share.js stays self-contained.
-  function showIOSPreview(url, title, onClose) {
-    const overlay = document.createElement("div");
-    overlay.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.6);"
-      + "z-index:100;display:flex;flex-direction:column;align-items:center;"
-      + "justify-content:center;padding:20px;";
-    overlay.innerHTML = `
-      <div style="color:white;font-weight:700;margin-bottom:12px;font-size:16px;">${title}</div>
-      <img src="${url}" style="max-width:90%;max-height:70vh;border-radius:18px;
-        border:3px solid #2C2C2C;background:white;" alt="分享卡">
-      <p style="color:white;margin-top:14px;font-size:13px;line-height:1.6;text-align:center;">
-        💡 <strong>長按上方圖片</strong>選「儲存到照片」<br>
-        <small style="opacity:0.8;">(iOS PWA 限制無法直接下載)</small>
-      </p>
-      <button id="ios-preview-close" style="margin-top:12px;padding:8px 22px;
-        background:#FFD86B;border:2px solid #2C2C2C;border-radius:999px;
-        font-weight:700;cursor:pointer;font-family:inherit;">關閉</button>
-    `;
-    overlay.addEventListener("click", e => {
-      if (e.target === overlay || e.target.id === "ios-preview-close") {
-        overlay.remove();
-        if (onClose) onClose();
-      }
-    });
-    document.body.appendChild(overlay);
-  }
 
   window.NourishShare = { generateShareCard, shareOrDownloadCard };
 })();

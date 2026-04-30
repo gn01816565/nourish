@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <!-- Chromatic-aberration ghost (cyan offset, behind) — y2k glitch flavor -->
+  <path d="M 17 22 H 37 V 32 H 57 V 22 H 77 V 32 H 87 V 52 H 77 V 62 H 67 V 72 H 57 V 82 H 37 V 72 H 27 V 62 H 17 V 52 H 7 V 32 H 17 Z"
+        fill="#6BCBFF" opacity="0.6"/>
+  <!-- Chromatic-aberration ghost (magenta offset, behind) -->
+  <path d="M 23 18 H 43 V 28 H 63 V 18 H 83 V 28 H 93 V 48 H 83 V 58 H 73 V 68 H 63 V 78 H 43 V 68 H 33 V 58 H 23 V 48 H 13 V 28 H 23 Z"
+        fill="#FFB7B7" opacity="0.55"/>
+  <!-- Pixel heart silhouette: stepped path, 8x6 cell grid (10 px each cell) -->
+  <path d="M 20 20 H 40 V 30 H 60 V 20 H 80 V 30 H 90 V 50 H 80 V 60 H 70 V 70 H 60 V 80 H 40 V 70 H 30 V 60 H 20 V 50 H 10 V 30 H 20 Z"
+        fill="#FF89A7" stroke="#B23A48" stroke-width="2" stroke-linejoin="miter"/>
+  <!-- Pixel highlight (top-left "shine" in classic 8-bit style) -->
+  <rect x="20" y="30" width="10" height="10" fill="#FFFFFF" opacity="0.55"/>
+  <rect x="30" y="20" width="10" height="10" fill="#FFFFFF" opacity="0.4"/>
+  <!-- Y2K sparkles + digital dots -->
+  <text x="76" y="20" font-size="11" fill="#FFD86B">✦</text>
+  <text x="14" y="22" font-size="9" fill="#6BCBFF">✦</text>
+  <rect x="86" y="74" width="3" height="3" fill="#FFD86B"/>
+  <rect x="10" y="72" width="3" height="3" fill="#6BCBFF"/>
+  <rect x="92" y="56" width="2" height="2" fill="#FFB7B7"/>
+</svg>

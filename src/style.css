@@ -648,6 +648,8 @@ body.reduce-motion .stage-hint { animation: none; }
   font-size: 12px;
   font-weight: 700;
 }
+/* iter#80: streak counter has tooltip with next-milestone hint, signal it. */
+#streak { cursor: help; }
 
 /* ============ Modal ============ */
 .modal {
@@ -850,3 +852,58 @@ kbd {
   margin: 8px 0;
 }
 .welcome-back strong { color: var(--c-orange); }
+
+/* Install banner — appears once player has invested 5+ min and a beforeinstallprompt
+ * event has been captured. iter#71. Dismiss state persists in state.settings. */
+.install-banner {
+  position: fixed;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  width: calc(100% - 24px);
+  max-width: 456px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: linear-gradient(90deg, var(--c-pink-soft), #FFF4F8);
+  border: 2px solid var(--c-pink-deep);
+  border-radius: 14px;
+  box-shadow: 0 4px 14px rgba(255, 137, 167, 0.25);
+  z-index: 50;
+  animation: install-slide-up 0.3s ease-out;
+}
+.install-banner-icon { font-size: 22px; }
+.install-banner-text {
+  flex: 1;
+  font-size: 13px;
+  color: #5A2A3A;
+  line-height: 1.35;
+}
+.install-banner-yes {
+  background: var(--c-pink-deep);
+  color: white;
+  border: 0;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.install-banner-yes:hover { filter: brightness(1.05); }
+.install-banner-no {
+  background: transparent;
+  border: 0;
+  color: #B86A82;
+  font-size: 20px;
+  line-height: 1;
+  width: 26px;
+  height: 26px;
+  cursor: pointer;
+  border-radius: 50%;
+}
+.install-banner-no:hover { background: rgba(255, 137, 167, 0.15); }
+@keyframes install-slide-up {
+  from { transform: translate(-50%, 100%); opacity: 0; }
+  to   { transform: translate(-50%, 0);    opacity: 1; }
+}

@@ -113,6 +113,32 @@ sides. Sparkles ✦ and stars around. Serene smile, eyes gently closed or radian
 white feather highlights. Background remains transparent except for the soft glow.
 ```
 
+## 8.6 探險家雞（chick-adult-explorer.png）  *iter#183 v0.3 第 9 個進化分支 — 待生圖補上，目前 cfg.petArt 暫指 healthy 占位*
+```
+[全域風格]
+Subject: a curious explorer chicken. Soft yellow body in standard chick-adult proportions.
+Wearing a small leather satchel / backpack across one shoulder, slightly open with a tiny
+mushroom or pink petal peeking out the top. Tiny pink bandana tied around the neck.
+Holding a small map or compass in one wing. Wide bright eyes (^_^) showing wonder, looking
+slightly off-frame at something interesting. Background transparent. Small floating sparkles
+nearby (one star, one mushroom dot). Mood: cottagecore-adventure / wholesome curiosity, soft
+pastel palette, never sharp / aggressive lines. Compass / map detail leans cute illustration
+not military.
+```
+**為什麼這個設計**：呼應 explorer 解鎖路徑（catch event >= 25 次）— backpack 裝的小蘑菇 / 花瓣對應 cfg.randomEvents 的 mushroom / petal / star 既有 art；粉色 bandana + soft 表情避免「冒險家 = 男性化」的視覺刻板；map / compass 是書卷氣 + 童趣的混合，跟 sage（学術派）區隔。**解鎖條件**：state.pet.traits.eventsCaught >= 25（catch event 25 次後解鎖，~5-7 天 D14+ 玩家自然達標）。
+
+## 8.5 美食家雞（chick-adult-gourmet.png）  *iter#156 v0.2 新進化分支 — 待生圖補上，目前 cfg.petArt 暫指 healthy 占位*
+```
+[全域風格]
+Subject: a gourmet pâtissier chicken. Soft yellow body in standard chick-adult proportions.
+Wearing a small pastel pink chef's hat (toque blanche) tilted slightly. Tiny ribbon-tie
+apron in cream / blush-pink with a strawberry or macaron motif on the front pocket. One
+wing holding up a tiny silver fork or whisk. Subtle blush cheeks, half-closed satisfied
+eyes (◕‿◕) with a small heart sparkle nearby. Background transparent. Mood: cottagecore /
+afternoon-tea aesthetic, soft pastel palette, never sharp / aggressive lines.
+```
+**為什麼這個設計**：呼應 iter#132「下午茶」隨機事件 + cottagecore 美食家路線；廚師帽 + 圍裙明確區分 healthy 模範生 / fatty 圓潤體型 / sage 學究眼鏡，獨立視覺記憶點；粉色 + 草莓 / 馬卡龍 motif 鎖女性向 TA。**解鎖條件**：state.pet.traits.feedCount >= 60（餵 60 次後解鎖，~3 週日常養成）。
+
 ## 9. 心情：開心（mood-happy.png）
 ```
 [全域風格]

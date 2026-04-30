@@ -34,11 +34,21 @@ git push origin main
 
 每次 push 前過一次：
 
-- [ ] `node --check src/game.js src/cfg.js src/dex.js src/share.js src/achievements.js` 全綠
+- [ ] **`./scripts/run-checks.sh` 全綠**（一鍵跑 7 檔 `node --check` + sw.js + 2 個 lint，set -e fail-fast）
 - [ ] 本機 `python3 -m http.server 8765` 跑得起來，至少看一遍 onboarding modal
 - [ ] **bump `sw.js` 的 `CACHE_VERSION` 字串**（每次 ship 都加日期或版本號），避免老 cache 卡住玩家
 - [ ] iteration-log.md 有記這輪做了什麼（雙 session 接力依此判斷）
 - [ ] commit 訊息有意義（不要 `update` `fix`）
+
+> 個別檢查（`run-checks.sh` 抓到問題時可單獨跑除錯）：
+> - `node --check src/cfg.js src/ui.js src/dex.js src/achievements.js src/audio.js src/share.js src/game.js`
+> - `node scripts/check-sw-shell.js`（iter#66 教訓：防 SW APP_SHELL 漂移）
+> - `node scripts/check-assets.js`（驗證 60+ 個 assets/ 路徑檔案實存）
+> - `node scripts/check-cfg-schema.js`（驗 cfg.js 內部 cross-ref + 13 條數值 invariant）
+> - `node scripts/check-render-smoke.js`（iter#98 教訓：vm sandbox + 最小 DOM stub 跑 init/render 一次抓 runtime error，補 lint 全靜態的盲區）
+>
+> 資訊型工具（不入 deploy gate）：
+> - `node scripts/locale-coverage.js`（iter#113 i18n 進度報表：總 / 已替換 / 各檔剩餘 CJK 數）
 
 ---
 
@@ -117,9 +127,10 @@ server {
 開部署後的 URL，過一遍：
 
 - [ ] index.html 加載完整（看到啾啾標題）
-- [ ] DevTools Network 看 5 個 .js 都 200
+- [ ] DevTools Network 看 8 個 .js 都 200（cfg / i18n / ui / dex / achievements / audio / share / game）
 - [ ] DevTools Application → Service Workers 看 sw.js registered + activated
 - [ ] DevTools Application → Manifest 看 PWA manifest 解析正確（icons 全綠）
+- [ ] **Lighthouse PWA audit ≥ 90**（DevTools → Lighthouse → Mode: Navigation / Categories: PWA + Performance + SEO + Best Practices + Accessibility / Device: Mobile）— iter#118 GSC 2026 升級為 AI 解讀 dashboard，PWA 分數低 = 玩家搜不到
 - [ ] 點摸頭觸發 SFX → 聽得到（Web Audio）
 - [ ] 設定頁開「啾啾呼叫」→ 跳出 permission prompt
 - [ ] 圖鑑 → 分享卡 → toast「卡片已下載」（桌機）or 系統分享 sheet（手機）
@@ -187,10 +198,67 @@ PWA 玩家還會吃到 SW cache，請務必同時 bump `CACHE_VERSION` 字串否
 
 ---
 
+## 11. Search Console / Bing Webmaster 提交流程
+
+部署完並驗證 §6 都過後，**送搜尋引擎收錄**才能讓玩家搜得到。  
+SEO 三件套（meta tags / canonical+JSON-LD / robots.txt+sitemap.xml）已在 iter#59/64/65 鋪好，這裡只是把它們送出去。
+
+### Google Search Console（首要）
+
+1. 開 https://search.google.com/search-console/welcome
+2. 加 property → 選 **「網址前置」（URL prefix）** → 填 `https://gn01816465.github.io/nourish/`
+3. 驗證所有權 → 推薦用 **HTML 標籤法**：
+   - 複製 `<meta name="google-site-verification" content="...">`
+   - 貼到 `index.html` `<head>` 區（緊跟 og: meta 之後）
+   - push 部署 → 等 1-2 分鐘 → 回 GSC 按「驗證」
+4. 驗證成功後左欄 → **「Sitemap」** → 填 `sitemap.xml`（相對路徑）→ 提交
+5. 等 24-48 小時，Google 會開始爬 → 「索引 → 涵蓋範圍」會看到頁面被收錄
+6. 用 **「網址檢查」** 工具搜 `https://gn01816465.github.io/nourish/`，可以強制請求建立索引（每天 ~10 次配額）
+
+### Bing Webmaster Tools（次要）
+
+1. 開 https://www.bing.com/webmasters
+2. 用 GSC 帳號登入 → **「Import from Google Search Console」**（一鍵把 sitemap / property 同步過來）
+3. 或手動：Add site → 同樣的 URL → 驗證 → 提交 sitemap
+
+### 驗證 SEO 武裝是否生效
+
+部署 24-48 小時後跑這幾項：
+
+- [ ] **Google rich snippet 預覽**：https://search.google.com/test/rich-results 貼網址，看 JSON-LD VideoGame schema 有沒有解析成功
+- [ ] **PageSpeed Insights**：https://pagespeed.web.dev/ 跑 mobile，目標 Performance ≥ 90 / SEO 100
+- [ ] **Mobile-Friendly Test**：https://search.google.com/test/mobile-friendly（現已併入 PSI）
+- [ ] **Schema validator**：https://validator.schema.org/ 貼 JSON-LD 文字塊
+- [ ] **robots.txt tester**：GSC「設定 → robots.txt」確認 6 條 Disallow 正常
+
+### 預期收錄時程
+
+| 項目 | 時間 |
+|------|------|
+| Google 第一次爬 sitemap | 24h 內 |
+| 首頁出現在 site:gn01816465.github.io 結果 | 1-3 天 |
+| 搜「啾啾日常」可找到 | 3-7 天（中文索引較慢） |
+| 出現 rich snippet 卡片 | 7-14 天（Google 重新處理 schema） |
+| 達到 Search Console 顯示「涵蓋率 100%」 | 14-30 天 |
+
+### 常見問題
+
+**Q：Google 不收錄怎麼辦？**  
+A：(1) 確認 robots.txt 沒擋首頁（只擋 docs/）；(2) 用 GSC 網址檢查強制請求；(3) 從外部來源（Reddit / PTT / 個人 blog）拿一個 backlink，加快爬蟲發現
+
+**Q：JSON-LD schema 沒被解析？**  
+A：(1) 確認 `<script type="application/ld+json">` 不是 `text/javascript`；(2) JSON 內部不能有註解；(3) 用 schema.org validator 看具體錯誤
+
+**Q：sitemap 提交後顯示「無法擷取」？**  
+A：(1) `curl -I https://gn01816465.github.io/nourish/sitemap.xml` 應回 200；(2) Content-Type 應是 `application/xml`；(3) 不能有 BOM 開頭
+
+---
+
 ## 後續
 
 部署成功後請：
 
 1. 更新 README.md 第 1 行徽章下面加「[🐣 在線玩看看](https://...)」
 2. 在 iteration-log.md 記一條 `部署上線`
-3. 分享 link 給朋友 / TA 試玩
+3. 跑 §11 Search Console 提交流程
+4. 分享 link 給朋友 / TA 試玩

@@ -12,6 +12,9 @@
   "use strict";
 
   const KEY = "nourish.dex.v1";
+  const CAP = 50;
+  // Final form ids — derived from CFG.finalForms so the list stays in sync.
+  const FINAL_FORMS = Object.keys((window.NourishCFG && window.NourishCFG.finalForms) || {});
 
   function api() {
     const a = window.NourishAPI;
@@ -65,8 +68,28 @@
       archivedAt: Date.now(),
       totalDays: Math.max(1, Math.round((Date.now() - state.pet.bornAt) / 86400000)),
     });
-    if (dex.completedPets.length > 50) dex.completedPets.length = 50; // cap
+    if (dex.completedPets.length > CAP) trimWithPinned(dex);
     saveDex(dex);
+  }
+
+  // P2-6 (iter#77): preserve memorial pets when capping. Naive `length = CAP`
+  // drops oldest = "first pet ever" + the first instance of each rare final
+  // form, which are exactly the entries with the most emotional weight.
+  function trimWithPinned(dex) {
+    const pets = dex.completedPets;
+    const pinned = new Set();
+    // First-ever pet (oldest = last element since unshift puts newest at 0)
+    if (pets.length) pinned.add(pets[pets.length - 1].id);
+    // First (= oldest) occurrence of each final form
+    for (const form of FINAL_FORMS) {
+      for (let i = pets.length - 1; i >= 0; i--) {
+        if (pets[i].finalForm === form) { pinned.add(pets[i].id); break; }
+      }
+    }
+    // Drop oldest non-pinned until at cap. Walk from oldest (end) inward.
+    for (let i = pets.length - 1; i >= 0 && pets.length > CAP; i--) {
+      if (!pinned.has(pets[i].id)) pets.splice(i, 1);
+    }
   }
 
   window.NourishDex = { KEY, loadDex, saveDex, unlockedFormsSet, archiveCurrentPet };

@@ -101,30 +101,43 @@ open http://localhost:8765/
 ├── index.html          ← 入口
 ├── manifest.json       ← PWA 設定
 ├── sw.js               ← Service Worker（離線快取）
+├── robots.txt          ← 搜尋引擎索引規則
+├── sitemap.xml         ← Search Console 用
 ├── src/
-│   ├── cfg.js          ← 純資料（CFG → window.NourishCFG）
+│   ├── cfg.js          ← 純資料（CFG → window.NourishCFG，12 個結構化 block）
+│   ├── ui.js           ← Modal / toast / speak / onboarding → window.NourishUI
 │   ├── dex.js          ← 圖鑑儲存層 → window.NourishDex
 │   ├── achievements.js ← 成就規則引擎 → window.NourishAchievements
+│   ├── audio.js        ← Web Audio API 程序合成 → window.NourishAudio
 │   ├── share.js        ← 分享卡 Canvas 渲染 → window.NourishShare
 │   ├── game.js         ← 業務邏輯 + UI（IIFE）
 │   └── style.css
+├── scripts/
+│   ├── run-checks.sh   ← 一鍵 deploy gate（7 檔 syntax + sw.js + 3 lint）
+│   ├── check-sw-shell.js   ← 防 sw.js APP_SHELL ↔ index.html script 飄移
+│   ├── check-assets.js     ← 驗 60+ 個 assets/ 路徑檔案實存
+│   └── check-cfg-schema.js ← cfg.js 內部 cross-ref + 數值 invariant（13 條）
 ├── assets/
 │   ├── images/         ← Pixar/Sanrio 風 PNG（DreamShaperXL Turbo + rembg）
 │   ├── svg/            ← SVG 占位圖（角色、配件、事件）
 │   └── icons/          ← PWA icon set 9 尺寸 + 2 maskable
 └── docs/
-    ├── gdd.md          ← Game Design Document（核心參考）
+    ├── gdd.md             ← Game Design Document（核心參考）
     ├── character-sheet.md ← 美術 / 角色設定書（生圖前必讀）
-    ├── market-research.md / market-research-2026.md
-    ├── review.md / review-v2.md
-    ├── extensions.md   ← v0.2 / v0.3 / App 路線圖
-    └── iteration-log.md ← 自動循環開發日誌
+    ├── market-research.md + market-research-2026.md  ← 競品 / 趨勢 / 部署 growth
+    ├── review.md / review-v2.md  ← 程式 review（多數已 ✅ DONE）
+    ├── extensions.md      ← v0.2 / v0.3 / App 路線圖
+    ├── multipet-plan.md   ← v0.4 多寵物規劃
+    ├── deploy.md          ← 部署 + Search Console SOP
+    ├── launch-plan.md     ← 30 天 launch 戰術 (W1-W4 短片 / KPI / KOL 模板)
+    ├── launch-tiktok-prompts.md ← W1 7 條短片 cover 圖 prompt
+    └── iteration-log.md   ← 自動循環開發日誌
 ```
 
 模組依賴鏈靠 `<script>` 順序當依賴系統，無 import：
 
 ```
-cfg.js → dex.js → achievements.js → share.js → game.js
+cfg.js → ui.js → dex.js → achievements.js → audio.js → share.js → game.js
 ```
 
 ---
@@ -139,9 +152,12 @@ cfg.js → dex.js → achievements.js → share.js → game.js
 | [`docs/review.md`](docs/review.md) + [`review-v2.md`](docs/review-v2.md) | Code & gameplay review，P0/P1/P2 修復追蹤 |
 | [`docs/extensions.md`](docs/extensions.md) | v0.2 / v0.3 / App 階段路線圖 |
 | [`docs/iteration-log.md`](docs/iteration-log.md) | 每輪自動循環做了什麼（最新狀態以此為準）|
-| [`docs/deploy.md`](docs/deploy.md) | 部署 GitHub Pages / Cloudflare / 自家 VPS 步驟 + cache-busting |
+| [`docs/deploy.md`](docs/deploy.md) | 部署 GitHub Pages / Cloudflare / 自家 VPS 步驟 + cache-busting + Search Console SOP |
+| [`docs/launch-plan.md`](docs/launch-plan.md) | 上線 30 天戰術手冊（W1-W4 短片 / KPI / KOL DM 模板 / 緊急 SOP） |
+| [`docs/launch-tiktok-prompts.md`](docs/launch-tiktok-prompts.md) | W1 7 條短片 cover 圖 SDXL/Niji prompts（Session B 美工接力用）|
+| [`docs/multipet-plan.md`](docs/multipet-plan.md) | v0.4 多寵物 schema / sprint 規劃 |
 | [`CHANGELOG.md`](CHANGELOG.md) | 版本變更總表（v0.1 → v1.0） |
-| [`CLAUDE.md`](CLAUDE.md) | 雙 session 協作 + 自主模式約定 |
+| [`CLAUDE.md`](CLAUDE.md) | 雙 session 協作 + 自主模式約定 + cfg-driven 架構說明 |
 
 ---
 

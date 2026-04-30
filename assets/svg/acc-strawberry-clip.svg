@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <!-- Hair-clip backplate (gold base, oval) -->
+  <ellipse cx="50" cy="68" rx="22" ry="6" fill="#FFD86B" stroke="#8B5A2B" stroke-width="1.5"/>
+  <!-- Strawberry body (heart-ish silhouette via two arcs joining at bottom) -->
+  <path d="M 30 38 Q 30 24 42 24 Q 50 24 50 32 Q 50 24 58 24 Q 70 24 70 38 Q 70 60 50 70 Q 30 60 30 38 Z"
+        fill="#B23A48" stroke="#8B2030" stroke-width="2"/>
+  <!-- Strawberry seed dots (small yellow ovals scattered) -->
+  <ellipse cx="40" cy="42" rx="1.6" ry="2.4" fill="#FFD86B"/>
+  <ellipse cx="50" cy="40" rx="1.6" ry="2.4" fill="#FFD86B"/>
+  <ellipse cx="60" cy="42" rx="1.6" ry="2.4" fill="#FFD86B"/>
+  <ellipse cx="44" cy="50" rx="1.6" ry="2.4" fill="#FFD86B"/>
+  <ellipse cx="56" cy="50" rx="1.6" ry="2.4" fill="#FFD86B"/>
+  <ellipse cx="50" cy="58" rx="1.6" ry="2.4" fill="#FFD86B"/>
+  <!-- Green leafy crown (3 leaves fanning from top of strawberry) -->
+  <path d="M 50 28 L 38 16 L 44 24 L 50 14 L 56 24 L 62 16 L 50 28 Z"
+        fill="#6BCB77" stroke="#3E8C4A" stroke-width="1.5" stroke-linejoin="round"/>
+  <!-- Tiny highlight on left shoulder of berry -->
+  <ellipse cx="38" cy="36" rx="3" ry="5" fill="#FFFFFF" opacity="0.45"/>
+  <!-- Sparkle accent for cottagecore charm -->
+  <text x="78" y="22" font-size="9" fill="#FFB7B7">✨</text>
+</svg>
