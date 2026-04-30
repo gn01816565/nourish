@@ -113,6 +113,26 @@ sides. Sparkles ✦ and stars around. Serene smile, eyes gently closed or radian
 white feather highlights. Background remains transparent except for the soft glow.
 ```
 
+## 8.9 精選家雞（chick-adult-curator.png）  *iter#234 v0.6 第 12 個進化分支 — 待生圖補上，目前 cfg.petArt 暫指 healthy 占位*
+```
+[全域風格]
+Subject: a refined / minimalist curator chicken. Soft yellow body in standard chick-adult
+proportions but with extra-clean / pristine feather rendering — feathers cream-tinged,
+almost pure white at chest. Wearing ONE single understated accent only: a thin gold
+chain (callback to minimal_chain accessory) with a tiny pearl pendant resting at the
+chest. NO other accessories — visual emptiness is intentional, "spacious aesthetic"
+narrative. Calm composed eyes (─‿─), soft contented expression, tiny refined smile.
+Pose: upright, gentle, slightly tilted head suggesting "I curated this moment". Tiny
+soft pink blush dot on cheek (TA softening — minimalism 不全冷). ONE single ✦ sparkle
+nearby (singular, not multiple). Background transparent with hint of cream haze (negative
+space as design element). Mood: scandinavian-minimal / Mejuri-aesthetic / quiet luxury,
+soft pastel palette warmed with cream highlights, never sharp / cold / clinical. Critical:
+"少即是多" — single accent, single sparkle, single intentional detail. Avoid drifter
+overlap (no shawl / no fringe / no multiple trinkets — those are drifter anchors); avoid
+warmheart overlap (not lazy / not leaning — curator is composed and intentional).
+```
+**為什麼這個設計**：呼應 curator 解鎖路徑（cross-life ownedAccessories ≤ 3 + perfectStreakMinutes ≥ 60） — single thin chain 直接視覺化「不堆量、選自己愛的」narrative；跟 drifter 的「收藏家堆疊」（woven shawl + multiple dangling trinkets）**narrative 對稱反向對立**設計（drifter ≥ 8 件累積 ↔ curator ≤ 3 件克制 = 第一個跨 form spectrum 對立配對 minimalism ↔ kawaii-decora 軸對立）；feather 純白 + cream tinge 跟 healthy「黃毛標準」區隔，但仍保持 cottagecore TA palette（粉色 blush 軟化 scandinavian 冷感）。**解鎖條件**：state.pet.ownedAccessories Object.keys length ≤ 3 AND state.pet.traits.perfectStreakMinutes ≥ 60（跨命累積配件 ≤ 3 件 + 單命 perfect care 累積 ≥ 60 分鐘 — 「克制收藏家 + 精心照顧」雙條件 narrative；典型路徑：刻意選擇 minimalism aesthetic 的玩家，配件購買 0-3 件 + 連續正向照顧 1 小時後達標）。
+
 ## 8.8 漂泊者雞（chick-adult-drifter.png）  *iter#216 v0.5 第 11 個進化分支 — 待生圖補上，目前 cfg.petArt 暫指 healthy 占位*
 ```
 [全域風格]

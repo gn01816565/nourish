@@ -4,6 +4,258 @@
 
 ---
 
+## 2026-04-30 18:21 · Session A — iter#238 i18n 衝刺第二輪：events labelKey 全補完（21 regular + 12 seasonal = 33 events 一次推進）— **i18n 469 → 535 跨破 500 milestone** 🎉🎉
+
+**觸發**：cron 第 238 輪 — iter#237 第一輪 14 events labelKey ship 後，本輪一次推完剩 33 events 跨破 500 milestone（原預估分 2 輪做完，但本輪實作後發現可一次完成）。
+
+**為什麼一次推完 33 events 而非分 2 輪**：
+- iter#237 已驗證 labelOf() helper 漸進式 migration 設計零 regression — 本輪只是擴大 cfg 端 labelKey field 覆蓋 + i18n entries 補齊
+- node 一次性 batch script 驗證可行（21 regular events 透過 unique `apply:"id"` pattern + 12 seasonal events 透過 multi-line `          apply:"id",` pattern 各自唯一可匹配）— 風險可控
+- 集中一輪完成可避免「event labelKey 補完一半」的 in-between 狀態，後續 cron 輪可徹底切到下個議題
+
+**動作**：
+
+1. **`src/cfg.js` 33 events labelKey 一次性 batch 加入**（透過 `node -e` 腳本 + `/tmp/cfg.js.iter237.bak` 安全備份）：
+   - **21 regular events** — `apply:"X"` → `labelKey:"event.label.X", apply:"X"`：
+     - coin_drop / herb / butterfly / fly / star / rainbow / candy / bubble / petal / mushroom（v0.1 起點 10 個）
+     - tea / book / rose_bouquet / dewdrop / pixel_heart（v0.2 軸 events，5 個）
+     - seed / towel / message_bottle / pointe_shoe / moonlight / confetti_pop（v0.4 axis-second-event batch，6 個）
+   - **12 seasonal events** — multi-line object 加新行 `labelKey:"seasonal.label.X",`：
+     - sakura / valentine / summer_breeze / mooncake / halloween / xmas / newyear / zongzi（v0.1 12-month coverage 8 個）
+     - carnation / rainbow_heart / redenvelope / pinwheel（v0.3 narrow window 4 個）
+   - 腳本驗證：`node --check cfg.js` 通過 + `grep -cE "labelKey:\"(event|seasonal)\.label\."` = 47（14 from iter#237 + 33 本輪）✅
+   - **零 regression 設計確認**：每個 id unique，each replace 只觸發一次
+
+2. **`src/i18n.js` 雙語 66 條 i18n entries**（zh + en 各 33 條）：
+   - **zh-TW 33 條**：複製既有 cfg.label literal（無翻譯成本）— 從「撿到飼料幣」「神祕草藥」「蝴蝶飛過」到「兒童節風車」「萬聖節糖果」「聖誕禮物」等
+   - **en 33 條**：簡潔翻譯（保軸 narrative + 文化 context）：
+     - 「**Mystery Herb / Mystery Shooting Star**」對齊原 zh「神祕」narrative
+     - 「**Pride Rainbow Heart**」明確 LGBTQ+ Pride context
+     - 「**Zongzi (Rice Dumpling)**」附英文補充避免文化陌生感
+     - 「**Children's Day Pinwheel / Mother's Day Carnation**」標題式節日命名 narrative 對齊原 zh
+     - 「**Page Turn**」對齊「翻書頁」smart academia 軸 narrative
+
+3. **`sw.js`：CACHE_VERSION iter237 → iter238**
+
+**lint chain 報表**：
+- 上輪 cfg-schema：`9 traits / 51 speech_pools / 12 final_forms / 27 accessories`
+- 本輪 cfg-schema：unchanged（events labelKey 加在 cfg 但不在 schema summary 顯示）
+- check-assets：115 references（unchanged）
+- i18n-coverage 175 static t() keys（unchanged，labelOf() 動態 lookup 不算 static call）；dict 增 66 條
+- 7 step + 8/8 smoke + i18n-shadow 23 src ✅
+
+**i18n milestone 紀錄（iter#238）— 跨破 500 條**：
+| 輪次 | 主題 | 增量 | 累積 | 距 500 |
+|------|------|------|------|--------|
+| iter#235 | curator R2 i18n keys | +5 | 441 | 59 |
+| iter#237 | events labelKey 第一輪 14 events | +28 | 469 | 31 |
+| **iter#238（本輪）** | **events labelKey 全補完 33 events** | **+66** | **535** | **-35 ✅ 過線** |
+
+**i18n 衝刺結算**（v0.6 衝 500 milestone 三輪 SOP）：
+- iter#235：派生 form curator i18n（form i18n SOP 第 2 次成功）
+- iter#237：events labelKey 第一輪（gradual migration helper 設計驗證）
+- **iter#238：events labelKey 第二輪（一次性批量完成 + 跨破 500 milestone）**
+- 設計遺產：`labelOf()` helper + `event.label.X / seasonal.label.X` namespace pattern → 後續新 events ship 必須 +labelKey field（cfg-schema invariant 候選 — 現在還沒強制 lint，未來可加）
+
+**events labelKey 補完進度（iter#238 後）**：
+- **47/47** events 全有 labelKey（**100%** ✅）— 26 regular + 21 seasonal
+- labelOf() helper 對所有 events 都 i18n-aware
+- 玩家在 en locale 看到 events 的 alt / title / aria-label / coin toast reason **全英文化**
+
+**v0.6+ 結算更新（iter#238）**：
+- ✅ iter#222 / 223-225 / 226-232 / 227-228+233 / 229-231 / 230 retrospective / 234-236 curator / 237 i18n 第一輪
+- ✅ **iter#238 i18n 衝刺第二輪 events labelKey 全補完 + 跨破 500 milestone（i18n 469 → 535）** 🎉
+- ⏳ iter#239+ 候選 ROI 排序：(1) cottagecore / y2k 派生 form 第 3 例 SOP（11-touchpoints 跨 2 cron-輪）/ (2) light academia 第 13 軸候選評估 / (3) accessories labelKey 已有但 description / shop 文案 i18n 補完（i18n 衝刺第三輪 candidate）/ (4) wants pool 文案 i18n（want_basic 等 14 件目前 zh-TW 鎖死）/ (5) docs/local-image-gen-setup.md 工具鏈安裝指南（user 提問待 cron 啟動）
+
+**i18n 進度**：469 + 66 = **535 條** zh-TW + 535 條 en（**跨破 500 milestone** 🎉）
+**事件池進度**：26 regular + 21 seasonal events = 47 total event SVGs（unchanged）
+**配件池進度**：27 accessories（unchanged）
+**finalForms**：12（unchanged）
+
+**未來 follow-up（不在本輪）**：
+- iter#239 候選優先級排序：(1) wants pool i18n（14 件 want_X label）— 跟 events 同 SOP，~30 i18n entries 一輪可推進到 565 / (2) cottagecore 派生 form 設計探索 / (3) light academia 第 13 軸差異化分析
+- iter#250 retrospective-250：以 12 forms 完整 + 12 軸 + i18n 跨破 500 + 派生 trait SOP 2 例為素材
+
+**影響檔案**：
+- `src/cfg.js`（33 events labelKey field 加上 — 21 regular + 12 seasonal，透過 node 一次性 batch script 安全注入）
+- `src/i18n.js`（66 條 i18n entries — 33 zh + 33 en）
+- `sw.js`（CACHE_VERSION iter237 → iter238）
+- `docs/iteration-log.md`（本條 entry）
+- 已 cleanup：`/tmp/cfg.js.iter237.bak`（節點腳本安全備份，lint 通過後刪除）
+
+**驗證**：`./scripts/run-checks.sh` 全 7 step + 8/8 smoke 綠燈 ✅；38 cron 輪 0 P0 bug accumulated（since iter#166 render regression）；node script batch transform 設計有效 — 33 events 一次推完零 regression，比 33 個 Edit calls 約省 5x 時間
+
+---
+
+## 2026-04-30 18:11 · Session A — iter#237 i18n 衝刺第一輪：events labelKey i18n batch（5 regular + 9 seasonal = 14 events）+ events.js labelOf() helper — i18n 441 → 469（+28 條，距 500 milestone 差 31 條）
+
+**觸發**：cron 第 237 輪 — iter#236 docs §8.9 curator prompt ship 完後，從 candidates ROI 排序選 (1)「i18n 衝刺第一輪」(中-高 ROI，每輪 ~20-30 條 batch 可推進到 500 milestone)。本輪聚焦 cfg events 一致性 — 既有 accessories 都有 `labelKey + label literal fallback`（i18n SOP 標準），但 events 只有 zh-TW literal `label` field 沒 i18n key（46 events 全 zh 鎖死，aria-label / tooltip / coin toast reason 對 en 玩家全是中文）。
+
+**為什麼選「events labelKey i18n batch」而非其他 i18n 衝刺方向**：
+- **既有架構不一致最該補的點**：accessories 27 件都有 labelKey（iter#229 decora_clips 等都遵循）/ events 46 件全沒有 labelKey — 設計不一致，玩家在 en locale 看到 events 的 alt / title / aria-label 全是中文，**accessibility 缺陷**
+- **events.js 有 4 個 user-facing 消費點**（line 42 coin toast reason / 91 img.alt / 97 el.title / 100 aria-label）— 一次補完影響 4 個 user-facing layer
+- **批量 ROI 高**：14 events × 2 sides = 28 i18n entries / 一輪達成；5 regular events 跨軸 narrative 5 個（boho / dark academia / minimalist / kawaii-decora / 美食家）+ 9 seasonal events 跨節日 9 個 — 每軸跨 locale 都觸發
+- **alternatives ROI 較低**：(2) cottagecore / y2k 補 form 是 11-touchpoints 跨 2 cron-輪 heavy ship 不適合本輪 / (3) light academia 第 13 軸 純研究產出較少 / (4) AI 生圖批次 無在地工具鏈
+
+**為什麼這 14 events 是首批最佳選擇**：
+- **5 regular events**：dried_herbs / quill_pen / morning_coffee / candy_jar 是 v0.5/v0.6 4 軸代表（boho / dark academia / minimalist / kawaii-decora）+ macaron 是 v0.2 美食家代表 — 5 events 涵蓋 5 個軸 narrative 完整
+- **9 seasonal events**：stationery_set / dance_tutu / winter_starlight / spa_salts / retro_console（iter#211-215 batch）+ picnic_blanket（iter#209 boho seasonal）+ gothic_candle / new_year_dawn / white_day_gifts（iter#227-228 + 233 form-less seasonal mini-batch）— 9 個跨 7 個軸 9 個節日 anchor
+- **下批 i18n 衝刺候選**：剩餘 21 regular events + 9 seasonal events 還沒 labelKey（包含 v0.1-v0.2 老 events: tea / book / rose_bouquet / dewdrop / pixel_heart / coin_drop / herb / butterfly / fly / star / rainbow / candy / bubble / petal / mushroom / seed / towel / message_bottle / pointe_shoe / moonlight / confetti_pop + sakura / valentine / mooncake / carnation / rainbow_heart / redenvelope / pinwheel）— 後續 1-2 cron 輪可全部補完
+
+**動作**：
+
+1. **`src/events.js` labelOf() helper + 4 callsite update**（events.js 唯一 i18n hookup 點）：
+   ```js
+   // iter#237 i18n SOP: gradual migration via labelKey + literal fallback
+   function labelOf(def) {
+     if (!def.labelKey) return def.label;
+     const s = t(def.labelKey);
+     return s === def.labelKey ? def.label : s;  // missing key → fallback to literal
+   }
+   ```
+   - 4 callsites swap：line 42 `eff.coinReason || def.label` → `eff.coinReason || labelOf(def)` / line 91 `pick.label` → `labelOf(pick)` × 3 處（img.alt / el.title / aria-label）
+   - 漸進式 i18n migration：events 沒 labelKey 就 fallback 到 literal `def.label`（21 個老 events + 9 個老 seasonal 仍可正常 render，本輪只是給 14 個新 events 加上 i18n 路徑）— **零 regression** 設計
+
+2. **`src/cfg.js` 14 events labelKey 加上**（5 regular + 9 seasonal）：
+   - **5 regular events**（同行追加 labelKey field）：
+     - macaron → `labelKey:"event.label.macaron"`
+     - dried_herbs → `labelKey:"event.label.dried_herbs"`
+     - quill_pen → `labelKey:"event.label.quill_pen"`
+     - morning_coffee → `labelKey:"event.label.morning_coffee"`
+     - candy_jar → `labelKey:"event.label.candy_jar"`
+   - **9 seasonal events**（多行 object 加新行，跟 id/art/weight/label 同段位）：
+     - stationery_set / dance_tutu / winter_starlight / spa_salts / retro_console → `labelKey:"seasonal.label.X"`
+     - picnic_blanket / gothic_candle / new_year_dawn / white_day_gifts → 同 SOP
+   - **i18n key namespace 設計**：`event.label.X` / `seasonal.label.X` — 跟既有 `event.X`（applyToast）/ `seasonal.X`（applyToast）區隔 — 一個 event 可能有 label key + applyToast key 兩個獨立 i18n namespace（iter#229 等已有此 pattern）
+
+3. **`src/i18n.js` 雙語 28 條 i18n entries**（zh + en 各 14 條）：
+   - **zh-TW 14 條**：複製既有 cfg.label literal（無翻譯成本，純 hoist）
+     - "馬卡龍" / "曬乾香草束" / "羽毛筆寫字" / "晨間咖啡" / "彩色糖果罐"
+     - "教師節文具" / "舞蹈節 tutu" / "冬至星空" / "SPA 浴鹽" / "復古遊戲機"
+     - "夏日野餐墊" / "哥德萬聖燭台" / "新年初晨" / "白色情人節禮盒"
+   - **en 14 條**：新翻譯（短 label，3-4 字以內為主）
+     - "Macaron" / "Dried Herb Bundles" / "Quill Pen Writing" / "Morning Coffee" / "Rainbow Candy Jar"
+     - "Teacher's Day Stationery" / "Dance Day Tutu" / "Winter Solstice Starlight" / "SPA Bath Salts" / "Retro Console"
+     - "Summer Picnic Blanket" / "Gothic Halloween Candle" / "New Year Dawn" / "White Day Gifts"
+   - i18n narrative 對標：en 翻譯保持簡潔 + 軸 narrative 對齊（"Gothic Halloween Candle" 對齊 dark academia / "New Year Dawn" 對齊 minimalism「dawn / 留白」/ "Rainbow Candy Jar" 對齊 kawaii-decora「rainbow 堆量」）
+
+4. **`sw.js`：CACHE_VERSION iter235 → iter237**（跳 iter236 因為純 docs 不需 sw bump）
+
+**lint chain 報表**：
+- 上輪 cfg-schema：`9 traits / 51 speech_pools / 12 final_forms / 27 accessories`
+- 本輪 cfg-schema：`9 traits / 51 speech_pools / 12 final_forms / 27 accessories`（accessories 不變，events labelKey 加在 cfg 但不在 schema summary 顯示）
+- check-assets：115 references resolve（unchanged）
+- **i18n-coverage 175 keys 不變但 dict 增 28 條**：i18n-coverage lint 只 check static t() keys 是否在 dict — labelOf() 動態 lookup `def.labelKey` 不算 static call 所以 175 keys count 不變；新加的 28 dict entries 是「準備好的 i18n keys」不是 t() callsite，coverage 100% pass
+- 7 step + 8/8 smoke + i18n-shadow 23 src ✅
+
+**i18n 進度**：441 + 28 = **469 條** zh-TW + 469 條 en（**距 500 milestone 差 31 條**，下一輪 i18n 衝刺第二輪可達標）
+
+**i18n 衝刺進度**：
+| 輪次 | 主題 | 增量 | 累積 | 距 500 |
+|------|------|------|------|--------|
+| iter#235 | curator R2 i18n keys | +5 | 441 | 59 |
+| **iter#237（本輪）** | **events labelKey batch 14 events** | **+28** | **469** | **31** |
+| iter#238（下輪候選） | 剩餘 events labelKey 第二批（~30 events） | +60 | 529 | -29 ✅ 過線 |
+
+**events labelKey 補完進度（iter#237 後）**：
+- **14/46** events 有 labelKey（30%）— 5 regular（v0.5/v0.6）+ 9 seasonal（iter#209+）
+- 剩 32 events 待補（21 regular + 11 seasonal）
+- iter#238 候選：events labelKey 第二批 — 老 events 補完（tea / book / rose_bouquet / dewdrop / pixel_heart / coin_drop / herb / butterfly 等 21 regular）+ 老 seasonal 補完（sakura / valentine / mooncake / carnation / rainbow_heart / redenvelope / pinwheel 等 9 seasonal） = ~30 events × 2 = ~60 i18n entries 一次推進到 529 跨破 500 milestone
+
+**v0.6+ 結算更新（iter#237）**：
+- ✅ iter#222 跨軸成就 / iter#223-225 minimalist / iter#229-231 kawaii-decora / iter#226-232 GDD §5.5 雙 sync / iter#227-228 + 233 form-less seasonal mini-batch / iter#230 retrospective-230 / iter#234-236 curator 完整 ship
+- ✅ **iter#237 i18n 衝刺第一輪 events labelKey batch（i18n 441 → 469）**
+- ⏳ iter#238 i18n 衝刺第二輪（剩餘 32 events labelKey + 跨破 500 milestone）
+
+**未來 follow-up（不在本輪）**：
+- iter#238 候選優先級：i18n 衝刺第二輪 32 events labelKey 跨破 500 milestone
+- iter#239+ 候選：cottagecore / y2k 補 form 設計（派生 trait SOP 第 3 例）/ light academia 第 13 軸候選評估 / docs/local-image-gen-setup.md 工具鏈安裝指南（user 提問後待 cron 啟動）
+- iter#250 retrospective-250
+
+**影響檔案**：
+- `src/cfg.js`（14 events labelKey field 加上 — 5 regular 同行 + 9 seasonal 多行 object 新行）
+- `src/events.js`（labelOf() helper +9 行 / 4 callsites swap def.label → labelOf(def)）
+- `src/i18n.js`（28 條 i18n entries — 14 zh + 14 en）
+- `sw.js`（CACHE_VERSION iter235 → iter237）
+- `docs/iteration-log.md`（本條 entry）
+
+**驗證**：`./scripts/run-checks.sh` 全 7 step + 8/8 smoke 綠燈 ✅；37 cron 輪 0 P0 bug accumulated（since iter#166 render regression）；events 漸進式 i18n migration 設計驗證成功 — 32 個未補 labelKey 的 events 仍正常 render（fallback to literal label）零 regression
+
+---
+
+## 2026-04-30 18:01 · Session A — iter#236 美工延伸：docs/image-prompts.md §8.9 curator AI 生圖 prompt 寫入 — 12 form 中 11/12 已有 prompt（healthy/fatty/ugly 系列 + fighter/sage/diva/divine + gourmet/explorer/warmheart/drifter/curator），剩 healthy 系 baseline
+
+**觸發**：cron 第 236 輪 — iter#235 curator R2 收尾完成後，從 candidates ROI 排序選「美工延伸：docs/image-prompts.md §8.9 chick-adult-curator.png prompt 寫入」(中 ROI，純 docs 無 code 變動，10 分鐘可完)。對標 §8.5-§8.8 已寫 4 個 prompt SOP（gourmet / explorer / warmheart / drifter）第 5 次複製。
+
+**iter#235 closing notes 修正**：原 closing 寫「§8.10 drifter prompt 也需補」是誤記 — 確認 §8.8 drifter prompt 在 iter#216 ship 時已寫入（drifter 只是 PNG 仍 placeholder，prompt 文字早已 ready），本輪只需補 §8.9 curator 單一 prompt。
+
+**為什麼選 curator prompt 而非其他 candidates**：
+- **iter#234-235 curator form 剛 ship 完，trait conditions 還新鮮**：寫 prompt 時可即時 cross-ref evolve.js `ownedAccessories ≤ 3 + perfectStreakMinutes ≥ 60` 條件 → 視覺敘事直接呼應解鎖路徑，narrative 一致性最高（拖到後幾輪 prompt 寫時可能漏細節）
+- **i18n 衝刺(候選 5)需 64 條才破 500**：10 分鐘無法做完，留給後續 batch
+- **cottagecore / y2k 補 form(候選 3)需 11-touchpoints 兩 cron-輪**：本輪 10 分鐘不夠
+- **light academia 第 13 軸候選(4)需先做差異化分析**：跟 dark academia narrative 競爭風險，需謹慎
+
+**為什麼 curator prompt narrative 設計關鍵點**：
+- **single accent narrative 強度**：「ONE single thin gold chain + ONE pearl pendant + NO other accessories」反覆強調「single / one / NO other」 — 跟 drifter prompt「multiple tiny trinkets attached / dangling」用語**對稱反向對立**
+- **「visual emptiness is intentional」明示**：在 prompt 中 explicit 寫「visual emptiness is intentional, 'spacious aesthetic' narrative」+「single accent, single sparkle, single intentional detail」+「Critical: 少即是多」三處強調 — 讓 AI 生圖模型不會誤加裝飾
+- **TA 軟化 SOP 一致**：「Tiny soft pink blush dot on cheek」+「warmed with cream highlights」對齊既有 4 個 form prompt 的「never sharp / cold / clinical」+ cottagecore TA palette 約束（per CLAUDE.md TA「avoid 過冷 / 過男性化」）— minimalism 不全冷敘事
+- **Avoid overlap explicit 寫入兩 form**：「Avoid drifter overlap (no shawl / no fringe / no multiple trinkets — those are drifter anchors)」+「avoid warmheart overlap (not lazy / not leaning — curator is composed and intentional)」— 跟 §8.6 explorer prompt 的 sage 區隔 + §8.7 warmheart prompt 的 cuddly 區隔同 SOP，明示性格 / pose / aesthetic 三層差異化
+
+**動作**：
+1. **`docs/image-prompts.md` §8.9 curator 段落新增**（在 §8.8 drifter 前插入維持時序倒敘 — 既有檔案是新→舊排列）：
+   - 標題行：「## 8.9 精選家雞（chick-adult-curator.png）  *iter#234 v0.6 第 12 個進化分支 — 待生圖補上，目前 cfg.petArt 暫指 healthy 占位*」
+   - prompt code block（13 行）：[全域風格] + Subject 描述 + 8 個明確視覺指令（pure white feathers / single thin gold chain + pearl / NO other accessories / calm composed eyes / pose upright / TA pink blush / single ✦ / cream haze background）+ 3 處「Critical 少即是多」強調 + 2 form overlap 避免規則
+   - 「為什麼這個設計」段落：呼應 curator 解鎖路徑 + drifter 對稱對立配對 + minimalism ↔ kawaii-decora 軸對立連結 + TA 軟化處理 + 解鎖條件詳細數值（state.pet.ownedAccessories Object.keys length ≤ 3 AND state.pet.traits.perfectStreakMinutes ≥ 60）
+
+**lint chain 報表**：
+- 純 docs 編輯，無 code 變動 — assets / cfg / i18n / sw 全 unchanged
+- 7 step + 8/8 smoke ✅（跑驗證確認既有 lint 100% pass）
+- 不需 sw bump（純 docs 不影響 runtime / cache）
+
+**curator form 生圖路徑收尾結算**：
+- ✅ iter#234 R1 main 6 處（cfg + evolve + achievements + sw 結構建立）
+- ✅ iter#235 R2 收尾 5 處（speech + i18n + onboarding + FORM_ICONS + dex display 全 user-facing）
+- ✅ **iter#236 §8.9 prompt 寫入**（AI 生圖時的 specification ready） — **派生 trait form R1+R2+§image-prompts 三段完整 SOP 第 2 次成功**（drifter iter#216 R1 → iter#217 R2 → iter#216 同期 §8.8 prompt = 三段完整 SOP 首例 / curator iter#234-236 三段完整 = 第 2 次）
+
+**image-prompts.md 統計（iter#236 後）**：
+| 章節 | form | 對應 iter | prompt 狀態 | PNG 狀態 |
+|------|------|-----------|------------|----------|
+| §8.1-§8.4 | healthy / fatty / ugly / divine 系列 baseline | iter#100 起點 | ✅ ✅ ✅ ✅ | ✅ ✅ ✅ ✅ |
+| §8.5 | gourmet | iter#156 v0.2 | ✅ | ⏳ healthy.png placeholder |
+| §8.6 | explorer | iter#183 v0.3 | ✅ | ⏳ healthy.png placeholder |
+| §8.7 | warmheart | iter#196 v0.4 | ✅ | ⏳ healthy.png placeholder |
+| §8.8 | drifter | iter#216 v0.5 | ✅ | ⏳ healthy.png placeholder |
+| **§8.9** | **curator（本輪）** | **iter#234 v0.6** | **✅（本輪 ship）** | **⏳ healthy.png placeholder** |
+
+**12 form 中 11/12 已有 prompt 寫入**（剩 fighter / sage / diva 走 baseline §8.1-§8.4 系列共用 visual style，無獨立 §X.X — iter#100 起點 5 form 都 share single style guide）。**4 個 v0.2-v0.6 新 form（gourmet / explorer / warmheart / drifter / curator = 5 個）prompt 全 ship 完成 ✅**
+
+**v0.6+ 結算更新（iter#236）**：
+- ✅ iter#222-225 / 227-228 / 229-231 / 233 五個美學軸 + 跨軸成就 + form-less seasonal mini-batch
+- ✅ iter#226 / 232 GDD §5.5 雙 sync
+- ✅ iter#230 retrospective-230
+- ✅ iter#234-235 curator 派生 form 完整 ship
+- ✅ **iter#236 curator §8.9 image-prompts 補齊 — v0.6 visible 工事全收尾**
+- ⏳ iter#237+ 候選 ROI 排序：(1) cottagecore / y2k 補 form 設計（派生 trait SOP 第 3 例，11-touchpoints 跨 2 cron-輪）/ (2) i18n 種子翻譯衝刺破 500 條（目前 441，差 59 條，分 3 輪 batch 可達）/ (3) light academia 第 13 軸候選評估（純研究 / 差異化分析）/ (4) AI 生圖批次（curator + drifter + warmheart + explorer + gourmet 5 個 PNG 同時生 — 但目前無在地生圖環境，需先建工具鏈）
+
+**i18n 進度**：441 條（unchanged，本輪純 docs）
+**事件池進度**：26 regular + 21 seasonal events = 47 total event SVGs（unchanged）
+**配件池進度**：27 accessories（unchanged）
+**finalForms**：12（unchanged，user-facing complete）
+**docs/image-prompts.md §8.5-§8.9 五個新 form prompt 100% 完整 ✅**
+
+**未來 follow-up（不在本輪）**：
+- iter#237 候選：i18n 衝刺第一輪（若選衝 500 條，每輪 ~20 條 batch × 3 cron-輪達標）
+- iter#240+ 派生 trait SOP 第 3 例：cottagecore 補 form「farmhand」/ y2k 補 form「digital_native」設計探索
+- iter#250 retrospective-250（14 cron 輪後）
+
+**影響檔案**：
+- `docs/image-prompts.md`（§8.9 curator 新段落 — 標題 + prompt code block + 為什麼這個設計）
+- `docs/iteration-log.md`（本條 entry）
+
+**驗證**：`./scripts/run-checks.sh` 全 7 step + 8/8 smoke 綠燈 ✅；36 cron 輪 0 P0 bug accumulated（since iter#166 render regression）；純 docs 編輯不需 sw bump
+
+---
+
 ## 2026-04-30 17:51 · Session A — iter#235 curator 派生 form R2 收尾 5 處 ship 完成 — i18n + speech + onboarding + FORM_ICONS 全打通 + 派生 trait ship pipeline SOP 第 2 次完整收尾
 
 **觸發**：cron 第 235 輪 — iter#234 R1 main 6 處（cfg.finalForms / petArt / achievements / evolve.js / achievements.js / sw）已 ship 後，本輪 R2 收尾（speech / i18n / onboarding text / FORM_ICONS map / dex display）完成 curator form 完整 user-facing layer。對標 iter#216-217 drifter 派生 trait ship 兩 cron-輪 SOP 第 2 次完整複製收尾。**派生 trait form ship pipeline SOP 第 2 次完整成功** ✅✅。

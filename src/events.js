@@ -35,11 +35,20 @@
     },
   };
 
+  // iter#237 i18n SOP: events use labelKey for tooltip / alt / aria-label / coin
+  // toast reason. Falls back to literal `def.label` if key missing or absent
+  // (covers events without labelKey field yet — gradual i18n migration).
+  function labelOf(def) {
+    if (!def.labelKey) return def.label;
+    const s = t(def.labelKey);
+    return s === def.labelKey ? def.label : s;
+  }
+
   function runEventApply(def) {
     const A = api();
     const eff = def.applyEffects || {};
     if (eff.stats) utils().applyDelta(A.getState().pet.stats, eff.stats);
-    if (eff.coin)  A.grantCoin(eff.coin, eff.coinReason || def.label);
+    if (eff.coin)  A.grantCoin(eff.coin, eff.coinReason || labelOf(def));
     const toastMsg = def.applyToastKey ? t(def.applyToastKey) : def.applyToast;
     if (toastMsg) A.toast(toastMsg, def.applyToastStyle || "good");
   }
@@ -88,16 +97,16 @@
     if (pick.art) {
       const img = document.createElement("img");
       img.src = pick.art;
-      img.alt = pick.label;
+      img.alt = labelOf(pick);
       img.draggable = false;
       el.appendChild(img);
     } else if (pick.emoji) {
       el.textContent = pick.emoji;
     }
-    el.title = pick.label;
+    el.title = labelOf(pick);
     el.style.left = (15 + Math.random() * 70) + "%";
     el.style.top  = (10 + Math.random() * 25) + "%";
-    el.setAttribute("aria-label", pick.label);
+    el.setAttribute("aria-label", labelOf(pick));
     stage.appendChild(el);
 
     active = { node: el, def: pick, expiresAt: Date.now() + C.randomEvents.lifetimeMs };
