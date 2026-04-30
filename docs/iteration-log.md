@@ -4,6 +4,167 @@
 
 ---
 
+## 2026-04-30 12:31 · Session A — 新隨機事件「月光灑落」(moonlight)：fairycore 軸第二 event，regular pool 20 → 21
+
+**觸發**：cron 第 202 輪 — 連續 axis-second-event content rotation 第 5 輪（iter#198 cottagecore seed / iter#199 cleangirl towel / iter#200 智慧 message_bottle / iter#201 balletcore pointe_shoe）。本輪挑 fairycore 軸補完 — 是「次薄軸第二 event」最後一個（剩 y2k / 元氣 兩軸 3 件 但有 fighter form / 配件 2 件支撐已較完整）。
+
+**為什麼選 moonlight 作為 fairycore 軸第二 event**：
+- **跟既有 dewdrop 視覺 / 敘事區隔**：dewdrop = 早晨葉上水珠（清晨 / 自然 / 微觀）/ moonlight = 夜晚月光（夜間 / 神祕 / 廣域）— 兩 event 串起完整 fairycore narrative arc（晨光 → 夜光 / 微小 → 宏大）
+- **連結 divine 終態 narrative**：cfg.finalForms.divine.desc「粉金光環、純白羽毛，傳說中的天使存在」+ form_divine speech「(光暈閃爍)」「(羽毛微微發光)」— moonlight 是**外部光源版本**的 divine glow，narrative 雙向呼應
+- **TA 軟化處理**：標準 moonlight scene 用冷色（深藍 + 銀月）會違反 CLAUDE.md §1「粉嫩優先 / 避免過冷」 — 本設計改用**粉色暖光暈 + 奶油白月**保仙氣但不冷
+- **數值區隔**：dewdrop +mood 10 +clean 8 純自然 / moonlight +mood 14 +clean 5 +energy 5（mid-tier 三 stat boost）— 月光擁抱比露珠更高 mood，呼應「靈性洗禮」narrative
+- **weight 6**：跟 dewdrop / book / tea 同 mid-tier
+
+**動作**：
+
+1. **新增 `assets/svg/event-moonlight.svg`（22 行 SVG）**：
+   - viewBox 100×100 對標既有 17 個 event SVG
+   - 色票嚴守 CLAUDE.md §5：白 #FFF8E7（月主體 — 奶油白）/ 黃 #FFD86B（月描邊 + sparkle ✦ + moonlight rays + face dots）/ 粉 #FFC8D6（外層 ambient glow halo）+ #FFD8DD（內層 halo 漸層）/ 粉 #FFB7B7（✧ accent star）
+   - 結構：**雙層粉色 ambient halo**（外層 r=36 透明 0.4 + 內層 r=26 透明 0.5 漸層暖光）+ **crescent moon path**（quadratic curve 雙弧形成 crescent，凸面朝右）+ 3 個淡黃 face dot（暗示月臉細節，非顯眼） + **4 條 falling moonlight rays**（quadratic curves 從月底部向下散射，opacity 0.5-0.7 漸層） + 6 個 corner stars / dots（黃 + 粉混合）
+   - **粉色 halo + 黃色月**是這個 SVG 的設計亮點：把 "moonlight scene" 從冷夜晚 reframe 成 "warm evening glow" — 跟 cottagecore-coquette TA aligned
+
+2. **`src/cfg.js` randomEvents.pool 加第 21 條**：
+   ```
+   { id:"moonlight", art:"assets/svg/event-moonlight.svg", weight:6,
+     label:"月光灑落", apply:"moonlight",
+     applyEffects:{ stats:{mood:14, clean:5, energy:5} },
+     applyToastKey:"event.moonlight",
+     applyToast:"🌙 月光灑下~ 啾啾被柔光擁抱" }
+   ```
+   - 加在 pointe_shoe 後（fairycore 軸註解串連 iter#202 標識 + TA 軟化 palette 設計動機）
+   - **無 coin**：spiritual atmospheric event，跟 dewdrop / petal / bubble 純自然 atmospheric pattern 一致
+   - **「月光灑落」label** 是動詞 + 名詞句式（vs「月光」單一名詞）— 跟 「練舞時光」「葉上露珠」narrative-driven label 風格一致
+
+3. **`src/i18n.js` 雙語 1 條**：
+   - zh-TW: `event.moonlight` = "🌙 月光灑下~ 啾啾被柔光擁抱"
+   - en: `event.moonlight` = "🌙 Moonlight drifts down~ Chichi wrapped in soft glow"
+   - 「drifts down」對應「灑下」— moonlight 用 drift 比 fall / shines 更詩意 + 慢動作感 / 「wrapped in soft glow」對應「被柔光擁抱」精準保 emotion
+
+4. **`sw.js`：CACHE_VERSION iter201 → iter202**
+
+**lint chain 報表**：
+- check-assets：92 → **93** asset references resolve
+- 7 step + 8/8 smoke + i18n-shadow 23 src + i18n-coverage 175 keys ✅
+
+**美學軸覆蓋更新（iter#202）**：
+| 軸 | event | form | accessory | 件數 |
+|----|-------|------|-----------|------|
+| coquette / 美食家 | tea / macaron | gourmet | chef_hat / strawberry_clip | 5 |
+| cottagecore | butterfly / mushroom / petal / herb / seed | — | flower / pin_butterfly / lace_collar | 8 |
+| 智慧 / sage | book / message_bottle | sage | glasses_thin | 4 |
+| balletcore | rose_bouquet / pointe_shoe | diva | ribbon_tie | 4 |
+| **fairycore** | dewdrop / **moonlight（本輪）** | divine | wings_fairy | **4** ⬆ from 3 |
+| cleangirl | bubble / towel | healthy | blush | 4 |
+| y2k | pixel_heart | — | star_clip / cd_pendant | 3 |
+| 元氣 | rainbow | fighter | party_hat | 3 |
+
+fairycore 軸從 3 → **4 件**（跟 智慧 / balletcore / cleangirl / 美食家 5 並列為次深軸）；event total 20 → **21**。**6/8 美學軸達 ≥ 4 件**（剩 y2k + 元氣 兩軸 3 件，但都是「form-less」cottagecore-y2k 軸 + 元氣有 fighter form 可作 anchor），美學深度健康。
+
+**i18n 進度跳躍**：
+- 種子翻譯：404 + 1 = **405 條** zh-TW + 405 條 en
+- functional sites：~249 + 1 = ~250 處
+
+**axis-second-event 5 輪 batch 結算（iter#198-202）**：
+- iter#198 cottagecore（5 → 6 → 後又 +1 到 8）
+- iter#199 cleangirl（3 → 4）
+- iter#200 智慧（3 → 4）
+- iter#201 balletcore（3 → 4）
+- iter#202 fairycore（3 → 4）— 本輪
+- regular pool: 16 → 21（5 輪 +5 events）
+- 平均每輪 +1 event / 軸（pace 健康）
+
+**剩下 axis 第二 event candidates**（不在本輪）：
+- y2k（pixel_heart 後加 cyber butterfly / VHS static / lava lamp）
+- 元氣（rainbow 後加 confetti pop / paper plane / streamer）
+
+**未來 follow-up**（不在本輪）：
+- 跨 pet memorial 進階 UI
+- 新美學軸開發（boho / minimalist / kawaii-decora / dark academia）
+- iter#210 retrospective-210（8 cron 輪後）
+- y2k / 元氣 軸第二 event（看 retro 後再排序）
+
+**影響檔案**：`assets/svg/event-moonlight.svg`（新）、`src/cfg.js`、`src/i18n.js`、`sw.js`、`docs/iteration-log.md`
+
+---
+
+## 2026-04-30 12:21 · Session A — 新隨機事件「練舞時光」(pointe_shoe)：balletcore 軸第二 event，regular pool 19 → 20
+
+**觸發**：cron 第 201 輪 — 連續 axis-second-event content rotation 第 4 輪（iter#198 cottagecore seed / iter#199 cleangirl towel / iter#200 智慧 message_bottle）。本輪挑 balletcore 軸補完，剩下 fairycore 一軸缺第二 event。
+
+**為什麼選 pointe_shoe（足尖鞋）作為 balletcore 軸第二 event**：
+- **跟既有 rose_bouquet 視覺 / 敘事區隔**：rose_bouquet = 演出**後**台收花 / pointe_shoe = 演出**前**後台練功 — 兩 event 串起完整 ballet narrative arc（rehearsal → performance → applause）
+- **連結 diva 終態 narrative**：cfg.finalForms.diva.desc「彩虹尾羽配麥克風，唱歌唱出來的閃亮明星」+ cfg.accessories.ribbon_tie「芭蕾蝴蝶結」— pointe shoe 是 ballet iconic motif
+- **數值區隔**：rose_bouquet +mood 16 +clean 3 + coin 8（gold tier 高潮 event）/ pointe_shoe +mood 10 +energy 8 純 atmospheric — pre-show「練功充能」narrative 對齊「+energy」設計
+- **weight 6**：跟 dewdrop / book / tea 同 mid-tier，比 rose_bouquet 5 略高（rehearsal 比 performance 常見）
+
+**動作**：
+
+1. **新增 `assets/svg/event-pointe-shoe.svg`（22 行 SVG）**：
+   - viewBox 100×100 對標既有 16 個 event SVG
+   - 色票嚴守 CLAUDE.md §5：粉 #FFB7B7（鞋身主色 — 經典 ballet pink）+ #FF89A7（描邊）/ 粉 #FFC8D6（drawstring opening / 第二 ribbon trail / 地面陰影 — 軟化）/ 黃 #FFD86B（embroidered 細節 + ✨ accent）/ 粉 #FF89A7（ribbon end curl + ♥ accent）
+   - 結構：粉色橢圓地面陰影 + **shoe path silhouette**（quadratic curve 仿側視 ballet 鞋形 — toe 在左 / heel opening 在右 / 鞋面隆起）+ inner sole 陰影 stripe + drawstring opening ellipse + **兩條 satin ribbon trailing up**（一深粉 + 一淺粉，分開 quadratic curves 模擬「綁完散落」自然垂落）+ ribbon end 兩個小 circle curl + tiny embroidered dot 鞋面細節 + ✨♥ corner accent
+   - **兩條 ribbon trailing up** 是 ballet shoe 的 iconic 視覺語：跟 rose_bouquet 緞帶（ribbon at base）形成「上飄 vs 下垂」對比，視覺辨識區隔
+
+2. **`src/cfg.js` randomEvents.pool 加第 20 條**：
+   ```
+   { id:"pointe_shoe", art:"assets/svg/event-pointe-shoe.svg", weight:6,
+     label:"練舞時光", apply:"pointe_shoe",
+     applyEffects:{ stats:{mood:10, energy:8} },
+     applyToastKey:"event.pointe_shoe",
+     applyToast:"🩰 排練好的腳尖鞋~ 充滿力量" }
+   ```
+   - 加在 message_bottle 後（balletcore 軸註解串連 iter#201 標識）
+   - **無 coin**：rehearsal atmospheric event（不是 performance reward）— 區隔 rose_bouquet 的 coin 8 reward narrative
+   - **「練舞時光」label** 比「足尖鞋」物件名更 narrative-driven — 凸顯 event 是 moment 而非 object
+
+3. **`src/i18n.js` 雙語 1 條**：
+   - zh-TW: `event.pointe_shoe` = "🩰 排練好的腳尖鞋~ 充滿力量"
+   - en: `event.pointe_shoe` = "🩰 Worn-in pointe shoes~ Full of strength"
+   - 「Worn-in」對應「排練好的」— ballet 用語裡 worn-in shoes 是「練到合腳」狀態，narrative 比「used / old」精準
+
+4. **`sw.js`：CACHE_VERSION iter200 → iter201**
+
+**lint chain 報表**：
+- check-assets：91 → **92** asset references resolve
+- 7 step + 8/8 smoke + i18n-shadow 23 src + i18n-coverage 175 keys ✅
+
+**美學軸覆蓋更新（iter#201）**：
+| 軸 | event | form | accessory | 件數 |
+|----|-------|------|-----------|------|
+| coquette / 美食家 | tea / macaron | gourmet | chef_hat / strawberry_clip | 5 |
+| cottagecore | butterfly / mushroom / petal / herb / seed | — | flower / pin_butterfly / lace_collar | 8 |
+| 智慧 / sage | book / message_bottle | sage | glasses_thin | 4 |
+| **balletcore** | rose_bouquet / **pointe_shoe（本輪）** | diva | ribbon_tie | **4** ⬆ from 3 |
+| fairycore | dewdrop | divine | wings_fairy | 3 |
+| cleangirl | bubble / towel | healthy | blush | 4 |
+| y2k | pixel_heart | — | star_clip / cd_pendant | 3 |
+| 元氣 | rainbow | fighter | party_hat | 3 |
+
+balletcore 軸從 3 → **4 件**（並列 智慧 / cleangirl / 美食家 5 為次深軸）；event total 19 → **20**（**首破 20-event 整數 milestone**）。
+
+**i18n 進度跳躍**：
+- 種子翻譯：403 + 1 = **404 條** zh-TW + 404 條 en
+- functional sites：~248 + 1 = ~249 處
+
+**axis-second-event 進度**：
+- iter#198 cottagecore（5 → 6 → 後又 +1 到 8）
+- iter#199 cleangirl（3 → 4）
+- iter#200 智慧（3 → 4）
+- iter#201 balletcore（3 → 4）— 本輪
+- ⏳ fairycore（仍 3 件 — 下個 candidate）
+- ⏳ y2k（仍 3 件）
+- ⏳ 元氣（仍 3 件）
+
+**未來 follow-up**（不在本輪）：
+- 下個 axis-second-event candidate：fairycore（dewdrop 後加月光 / 仙塵 / 蝴蝶仙女）
+- 跨 pet memorial 進階 UI
+- 新美學軸開發
+- iter#210 retrospective-210（9 cron 輪後）
+
+**影響檔案**：`assets/svg/event-pointe-shoe.svg`（新）、`src/cfg.js`、`src/i18n.js`、`sw.js`、`docs/iteration-log.md`
+
+---
+
 ## 2026-04-30 12:11 · Session A — iter#200 milestone：新隨機事件「漂流瓶」(message_bottle) 智慧軸第二 event，regular pool 18 → 19
 
 **觸發**：cron 第 200 輪 — milestone 三位數整數，但 retrospective-190 §closing 預估「下一份 retrospective 在 iter#210」+ 距離 iter#190 才 10 cron 輪（前次 retrospective 間隔 20 / 35 / 15 輪），現在寫過早。改 ship 第三波 axis-second-event content（智慧軸補完）— 對標 iter#198 cottagecore seed / iter#199 cleangirl towel 連續節奏。

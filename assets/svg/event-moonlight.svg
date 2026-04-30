@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <!-- Soft pink ambient glow halo (replaces typical cool dark night palette
+       to keep the cottagecore-fairycore TA constraint per CLAUDE.md §1) -->
+  <circle cx="50" cy="44" r="36" fill="#FFC8D6" opacity="0.4"/>
+  <circle cx="50" cy="44" r="26" fill="#FFD8DD" opacity="0.5"/>
+  <!-- Crescent moon: outer arc + inner crescent cutout via path -->
+  <path d="M 50 16 Q 78 32 70 60 Q 62 76 44 76 Q 34 76 30 70 Q 56 70 64 50 Q 68 30 50 16 Z"
+        fill="#FFF8E7" stroke="#FFD86B" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Tiny moon "face" details (subtle) -->
+  <circle cx="44" cy="36" r="1.4" fill="#FFD86B" opacity="0.5"/>
+  <circle cx="54" cy="48" r="1.4" fill="#FFD86B" opacity="0.5"/>
+  <circle cx="46" cy="58" r="1" fill="#FFD86B" opacity="0.4"/>
+  <!-- Falling moonlight rays — 4 quadratic curves descending from moon -->
+  <path d="M 40 70 Q 38 82 42 90" fill="none" stroke="#FFD86B" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+  <path d="M 50 72 Q 50 84 50 92" fill="none" stroke="#FFD86B" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>
+  <path d="M 60 70 Q 62 82 58 90" fill="none" stroke="#FFD86B" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+  <path d="M 30 64 Q 26 80 30 90" fill="none" stroke="#FFD86B" stroke-width="1.2" stroke-linecap="round" opacity="0.5"/>
+  <!-- Tiny stars scattered around the moon -->
+  <text x="14" y="28" font-size="11" fill="#FFD86B">✦</text>
+  <text x="84" y="22" font-size="9" fill="#FFD86B">✦</text>
+  <text x="80" y="56" font-size="8" fill="#FFB7B7">✧</text>
+  <text x="16" y="56" font-size="8" fill="#FFB7B7">✧</text>
+  <circle cx="22" cy="40" r="1.4" fill="#FFD86B"/>
+  <circle cx="78" cy="38" r="1.4" fill="#FFD86B"/>
+</svg>

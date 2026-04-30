@@ -328,6 +328,10 @@
         { id:"message_bottle", art:"assets/svg/event-message-bottle.svg", weight:5, label:"漂流瓶", apply:"message_bottle", applyEffects:{ stats:{mood:12, energy:6}, coin:5, coinReason:"瓶中字條" },                       applyToastKey:"event.message_bottle", applyToast:"📜 漂流瓶裡有給你的字條~" },
         // iter#201 balletcore 軸第二 event：足尖鞋 — 跟既有 rose_bouquet 區隔（rose_bouquet = 演出後收花 / pointe_shoe = 後台練功時刻）；無 coin 純 atmospheric
         { id:"pointe_shoe", art:"assets/svg/event-pointe-shoe.svg",       weight:6, label:"練舞時光", apply:"pointe_shoe", applyEffects:{ stats:{mood:10, energy:8} },                                                       applyToastKey:"event.pointe_shoe",    applyToast:"🩰 排練好的腳尖鞋~ 充滿力量" },
+        // iter#202 fairycore 軸第二 event：月光 — 跟既有 dewdrop 區隔（dewdrop = 葉上自然清晨 / moonlight = 夜晚仙氣神祕）；palette 軟化處理（粉色暖光暈 + 奶油白月）對齊 TA「避免過冷」約束
+        { id:"moonlight", art:"assets/svg/event-moonlight.svg",          weight:6, label:"月光灑落", apply:"moonlight",   applyEffects:{ stats:{mood:14, clean:5, energy:5} },                                              applyToastKey:"event.moonlight",       applyToast:"🌙 月光灑下~ 啾啾被柔光擁抱" },
+        // iter#203 元氣軸第二 event：彩帶煙火 — 跟既有 rainbow 區隔（rainbow = 廣域 atmospheric / confetti_pop = 慶祝動感 burst）；coin 7 暗示「派對小費」
+        { id:"confetti_pop", art:"assets/svg/event-confetti-pop.svg",    weight:5, label:"彩帶煙火", apply:"confetti_pop", applyEffects:{ stats:{mood:18, energy:6}, coin:7, coinReason:"派對驚喜" },                       applyToastKey:"event.confetti_pop",   applyToast:"🎉 砰！彩帶煙火爆出~" },
       ],
     },
     economy: { dailyLogin: 30, evolveReward: 100, streak7: 50, streak30: 200, firstHatchBonus: 60 },
