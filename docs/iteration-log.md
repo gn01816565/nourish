@@ -4,6 +4,157 @@
 
 ---
 
+## 2026-04-30 12:11 · Session A — iter#200 milestone：新隨機事件「漂流瓶」(message_bottle) 智慧軸第二 event，regular pool 18 → 19
+
+**觸發**：cron 第 200 輪 — milestone 三位數整數，但 retrospective-190 §closing 預估「下一份 retrospective 在 iter#210」+ 距離 iter#190 才 10 cron 輪（前次 retrospective 間隔 20 / 35 / 15 輪），現在寫過早。改 ship 第三波 axis-second-event content（智慧軸補完）— 對標 iter#198 cottagecore seed / iter#199 cleangirl towel 連續節奏。
+
+**為什麼選 message-bottle 作為智慧軸第二 event**：
+- **跟既有 book 視覺 / 敘事區隔**：book = 玩家在讀（當下 / 主動 / atmospheric）/ message-bottle = 遠方智慧 / 神祕緣分（被動 / 命運 / 收到禮物 narrative）
+- **連結 sage 終態 narrative**：cfg.finalForms.sage.desc「思考拼圖累積的智慧路線」+ form_sage speech「答案藏在風裡呢」— 漂流瓶神祕字條呼應「答案來自世界其它地方」narrative
+- **數值區隔**：book +mood 8 +energy 5（純 atmospheric）/ message-bottle +mood 12 +energy 6 + coin 5（mid-tier，coin 5 暗示「字條夾錢」surprise）
+- **weight 5**：跟 rose_bouquet / pixel_heart 同低稀有度 — 神祕事件設計準則
+
+**動作**：
+
+1. **新增 `assets/svg/event-message-bottle.svg`（21 行 SVG）**：
+   - viewBox 100×100 對標既有 15 個 event SVG
+   - 色票嚴守 CLAUDE.md §5：藍 #6BCBFF 透明 0.35（玻璃瓶身 — 透亮水滴感）+ 粉 #FF89A7（描邊 — 軟化）/ 棕 #8B5A2B + #5C3A1B（cork stopper 軟木塞）/ 黃 #FFD86B（rope 鎖頸繩 + ✦ accent）/ 白 #FFF8E7（紙條卷軸）/ 粉 #FFB7B7（紙條 handwritten lines）/ 粉 #FFC8D6（地面陰影）
+   - 結構：粉色橢圓地面陰影 + **bottle path**（quadratic curve 仿玻璃瓶身輪廓 + 頸部漸窄）+ cork stopper rect + 黃色 rope（quadratic curve over neck）+ **rolled scroll inside**（rotated -12° 視角，3 條 handwritten 模擬筆觸）+ 玻璃高光 stripe + ✦ + ✦ + dot accent
+   - **rotate(-12°) scroll**：把 inner scroll 透視旋轉一角度，暗示「漂浮 inside bottle」立體感
+   - 翻譯雙重視覺隱喻：玻璃透明 + 粉色描邊 — 神祕 + 軟化（避免過冷距離）
+
+2. **`src/cfg.js` randomEvents.pool 加第 19 條**：
+   ```
+   { id:"message_bottle", art:"assets/svg/event-message-bottle.svg", weight:5,
+     label:"漂流瓶", apply:"message_bottle",
+     applyEffects:{ stats:{mood:12, energy:6}, coin:5, coinReason:"瓶中字條" },
+     applyToastKey:"event.message_bottle",
+     applyToast:"📜 漂流瓶裡有給你的字條~" }
+   ```
+   - 加在 towel 後（智慧軸註解串連 iter#200 標識）
+   - **coin 5 + coinReason「瓶中字條」**：narrative 點題 — 字條夾著一點錢的「遠方友人」surprise
+
+3. **`src/i18n.js` 雙語 1 條**：
+   - zh-TW: `event.message_bottle` = "📜 漂流瓶裡有給你的字條~"
+   - en: `event.message_bottle` = "📜 A note for you in the drift bottle~"
+   - 「drift bottle」是英文典故詞（drift = 漂流） — 文化詞保 narrative 神秘感
+
+4. **`sw.js`：CACHE_VERSION iter199 → iter200**
+
+**lint chain 報表**：
+- check-assets：89 → **91**（user 在 cron 之外另加了 1 件 asset，本輪 +1 累積至 91）
+- 7 step + 8/8 smoke + i18n-shadow 23 src + i18n-coverage 175 keys ✅
+
+**美學軸覆蓋更新（iter#200）**：
+| 軸 | event | form | accessory | 件數 |
+|----|-------|------|-----------|------|
+| coquette / 美食家 | tea / macaron | gourmet | chef_hat / strawberry_clip | 5 |
+| cottagecore | butterfly / mushroom / petal / herb / seed | — | flower / pin_butterfly / lace_collar | 8 |
+| **智慧 / sage** | book / **message_bottle（本輪）** | sage | glasses_thin | **4** ⬆ from 3 |
+| balletcore | rose_bouquet | diva | ribbon_tie | 3 |
+| fairycore | dewdrop | divine | wings_fairy | 3 |
+| cleangirl | bubble / towel | healthy | blush | 4 |
+| y2k | pixel_heart | — | star_clip / cd_pendant | 3 |
+| 元氣 | rainbow | fighter | party_hat | 3 |
+
+智慧軸從 3 → **4 件**（並列 cleangirl / 美食家 5 為次深軸）；event total 18 → **19**。
+
+**i18n 進度跳躍**：
+- 種子翻譯：402 + 1 = **403 條** zh-TW + 403 條 en
+- functional sites：~247 + 1 = ~248 處
+
+**iter#200 milestone reflection（不寫獨立 retrospective）**：
+- 100 cron 輪累計 game.js 1990 → 502 / 23 模組 / 720 條雙語 i18n / 9 traits / 10 finalForms / 19 regular events + 12 seasonal events = 31 events / 19 accessories / 27 achievements / 49 speech pools / 89 asset paths / 7-step deploy gate
+- iter#100-149 R-1 主期 / iter#150-189 v0.2-v0.3 ship 期 / iter#190-200 v0.4 開新 + content variety
+- **iter#210 retrospective-200/210 預期合寫**：3 月 + 4 月共 100 cron 輪推進 + 兩次 v0.X feature 完整 ship 軸 — 體積夠大值得 5+ 章
+
+**為什麼這輪不寫 retrospective**：
+- 距 iter#190 才 10 輪 — 前次間隔 20 輪保 cadence
+- iter#190-200 主題（v0.4 第 10 form ship + 連續 axis-second-event）內容主軸統一，等 v0.4 多 ship 1-2 個 feature（跨 pet memorial 進階 / 新美學軸）後再寫 retro 涵蓋面更完整
+- iter#200 整數本身不是 milestone — milestone 應該對應「概念完成度」而非「整數」
+
+**未來 follow-up**（不在本輪）：
+- 下個 axis-second-event candidate：balletcore / fairycore（兩 軸還只有 1 event）
+- 跨 pet memorial 進階 UI
+- 新美學軸開發
+- iter#210 retrospective-210（10 cron 輪後）
+
+**影響檔案**：`assets/svg/event-message-bottle.svg`（新）、`src/cfg.js`、`src/i18n.js`、`sw.js`、`docs/iteration-log.md`
+
+---
+
+## 2026-04-30 12:01 · Session A — 新隨機事件「軟綿綿毛巾」(towel)：cleangirl 軸第二 event，regular pool 17 → 18
+
+**觸發**：cron 第 199 輪 — iter#198 種子粒（cottagecore filler）後接著補完次薄軸第二 event。掃 §5.5 美學軸地圖 cleangirl/智慧/balletcore/fairycore 都只有 1 event，cleangirl 軸 narrative 最具體（洗澡 / 清潔），最容易設計區隔內容。
+
+**為什麼選毛巾**：
+- **跟既有 bubble 視覺 / 敘事區隔**：bubble = 洗澡進行中（泡泡飄飄）/ towel = 洗完後（暖暖乾爽）— 兩 event 串起完整 cleangirl narrative arc
+- **填補既有 cottagecore-cleangirl 軸 SVG 視覺空缺**：bubble 是圓形 / petal 是花瓣 / mushroom 是傘菇 — towel 加入 stacked rectangle 結構，視覺多樣性增加
+- **數值區隔**：bubble +clean 10 +mood 8 / towel +clean 14 +mood 6 — towel 清潔效益更大但愉悅略少（fits「清潔 task done satisfaction」narrative）
+- **weight 7**：跟 mushroom 7 / book 6 / dewdrop 6 同 mid-tier，比 bubble 9 略稀有 — 設計「進階版」感
+
+**動作**：
+
+1. **新增 `assets/svg/event-towel.svg`（18 行 SVG）**：
+   - viewBox 100×100 對標既有 14 個 event SVG
+   - 色票嚴守 CLAUDE.md §5：白 #FFF8E7（外層 cream 毛巾）/ 粉 #FFB7B7（中層 pink 毛巾，三明治堆疊）+ #FF89A7（描邊）/ 粉 #FFC8D6（地面陰影 / 軟化）/ #FFD8DD（蒸氣描邊）/ 黃 #FFD86B（✨ accent）
+   - 結構：粉色橢圓地面陰影 + **3 層堆疊毛巾 stack**（rounded-rect bottom cream + middle pink + top cream，每層更窄做「整齊摺疊」立體感）+ middle 層 dashed stripe band + top 層 quadratic-curve embroidered 心形（小細節）+ **3 顆 white circle 蒸氣 / 蓬鬆雲團**（暗示剛洗好的暖呼呼） + ✨ corner accent
+   - 蒸氣 cloud 是 cottagecore-cleangirl 的視覺語：cozy + spa-like — 區隔 bubble 的「正在洗」動感
+
+2. **`src/cfg.js` randomEvents.pool 加第 18 條**：
+   ```
+   { id:"towel", art:"assets/svg/event-towel.svg", weight:7,
+     label:"軟綿綿毛巾", apply:"towel",
+     applyEffects:{ stats:{clean:14, mood:6} },
+     applyToastKey:"event.towel",
+     applyToast:"🛁 暖暖的乾毛巾~ 全身舒服" }
+   ```
+   - 加在 seed 後（cleangirl 軸註解串連 iter#199 標識）
+   - **無 coin**：toiletries / linens 是 spa-like atmosphere event，不該帶錢（對標 bubble / dewdrop / petal 純自然 atmospheric）
+
+3. **`src/i18n.js` 雙語 1 條**：
+   - zh-TW: `event.towel` = "🛁 暖暖的乾毛巾~ 全身舒服"
+   - en: `event.towel` = "🛁 A warm dry towel~ Cozy all over"
+   - 「Cozy all over」對應「全身舒服」— spa-like cottagecore 翻譯保溫暖感
+
+4. **`sw.js`：CACHE_VERSION iter198 → iter199**
+
+**lint chain 報表**：
+- check-assets：88 → **89** asset references resolve
+- 7 step + 8/8 smoke + i18n-shadow 23 src + i18n-coverage 175 keys ✅
+
+**美學軸覆蓋更新（iter#199）**：
+| 軸 | event | form | accessory | 件數 |
+|----|-------|------|-----------|------|
+| coquette / 美食家 | tea / macaron | gourmet | chef_hat / strawberry_clip | 5 |
+| cottagecore | butterfly / mushroom / petal / herb / seed | — | flower / pin_butterfly / lace_collar | 8 |
+| 智慧 / sage | book | sage | glasses_thin | 3 |
+| balletcore | rose_bouquet | diva | ribbon_tie | 3 |
+| fairycore | dewdrop | divine | wings_fairy | 3 |
+| **cleangirl** | bubble / **towel（本輪）** | healthy | blush | **4** ⬆ from 3 |
+| y2k | pixel_heart | — | star_clip / cd_pendant | 3 |
+| 元氣 | rainbow | fighter | party_hat | 3 |
+
+cleangirl 軸從 3 → **4 件**（跟 美食家 5 並列為次深軸）；event total 17 → **18**。
+
+**i18n 進度跳躍**：
+- 種子翻譯：401 + 1 = **402 條** zh-TW + 402 條 en
+- functional sites：~246 + 1 = ~247 處
+
+**為什麼這個 cleangirl 補充對 retention 重要**：
+- bath 是 GDD §4 互動之一（CD 300s），玩家做完 bath action 後會想看到「世界呼應這個 action」— towel event 隨機觸發剛好串敘事
+- bubble + towel 雙 event 跟 bath interaction 形成「動作 → 環境回應」cluster
+
+**未來 follow-up**（不在本輪）：
+- 下個 axis-second-event candidate：智慧（sage）/ balletcore / fairycore — 都還只有 1 event
+- 跨 pet memorial 進階 UI
+- 新美學軸開發
+- iter#210 retrospective-210（11 cron 輪後）
+
+**影響檔案**：`assets/svg/event-towel.svg`（新）、`src/cfg.js`、`src/i18n.js`、`sw.js`、`docs/iteration-log.md`
+
+---
+
 ## 2026-04-30 11:51 · Session A — 新隨機事件「灑落的種子」(seed)：cottagecore 補充 filler，regular pool 16 → 17
 
 **觸發**：cron 第 198 輪 — iter#196-197 完整 ship warmheart（v0.4 第 10 form）後切回 content 變化（rotation 健康，2 ship 輪後該換手）。retrospective-190.md §4.2 列「新隨機事件 batch」是 v0.4 候選 — 本輪起手第一條，加最自然的 cottagecore 補充。

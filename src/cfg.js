@@ -324,6 +324,10 @@
         { id:"seed",      art:"assets/svg/event-seed.svg",           weight:9,  label:"灑落的種子",  apply:"seed",       applyEffects:{ stats:{hunger:12, mood:4} },                                                       applyToastKey:"event.seed",        applyToast:"🌾 撿到散落的小米粒~" },
         // iter#199 cleangirl 軸第二 event：軟綿綿毛巾 — 跟既有 bubble 區隔（bubble = 洗澡中泡泡 / towel = 洗完後的暖呼呼）
         { id:"towel",     art:"assets/svg/event-towel.svg",          weight:7,  label:"軟綿綿毛巾",  apply:"towel",      applyEffects:{ stats:{clean:14, mood:6} },                                                        applyToastKey:"event.towel",       applyToast:"🛁 暖暖的乾毛巾~ 全身舒服" },
+        // iter#200 智慧軸第二 event：漂流瓶 — 跟既有 book 區隔（book = 讀書當下 / message-bottle = 遠方智慧 / 神祕緣分）；微 coin 5 暗示「字條中夾著」
+        { id:"message_bottle", art:"assets/svg/event-message-bottle.svg", weight:5, label:"漂流瓶", apply:"message_bottle", applyEffects:{ stats:{mood:12, energy:6}, coin:5, coinReason:"瓶中字條" },                       applyToastKey:"event.message_bottle", applyToast:"📜 漂流瓶裡有給你的字條~" },
+        // iter#201 balletcore 軸第二 event：足尖鞋 — 跟既有 rose_bouquet 區隔（rose_bouquet = 演出後收花 / pointe_shoe = 後台練功時刻）；無 coin 純 atmospheric
+        { id:"pointe_shoe", art:"assets/svg/event-pointe-shoe.svg",       weight:6, label:"練舞時光", apply:"pointe_shoe", applyEffects:{ stats:{mood:10, energy:8} },                                                       applyToastKey:"event.pointe_shoe",    applyToast:"🩰 排練好的腳尖鞋~ 充滿力量" },
       ],
     },
     economy: { dailyLogin: 30, evolveReward: 100, streak7: 50, streak30: 200, firstHatchBonus: 60 },

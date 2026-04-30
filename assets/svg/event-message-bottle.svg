@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <!-- Soft pink shadow under bottle -->
+  <ellipse cx="50" cy="86" rx="22" ry="3.5" fill="#FFC8D6" opacity="0.55"/>
+  <!-- Bottle body: rounded rectangle with neck taper -->
+  <!-- Bottle main body (clear glass tinted blue) -->
+  <path d="M 38 32 L 38 28 Q 38 24 42 24 L 58 24 Q 62 24 62 28 L 62 32 Q 70 38 70 50 L 70 76 Q 70 84 62 84 L 38 84 Q 30 84 30 76 L 30 50 Q 30 38 38 32 Z"
+        fill="#6BCBFF" fill-opacity="0.35"
+        stroke="#FF89A7" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Cork stopper -->
+  <rect x="40" y="14" width="20" height="12" rx="2.5" fill="#8B5A2B" stroke="#5C3A1B" stroke-width="1.5"/>
+  <!-- Tiny rope tied around neck -->
+  <path d="M 36 30 Q 50 28 64 30" fill="none" stroke="#FFD86B" stroke-width="2" stroke-linecap="round"/>
+  <!-- Rolled paper scroll inside the bottle (visible through glass) -->
+  <rect x="42" y="50" width="16" height="22" rx="1.5" fill="#FFF8E7" stroke="#8B5A2B" stroke-width="1.2" transform="rotate(-12 50 60)"/>
+  <!-- Scroll handwritten lines (faint pink, suggesting message) -->
+  <line x1="42" y1="56" x2="56" y2="54" stroke="#FFB7B7" stroke-width="1" stroke-linecap="round" opacity="0.7" transform="rotate(-12 50 60)"/>
+  <line x1="42" y1="60" x2="56" y2="58" stroke="#FFB7B7" stroke-width="1" stroke-linecap="round" opacity="0.7" transform="rotate(-12 50 60)"/>
+  <line x1="42" y1="64" x2="52" y2="62" stroke="#FFB7B7" stroke-width="1" stroke-linecap="round" opacity="0.7" transform="rotate(-12 50 60)"/>
+  <!-- Glass highlight stripes on bottle -->
+  <line x1="36" y1="44" x2="36" y2="68" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+  <!-- Sparkle accents - mysterious wisdom -->
+  <text x="78" y="22" font-size="10" fill="#FFD86B">✦</text>
+  <text x="14" y="22" font-size="9" fill="#6BCBFF">✦</text>
+  <circle cx="86" cy="50" r="1.4" fill="#FFD86B"/>
+</svg>
