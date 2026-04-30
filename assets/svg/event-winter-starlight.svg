@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <!-- fairycore seasonal: winter solstice starlight constellation.
+       Pink-warmed night palette per CLAUDE.md TA — avoid cool dark navy. -->
+  <!-- Soft pink ambient halo (replaces standard cool starry-night) -->
+  <circle cx="50" cy="50" r="42" fill="#FFC8D6" opacity="0.35"/>
+  <circle cx="50" cy="50" r="28" fill="#FFD8DD" opacity="0.45"/>
+  <!-- Constellation: connect 5 stars with thin lines forming a soft "wand" shape -->
+  <g stroke="#FFD86B" stroke-width="0.8" opacity="0.55">
+    <line x1="22" y1="32" x2="38" y2="44"/>
+    <line x1="38" y1="44" x2="50" y2="30"/>
+    <line x1="50" y1="30" x2="62" y2="44"/>
+    <line x1="62" y1="44" x2="78" y2="32"/>
+    <line x1="38" y1="44" x2="44" y2="62"/>
+    <line x1="62" y1="44" x2="56" y2="62"/>
+  </g>
+  <!-- Constellation stars — 5-pointed glyphs at line endpoints -->
+  <g fill="#FFD86B" stroke="#FF89A7" stroke-width="0.8">
+    <path d="M 22 28 L 23.5 31.5 L 27 32 L 24 34.5 L 25 38 L 22 36 L 19 38 L 20 34.5 L 17 32 L 20.5 31.5 Z"/>
+    <path d="M 78 28 L 79.5 31.5 L 83 32 L 80 34.5 L 81 38 L 78 36 L 75 38 L 76 34.5 L 73 32 L 76.5 31.5 Z"/>
+    <path d="M 50 26 L 51.5 29.5 L 55 30 L 52 32.5 L 53 36 L 50 34 L 47 36 L 48 32.5 L 45 30 L 48.5 29.5 Z"/>
+  </g>
+  <!-- Smaller star points at lower constellation tips -->
+  <circle cx="38" cy="44" r="2.5" fill="#FFFFFF" stroke="#FFD86B" stroke-width="1.2"/>
+  <circle cx="62" cy="44" r="2.5" fill="#FFFFFF" stroke="#FFD86B" stroke-width="1.2"/>
+  <circle cx="44" cy="62" r="1.8" fill="#FFFFFF" stroke="#FFD86B" stroke-width="1"/>
+  <circle cx="56" cy="62" r="1.8" fill="#FFFFFF" stroke="#FFD86B" stroke-width="1"/>
+  <!-- Soft snowflake-like dots scattered around (Yule winter feel) -->
+  <text x="14" y="56" font-size="9" fill="#FFFFFF" opacity="0.85">❄</text>
+  <text x="82" y="60" font-size="8" fill="#FFFFFF" opacity="0.85">❄</text>
+  <text x="22" y="80" font-size="7" fill="#FFFFFF" opacity="0.7">·</text>
+  <!-- Falling sparkles tail -->
+  <text x="74" y="78" font-size="9" fill="#FFD86B">✦</text>
+  <text x="40" y="84" font-size="8" fill="#FFB7B7">✧</text>
+  <!-- Tiny crescent moon decoration in corner (subtle, not main subject) -->
+  <path d="M 86 18 q -4 4 0 8 q -2 -1 -3 -4 q 1 -3 3 -4 z" fill="#FFF8E7" stroke="#FFD86B" stroke-width="0.8"/>
+</svg>

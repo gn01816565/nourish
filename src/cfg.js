@@ -303,6 +303,62 @@
           applyToastStyle:"gold",
           dateRange: { from: "07-13", to: "07-19" },
         },
+        // iter#211 智慧軸首 seasonal — TW 教師節 09-28 固定日，7 天 window（含中秋 mooncake 09-25 結束後接力）
+        // 文具組（筆記本 / 鉛筆 / 墨水 / 蘋果）對齊智慧軸 sage / book / message_bottle 學術氛圍
+        {
+          id:"stationery_set",
+          art:"assets/svg/event-stationery-set.svg",
+          weight:25,
+          label:"教師節文具",
+          apply:"stationery_set",
+          applyEffects:{ stats:{mood:18, energy:8, clean:4}, coin:18, coinReason:"教師節" },
+          applyToastKey:"seasonal.stationery_set",
+          applyToast:"📓 收到一組嶄新文具~ 知識的禮物",
+          applyToastStyle:"gold",
+          dateRange: { from: "09-26", to: "10-02" },
+        },
+        // iter#212 balletcore 軸首 seasonal — UNESCO 國際舞蹈節 04-29 固定日，7 天 window（在 sakura 03-20~05-10 期間 narrow）
+        // 三層 tutu 裙 + 蕾絲 corset + 玫瑰花 — 對齊 diva form + ribbon_tie / rose_bouquet / pointe_shoe 表演敘事
+        {
+          id:"dance_tutu",
+          art:"assets/svg/event-dance-tutu.svg",
+          weight:25,
+          label:"舞蹈節 tutu",
+          apply:"dance_tutu",
+          applyEffects:{ stats:{mood:22, energy:10}, coin:15, coinReason:"舞蹈節" },
+          applyToastKey:"seasonal.dance_tutu",
+          applyToast:"🩰 嶄新的 tutu 裙~ 上台前的儀式感",
+          applyToastStyle:"gold",
+          dateRange: { from: "04-26", to: "05-02" },
+        },
+        // iter#213 fairycore 軸首 seasonal — 冬至 / Yule 12-21~12-22 anchor，4 天 window（11 月底以後到 xmas 之前的縫隙填補）
+        // 星座 / 雪花 / 月光 — 對齊 divine + dewdrop + moonlight fairycore 仙氣 narrative，TA 軟化 palette（粉色 halo + 奶油月）
+        {
+          id:"winter_starlight",
+          art:"assets/svg/event-winter-starlight.svg",
+          weight:25,
+          label:"冬至星空",
+          apply:"winter_starlight",
+          applyEffects:{ stats:{mood:20, clean:8, energy:6}, coin:12, coinReason:"冬至星願" },
+          applyToastKey:"seasonal.winter_starlight",
+          applyToast:"❄ 冬至星空~ 許下你的冬日願望",
+          applyToastStyle:"gold",
+          dateRange: { from: "12-19", to: "12-22" },
+        },
+        // iter#214 cleangirl 軸首 seasonal — World Wellness Day 06-13 anchor，7 天 window（在 zongzi 05-30~06-09 之後 / Pride 整月期間）
+        // 浴鹽罐 + 薰衣草 sprig — 對齊 healthy form + bubble + towel cleangirl spa narrative
+        {
+          id:"spa_salts",
+          art:"assets/svg/event-spa-salts.svg",
+          weight:25,
+          label:"SPA 浴鹽",
+          apply:"spa_salts",
+          applyEffects:{ stats:{clean:18, mood:12, energy:8}, coin:10, coinReason:"Wellness Day" },
+          applyToastKey:"seasonal.spa_salts",
+          applyToast:"🧖‍♀️ 一罐玫瑰浴鹽~ Wellness 寵愛自己",
+          applyToastStyle:"gold",
+          dateRange: { from: "06-10", to: "06-16" },
+        },
       ],
     },
     randomEvents: {

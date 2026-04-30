@@ -6,7 +6,7 @@
  *
  * Versioning: bump CACHE_VERSION on any shipped change so old caches purge.
  */
-const CACHE_VERSION = "chickaday-v1-2026-04-30-iter209";
+const CACHE_VERSION = "chickaday-v1-2026-04-30-iter213";
 
 // What gets pre-fetched on install — keep tight to the app shell so first
 // install is fast. Other assets fall through to runtime caching below.

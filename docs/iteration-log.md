@@ -4,6 +4,427 @@
 
 ---
 
+## 2026-04-30 14:21 · Session A — seasonal 補完 batch 第 3：fairycore 軸「冬至星空」(winter_starlight)，seasonal pool 15 → 16
+
+**觸發**：cron 第 213 輪 — seasonal 補完 batch 第 3 軸（per retrospective-210 §4.1 排序）。fairycore 軸 dewdrop（自然清晨）+ moonlight（夜晚仙氣）兩個 atmospheric event 後，seasonal layer 自然 anchor 是「冬至 / Yule」— 北半球最長夜的星空仪式感。
+
+**為什麼選冬至而非其他 fairycore 候選**：
+- **既有日曆 anchor**：冬至是 cross-culture 共通節日（華語圈 + 西方 Yule + 北歐 jul），narrow window 強
+- **跟 fairycore 既有 events narrative 連續**：dewdrop（清晨）→ moonlight（夜晚）→ winter_starlight（冬夜）— 全 atmospheric / 仙氣 / 自然 cluster
+- **填補 12 月空檔**：xmas（12-20~12-26）+ newyear（12-31~01-03）兩 event 接力，但 xmas 之前 12 月初到 12-19 完全沒 seasonal — 4 天 window（12-19~12-22）填這個 gap
+- **Yule narrative 更通用**：跟既有 xmas（耶誕）區隔 — winter_starlight 是泛冬至 / pagan winter celebration / star-gazing 全文化通用，不綁特定宗教
+
+**動作**：
+
+1. **新增 `assets/svg/event-winter-starlight.svg`（28 行 SVG）**：
+   - viewBox 100×100 對標既有 23 個 event SVG
+   - 色票嚴守 CLAUDE.md §5：粉 #FFC8D6（外層 ambient halo opacity 0.35）+ #FFD8DD（內層 halo opacity 0.45）— **TA 軟化 palette**（避開冷 navy night）/ 黃 #FFD86B（5-pointed stars + 兩條 connecting line + ✦ accent）+ #FF89A7（star 描邊軟化）/ 白 #FFFFFF（雪花 ❄ + smaller star tips + ✧ accent）/ 奶油 #FFF8E7（小 crescent moon corner decoration）/ 粉 #FFB7B7（✧ accent）
+   - 結構：**雙層粉色 ambient halo**（取代冷夜空 palette — 對齊 iter#202 moonlight 同 SOP）+ **constellation network**（5 條黃色 0.55 opacity connecting lines 串起 5 顆星 — 形成「魔杖 / 星座」silhouette）+ **3 顆 5-pointed star path**（path 用 10-point M-L 鋸齒繪 5 角星 — 黃 fill + 粉描邊）+ **4 顆 white circle 小星 tip**（constellation 下端的小星）+ **2 顆雪花 ❄ + 1 個 ·**（Yule winter feel scattered）+ **2 個 corner sparkles ✦✧**（黃 + 粉）+ **角落小 crescent moon path**（quadratic curve 暗示 fairycore 連續性，subtle 不搶主題）
+   - **constellation 概念 + 粉色暖夜**是設計亮點：冬至感 + fairycore 仙氣 + cottagecore 軟化 palette 三 fold 兼顧
+
+2. **`src/cfg.js` seasonalEvents.pool 加第 16 條**：
+   ```
+   { id:"winter_starlight", art:"assets/svg/event-winter-starlight.svg", weight:25,
+     label:"冬至星空", apply:"winter_starlight",
+     applyEffects:{ stats:{mood:20, clean:8, energy:6}, coin:12, coinReason:"冬至星願" },
+     applyToastKey:"seasonal.winter_starlight",
+     applyToast:"❄ 冬至星空~ 許下你的冬日願望",
+     applyToastStyle:"gold",
+     dateRange: { from: "12-19", to: "12-22" } }
+   ```
+   - 加在 dance_tutu 後（fairycore 軸 + 12 月日曆位置標識）
+   - **dateRange 4 天**：narrow window — 冬至本身只 1 天，但前後 1-2 天涵蓋 timezone 浮動 + 玩家命中機率
+   - **3-stat boost + coin 12**：emotional + spiritual cleansing + nighttime energy + coin reward — 「許願」narrative 帶獎勵
+   - **gold style** + weight 25：節日 mid-high tier
+
+3. **`src/i18n.js` 雙語 1 條**：
+   - zh-TW: `seasonal.winter_starlight` = "❄ 冬至星空~ 許下你的冬日願望"
+   - en: `seasonal.winter_starlight` = "❄ Winter solstice starlight~ Make your winter wish"
+   - 「Make your winter wish」對應「許下你的冬日願望」 — 命令句 + winter wish narrative 跨文化通用
+
+4. **`sw.js`：CACHE_VERSION iter212 → iter213**
+
+**lint chain 報表**：
+- check-assets：100 → **101 asset references resolve**
+- 7 step + 8/8 smoke + i18n-shadow 23 src + i18n-coverage 175 keys ✅
+
+**美學軸覆蓋更新（iter#213）**：
+| 軸 | event | form | accessory | 件數 |
+|----|-------|------|-----------|------|
+| coquette / 美食家 | tea / macaron + carnation(s) | gourmet | chef_hat / strawberry_clip | 6 |
+| cottagecore | 5 events + sakura(s) | — | flower / pin_butterfly / lace_collar | 9 |
+| 智慧 / sage | book / message_bottle + stationery_set(s) | sage | glasses_thin | 5 |
+| balletcore | rose_bouquet / pointe_shoe + dance_tutu(s) | diva | ribbon_tie | 5 |
+| **fairycore** | dewdrop / moonlight + **winter_starlight(s)（本輪）** | divine | wings_fairy | **5** ⬆ from 4 |
+| cleangirl | bubble / towel | healthy | blush | 4 |
+| y2k | pixel_heart + redenvelope(s) | — | star_clip / cd_pendant | 4 |
+| 元氣 | rainbow / confetti_pop + pinwheel(s) + rainbow_heart(s) | fighter | party_hat | 6 |
+| boho | dried_herbs + picnic_blanket(s) | — | fringe_ribbon / straw_hat | 4 |
+
+fairycore 軸從 4 → **5 件**（並列智慧 / balletcore 5 件）；event total 26 → **27**（22 regular + 16 seasonal = 38）。
+
+**season pool 12 月覆蓋更新**：
+- 既有：xmas（12-20~12-26）/ newyear（12-31~01-03）
+- **本輪 winter_starlight（12-19~12-22 4 天）** — 12 月最長 dark zone（12-01~12-19 整段）後段補完
+- 12 月覆蓋：12-01~12-18 空 / **12-19 winter_starlight 起 / 12-20~12-22 winter_starlight + xmas 重疊 3 天 / 12-23~12-26 xmas 單 / 12-27~12-30 空 / 12-31 newyear**
+
+**i18n 進度跳躍**：
+- 種子翻譯：412 + 1 = **413 條** zh-TW + 413 條 en
+- functional sites：~256 + 1 = ~257 處
+- seasonal events 全 i18n functional（16/16 applyToastKey）
+
+**v0.5 seasonal 補完 batch 進度（iter#213）**：
+- iter#211 智慧 ✅
+- iter#212 balletcore ✅
+- **iter#213 fairycore ✅（本輪）**
+- ⏳ cleangirl（spa day / aromatherapy / bath salts candidate）
+- ⏳ 1 額外候選（boho 已 picnic / cottagecore 軸已最深 / 美食家 軸已 carnation / 元氣 已雙 seasonal — 候選空間：y2k Halloween 對齊？）
+
+**驗證**：
+- `node --check src/{cfg,i18n}.js` → ✅
+- `./scripts/run-checks.sh` → 全綠 7 step
+
+**影響檔案**：`assets/svg/event-winter-starlight.svg`（新）、`src/cfg.js`、`src/i18n.js`、`sw.js`、`docs/iteration-log.md`
+
+---
+
+## 2026-04-30 14:11 · Session A — seasonal 補完 batch 第 2：balletcore 軸「舞蹈節 tutu」(dance_tutu)，**check-assets 99 → 100 整數 milestone**
+
+**觸發**：cron 第 212 輪 — iter#211 智慧軸 seasonal 後 batch 第 2 軸補完。balletcore 軸是 retrospective-210 §4.1 排序的 v0.5 candidate「seasonal 補完 5 軸」之一。
+
+**為什麼 UNESCO 國際舞蹈節 04-29 是天然 anchor**：
+- **既有日曆 anchor**：UNESCO 1982 起設立的官方節日，跟 ballet 直接綁定（紀念 Jean-Georges Noverre 生日，現代芭蕾之父）— 不是 niche 自創節日
+- **時段 narrow window**：04-26~05-02 7 天 window，在既有 sakura（03-20~05-10）+ carnation（05-08~05-12）+ zongzi（05-30~06-09）之間 — 4 月底 / 5 月初的小空缺被正好填滿
+- **連結 diva form + 既有 3 件 balletcore item 全 cluster**：tutu 跟 ribbon_tie（accessory）+ rose_bouquet（演出後 event）+ pointe_shoe（後台練功 event）構成完整 ballet narrative arc — performance day 是 cluster 的 emotional peak
+
+**動作**：
+
+1. **新增 `assets/svg/event-dance-tutu.svg`（30 行 SVG）**：
+   - viewBox 100×100 對標既有 22 個 event SVG
+   - 色票嚴守 CLAUDE.md §5：粉 #FFD8DD（外層 tutu 最軟 pink）/ #FFC8D6（中層）/ #FFB7B7（上層 tulle）+ #FF89A7（描邊）/ 暗紅 #B23A48（bodice corset 主色 — drama tone）+ #8B2030（描邊）/ 黃 #FFD86B（criss-cross laces + ✦ accent）/ 白 #FFFFFF（tulle ruffle dots — 7 顆隨機散布模擬蓬鬆）/ 粉 #FFB7B7（waist 玫瑰中心 + ♥ accent）
+   - 結構：粉色橢圓地面陰影 + **3 層 tulle 漸層橢圓**（外大內小 / 漸深 pink / 模擬 ballet tutu 經典 layered silhouette）+ **path bodice**（V 字 corset 形狀 + 暗紅描邊）+ **4 條 criss-cross laces**（×× 圖案）+ **7 顆 white opacity 0.6-0.7 dots**（tulle 蓬鬆紋理散布在裙子層上）+ **waist 雙層玫瑰**（外圓 + 內小圓）+ ✦♥✨ 三 corner accent
+   - **三層 tutu + criss-cross corset + waist rose** 是這件 SVG 的設計亮點：跟既有 rose_bouquet（單一束花）+ pointe_shoe（單側鞋）視覺層次更豐富
+
+2. **`src/cfg.js` seasonalEvents.pool 加第 15 條**：
+   ```
+   { id:"dance_tutu", art:"assets/svg/event-dance-tutu.svg", weight:25,
+     label:"舞蹈節 tutu", apply:"dance_tutu",
+     applyEffects:{ stats:{mood:22, energy:10}, coin:15, coinReason:"舞蹈節" },
+     applyToastKey:"seasonal.dance_tutu",
+     applyToast:"🩰 嶄新的 tutu 裙~ 上台前的儀式感",
+     applyToastStyle:"gold",
+     dateRange: { from: "04-26", to: "05-02" } }
+   ```
+   - 加在 stationery_set 後（balletcore 軸 + 4 月底日曆位置）
+   - **+mood 22 +energy 10**：emotional peak event；coin 15 = 演出 reward narrative
+   - **dateRange 7 天**：跟既有 narrow window seasonal pattern 一致
+   - **gold style**：節日 mid-high tier
+
+3. **`src/i18n.js` 雙語 1 條**：
+   - zh-TW: `seasonal.dance_tutu` = "🩰 嶄新的 tutu 裙~ 上台前的儀式感"
+   - en: `seasonal.dance_tutu` = "🩰 A brand-new tutu~ Pre-show ritual"
+   - 「Pre-show ritual」對應「上台前的儀式感」 — 演員 narrative 直接保
+
+4. **`sw.js`：CACHE_VERSION iter211 → iter212**
+
+**lint chain 報表 — 整數 milestone**：
+- check-assets：99 → **100 asset references resolve** 🎉 — **首破 100 整數**
+- 7 step + 8/8 smoke + i18n-shadow 23 src + i18n-coverage 175 keys ✅
+
+**美學軸覆蓋更新（iter#212）**：
+| 軸 | event | form | accessory | 件數 |
+|----|-------|------|-----------|------|
+| coquette / 美食家 | tea / macaron + carnation(s) | gourmet | chef_hat / strawberry_clip | 6 |
+| cottagecore | 5 events + sakura(s) | — | flower / pin_butterfly / lace_collar | 9 |
+| 智慧 / sage | book / message_bottle + stationery_set(s) | sage | glasses_thin | 5 |
+| **balletcore** | rose_bouquet / pointe_shoe + **dance_tutu(s)（本輪）** | diva | ribbon_tie | **5** ⬆ from 4 |
+| fairycore | dewdrop / moonlight | divine | wings_fairy | 4 |
+| cleangirl | bubble / towel | healthy | blush | 4 |
+| y2k | pixel_heart + redenvelope(s) | — | star_clip / cd_pendant | 4 |
+| 元氣 | rainbow / confetti_pop + pinwheel(s) + rainbow_heart(s) | fighter | party_hat | 6 |
+| boho | dried_herbs + picnic_blanket(s) | — | fringe_ribbon / straw_hat | 4 |
+
+balletcore 軸從 4 → **5 件**（首次擁有 seasonal layer，並列智慧 5）；event total 25 → **26**（22 regular + 15 seasonal = 37）。
+
+**season pool 4-5 月覆蓋更新**：
+- 既有：sakura（03-20~05-10）/ pinwheel（04-01~04-05）/ carnation（05-08~05-12）/ zongzi（05-30~06-09）
+- **本輪 dance_tutu（04-26~05-02 7 天）** — 4 月底空缺填補 + 5 月初首兩天重疊 carnation 之前
+- 4 月覆蓋：04-01~04-05 pinwheel / 04-26~04-30 dance_tutu / 全月有 sakura 重疊
+- 5 月覆蓋：05-01~05-02 dance_tutu / 05-03~05-07 sakura 單獨 / 05-08~05-12 carnation / 05-30~06-09 zongzi
+
+**i18n 進度跳躍**：
+- 種子翻譯：411 + 1 = **412 條** zh-TW + 412 條 en
+- functional sites：~255 + 1 = ~256 處
+- seasonal events 全 i18n functional（15/15 applyToastKey）
+
+**v0.5 seasonal 補完 batch 進度（iter#212）**：
+- iter#211 智慧 ✅ stationery_set
+- **iter#212 balletcore ✅ dance_tutu**
+- ⏳ fairycore（仙塵或月圓夜或星座 candidate）
+- ⏳ cleangirl（spa day / aromatherapy candidate）
+- ⏳ 1 額外候選 軸 ship（boho 已 picnic_blanket 不在補完之列 / cottagecore 軸 9 件已最深）
+
+**驗證**：
+- `node --check src/{cfg,i18n}.js` → ✅
+- `./scripts/run-checks.sh` → 全綠 7 step + check-assets **100 paths 整數 milestone**
+
+**🎉 100 asset references milestone**：
+- iter#100 起點：~30 paths
+- iter#150：~73
+- iter#200：~93
+- **iter#212：100 paths**（含 51 個 SVG + 49 個 PNG / icon / image references）— 視覺資產 baseline 健康
+
+**影響檔案**：`assets/svg/event-dance-tutu.svg`（新）、`src/cfg.js`、`src/i18n.js`、`sw.js`、`docs/iteration-log.md`
+
+---
+
+## 2026-04-30 14:01 · Session A — v0.5 起手 seasonal 補完批次第 1：智慧軸「教師節文具」(stationery_set)，seasonal pool 13 → 14
+
+**觸發**：cron 第 211 輪 — iter#210 retrospective 後切到 v0.5 開新。retrospective-210.md §4.1 v0.5 candidates 排序「seasonal 補完 5 軸」是 cleanest 5-cron-輪 pace（智慧 / balletcore / fairycore / cleangirl / boho 已 ship）batch — 對齊 axis-second-event batch SOP 第二次複製。
+
+**為什麼智慧軸 seasonal 第一個 ship**：
+- **TW 教師節 09-28 固定日**：日曆 anchor 強，narrow 7 天 window 玩家命中機率高
+- **連結 sage form + book / message_bottle event 全 cluster**：智慧軸 narrative arc 從 atmospheric「讀書」「神祕字條」delta 拓展到「節日致敬 mentor」layer
+- **填補 9 月覆蓋**：既有 mooncake（09-10~09-25）後立即接力 seasonal 教師節 09-26~10-02 — 9 月覆蓋 22 天（mooncake 16 天 + 教師節 7 天，其中 1 天重疊）
+- **數值與 mooncake 區隔**：mooncake +hunger 30 +mood 10（吃月餅）/ stationery_set +mood 18 +energy 8 +clean 4 + coin 18（學術 narrative + coin reward）
+
+**動作**：
+
+1. **新增 `assets/svg/event-stationery-set.svg`（30 行 SVG）**：
+   - viewBox 100×100 對標既有 21 個 event SVG
+   - 色票嚴守 CLAUDE.md §5：奶油 #FFE8C8（notebook 底層 + 鉛筆 cone wood）+ 棕 #8B5A2B（描邊保學術 earth tone）/ 粉 #FFB7B7（notebook 上層 — 軟化）+ #FF89A7（描邊）/ 暗紅 #B23A48（notebook spine + apple — earth-rust accent）+ #8B2030（apple 描邊）/ 黃 #FFD86B（鉛筆主體 + ✦ accent）/ 黑 #2C2C2C（鉛筆 lead）/ 藍 #6BCBFF 透明 0.55（ink bottle 玻璃透明）/ 綠 #6BCB77 + #3E8C4A（apple 葉柄）/ 粉 #FFC8D6（地面陰影）/ 粉 #FFB7B7（♥ accent）
+   - 結構：粉色橢圓地面陰影 + **2 層筆記本疊**（cream bottom + 粉色 top + spine 暗紅 band + 3 條粉色頁面 lines）+ **rotated -18° 鉛筆**（黃色主體 + 棕邊 + cream cone tip + 黑色 lead + 粉色 eraser end）+ **小墨水瓶**（藍色透明 + 棕色蓋 + 白色 label sticker）+ **左側小蘋果**（圓形 + 葉柄 + 葉片 — teacher gift symbol）+ ✦♥ corner accent
+   - **多元素組合**（4 個 distinct objects + label）是這件 SVG 的設計亮點：narrative 豐富比單一物件 event 強（對齊「文具組」概念非單一文具）
+
+2. **`src/cfg.js` seasonalEvents.pool 加第 14 條**：
+   ```
+   { id:"stationery_set", art:"assets/svg/event-stationery-set.svg", weight:25,
+     label:"教師節文具", apply:"stationery_set",
+     applyEffects:{ stats:{mood:18, energy:8, clean:4}, coin:18, coinReason:"教師節" },
+     applyToastKey:"seasonal.stationery_set",
+     applyToast:"📓 收到一組嶄新文具~ 知識的禮物",
+     applyToastStyle:"gold",
+     dateRange: { from: "09-26", to: "10-02" } }
+   ```
+   - 加在 picnic_blanket 後（智慧軸 + 9 月日曆位置標識）
+   - **3-stat boost + coin 18**：emotional + cognitive + minor cleanliness narrative
+   - **dateRange 7 天**：跟 valentine（4 天）/ carnation（5 天）/ 紅包（7 天）/ picnic（7 天）narrow window 一致
+   - **gold style** + weight 25：節日 mid-high tier
+
+3. **`src/i18n.js` 雙語 1 條**：
+   - zh-TW: `seasonal.stationery_set` = "📓 收到一組嶄新文具~ 知識的禮物"
+   - en: `seasonal.stationery_set` = "📓 A fresh stationery set~ A gift of knowledge"
+   - 「a gift of knowledge」對應「知識的禮物」 — 教師節 narrative 高度 metaphorical 翻譯
+
+4. **`sw.js`：CACHE_VERSION iter209 → iter211**（iter#210 純 docs round 跳 cache bump，本輪 +2）
+
+**lint chain 報表**：
+- check-assets：98 → **99** asset references resolve
+- 7 step + 8/8 smoke + i18n-shadow 23 src + i18n-coverage 175 keys ✅
+
+**美學軸覆蓋更新（iter#211）**：
+| 軸 | event | form | accessory | 件數 |
+|----|-------|------|-----------|------|
+| coquette / 美食家 | tea / macaron + carnation(s) | gourmet | chef_hat / strawberry_clip | 6 |
+| cottagecore | 5 events + sakura(s) | — | flower / pin_butterfly / lace_collar | 9 |
+| **智慧 / sage** | book / message_bottle + **stationery_set(s)（本輪）** | sage | glasses_thin | **5** ⬆ from 4 |
+| balletcore | rose_bouquet / pointe_shoe | diva | ribbon_tie | 4 |
+| fairycore | dewdrop / moonlight | divine | wings_fairy | 4 |
+| cleangirl | bubble / towel | healthy | blush | 4 |
+| y2k | pixel_heart + redenvelope(s) | — | star_clip / cd_pendant | 4 |
+| 元氣 | rainbow / confetti_pop + pinwheel(s) + rainbow_heart(s) | fighter | party_hat | 6 |
+| boho | dried_herbs + picnic_blanket(s) | — | fringe_ribbon / straw_hat | 4 |
+
+智慧軸從 4 → **5 件**（首次擁有 seasonal layer，與 美食家 / 元氣 並列為 tied 6 件 — 智慧仍 5 但近其它軸）；event total 24 → **25**（22 regular + 14 seasonal = 36）。
+
+**season pool 9 月覆蓋更新**：
+- 既有：mooncake（09-10~09-25 16 天）
+- **本輪 stationery_set（09-26~10-02 7 天）** — 9 月補完從 16 → 22 天
+- 9 月覆蓋：09-10~09-25 mooncake / **09-26~09-30 stationery_set + 9-26 隔天 mooncake 結束**（單日重疊）/ 10-01~10-02 stationery_set 結束跨 10 月初
+
+**i18n 進度跳躍**：
+- 種子翻譯：410 + 1 = **411 條** zh-TW + 411 條 en
+- functional sites：~254 + 1 = ~255 處
+- seasonal events 全 i18n functional（14/14 applyToastKey）
+
+**v0.5 backlog 結算（iter#211）**：
+- ⏳ seasonal 補完批次（智慧 ✅ 1/5）
+- ⏳ 11th finalForm（v0.5 candidate）
+- ⏳ 跨軸 mixing-mode 成就
+- ⏳ boho axis form「漂泊者雞」候選
+- ⏳ 新美學軸（minimalist / kawaii-decora / dark academia）
+
+**axis-second-seasonal batch 第 1 輪**（per retrospective-210 §4.1 SOP 第二次複製 — 對齊 iter#198-203 axis-second-event batch）：
+- iter#211 智慧 ✅
+- 預期 iter#212-215 連續：balletcore / fairycore / cleangirl / 1 額外候選 軸 ship seasonal
+- pace ~5 cron 輪 / 1 軸
+
+**驗證**：
+- `node --check src/{cfg,i18n}.js` → ✅
+- `./scripts/run-checks.sh` → 全綠 7 step
+
+**影響檔案**：`assets/svg/event-stationery-set.svg`（新）、`src/cfg.js`、`src/i18n.js`、`sw.js`、`docs/iteration-log.md`
+
+---
+
+## 2026-04-30 13:51 · Session A — iter#210 milestone：docs/retrospective-210.md 寫 iter#190-209 共 20 輪 v0.4 完整 arc 總結
+
+**觸發**：cron 第 210 輪 — milestone 整數對應前次 retrospective（iter#190）正好 20 輪間隔，自然 cadence 切點。前 5 份 retros：iter#100（35 輪）/ iter#130（35 輪）/ iter#150（15 輪）/ iter#170（20 輪）/ iter#190（20 輪）— 本輪是第 6 份。
+
+**為什麼**：
+- iter#190-209 是「**v0.4 完整 ship + 9 美學軸成形 + cfg-level i18n 全封閉**」三主軸 arc
+- 5 大 ship 全達標（10th form / axis-second-event 6 軸 / 跨 pet memorial / boho 新軸 / GDD canonical sync）
+- cfg.speech 230 條 batch 完整封閉（iter#186-193 8 batches）+ cfg-driven dynamic key i18n SOP 確立
+- v0.5 候選方向清晰（11th form / seasonal 補完 / 新美學軸 / 跨軸 mixing-mode）
+
+**動作**：
+
+1. **新增 `docs/retrospective-210.md`（5 章 + 18 列指標表）**：
+   - **§1 TL;DR**：6 點濃縮 — v0.4 主軸 5/5 全 ship / cfg.speech 完整封閉 / 9 軸全 ≥ 3 件 / i18n-coverage lint / content 規模膨脹 / game.js 502 行穩定
+   - **§2 階段時序表**：iter#190-209 的 11 段 entry 對應主題 + 產出（包含連續 6 輪 axis-second-event batch / 3 輪 boho ship / cfg.speech 第 5-7 刀 final）
+   - **§3 關鍵學習 7 段**：
+     - §3.1 v0.4 ship pipeline 第三次成功複製（gourmet → explorer → warmheart）
+     - §3.2 axis-second-event batch 的「軸成形」設計準則（≥ 3 件門檻 / narrative arc 完整性）
+     - §3.3 cfg-level i18n batch 完整封閉的「最後一里」（cfg.speech array i18n SOP）
+     - §3.4 GDD canonical sync 紀律（每 10-15 輪主動 sync，不等 retrospective）
+     - §3.5 「P0 → lint」reactive vs proactive 投資 timing 規律
+     - §3.6 cfg-driven dynamic key 的 i18n 擴展性（v0.4 加 11 個 content / 0 callsite 改動）
+     - §3.7 form-less 軸的設計擴展（cottagecore + y2k + boho 三軸 form-less by-design）
+   - **§4 後續方向**：3 段
+     - §4.1 v0.5 candidates 排序表（11th form / 跨軸 mixing-mode / seasonal 補完 / boho form 化 / 新軸）
+     - §4.2 工程紀律觀察（24 輪無新 P0 / dynamic-key 架構價值）
+     - §4.3 retrospective cadence 確立（20-輪健康節奏）
+   - **§5 數字總結 18 列指標表**：game.js 502 穩定 / **i18n 種子 360 → 410（破 400）** / forms 9 → 10 / events 16 → 22 / accessories 19 → 21 / 美學軸 8 → 9 / lint 6 → 7 step / etc.
+
+**為什麼是 5 章 / 7 學習段 / 18 指標**：
+- 對標 retrospective-190 的 5 章 / 7 學習 / 17 指標 — 本 arc 工作面向類似（content + i18n + tooling），數字維度 +1（lint script / 美學軸數 細項分開）
+- 7 學習段跟 retrospective-190 保持，但內容主題完全切換到 v0.4 ship pipeline 第三次複製 / dynamic-key i18n 架構驗證 / form-less 軸設計擴展
+- 18 列數字含明確 milestone「9/9 軸成形 ≥ 3 件 GDD §5.5 達標」
+
+**lines 變化**：
+- `docs/retrospective-210.md`：**新增 ~280 行**（含 5 章 + 18 列數字 + 詳細 reflection）
+- `src/`：本輪不動（純 docs round / sw.js 也不 bump — docs 不在 SW APP_SHELL）
+
+**驗證**：
+- 純 docs round，無 src 變更 — `./scripts/run-checks.sh` 跑保險：全綠 7 step ✅
+- 對標 iter#150 / iter#170 / iter#190 / iter#200 milestone round 都跳 cache bump（docs 不影響玩家 SW cache）
+
+**reflection — 110 cron 輪這個專案做出什麼**（per §5 數字總結）：
+- game.js 從 iter#100 起點 ~1990 → 502（74.7% 縮減 / 16 R-1 大塊 + 7 micro）
+- 23 模組 / 17 NourishAPI bridge / 14 NourishUtils 自包含
+- **10 finalForms / 9 traits / 22 regular events + 13 seasonal events = 35 events / 21 accessories / 28 achievements / 49 speech pools / 52 SVG assets**
+- **i18n 種子翻譯 410 條 zh-TW + 410 條 en = 820 條 i18n.js 條目** — cfg-level dual-field 6 種 cfg 結構（welcomeBack / finalForms / regularEvents / seasonalEvents / accessories / interactions / wants / achievements / speech）100% functional
+- **9 美學軸全 ≥ 3 件 ✅** — TA「choose your aesthetic axis」承諾兌現的健康 baseline
+- 7-step deploy gate（i18n-shadow + i18n-coverage 雙防線）+ 8/8 smoke + cfg-schema lint
+- 6 份 retrospective + r1-plan + image-prompts + GDD § 5.5 axis map 完整 meta 文件
+
+**v0.4 backlog 全 ship 結算**：
+- ✅ 10th finalForm warmheart（iter#196-197）
+- ✅ axis-second-event 6 軸補完（iter#198-203）
+- ✅ 跨 pet memorial 進階 UI（iter#204）
+- ✅ 新美學軸 boho ship（iter#205-207, +1 seasonal iter#209）
+- ✅ GDD §5.5 canonical sync（iter#208）
+- ✅ **cfg.speech 完整封閉**（iter#186-193，跨 v0.3/v0.4 邊界）
+- ✅ **i18n-coverage lint**（iter#194 防呆 lint）
+- ✅ **iter#210 retrospective**（**本輪**）
+
+**v0.5 入口健康 baseline 確立** — 9/9 軸 ≥ 3 件 / cfg-level i18n 全 functional / 7-step deploy gate / 0 P0 24 輪累積 / dynamic-key 擴展性架構驗證。
+
+**影響檔案**：`docs/retrospective-210.md`（新）、`docs/iteration-log.md`
+
+---
+
+## 2026-04-30 13:41 · Session A — boho 軸 seasonal 起手「夏日野餐墊」(picnic_blanket)，seasonal pool 12 → 13
+
+**觸發**：cron 第 209 輪 — iter#208 GDD §5.5 sync 後切回 content。retrospective-190 / GDD §5.5 v0.5+ 補強重點都列「智慧 / balletcore / fairycore / cleangirl / boho 仍缺 seasonal event」是 cleanest backlog item — 用戶沒選塔防方向後（前一輪對話），主動推 boho seasonal 是「軸內容 push 連續性」的對齊 ship。
+
+**為什麼選 picnic_blanket（夏日野餐墊）作為 boho 第一個 seasonal**：
+- **boho aesthetic 主流 pinterest motif**：野餐墊 + 編織籃 + 戶外用餐 = boho-cottagecore 重疊區的 No.1 視覺辨識 scene（搜尋 boho aesthetic 必出）
+- **填補 7 月空缺**：既有 summer_breeze (07-01~08-31) 涵蓋整個夏天但「整月份」感很弱 — 在 7 月中段加 narrow 7 天 window（07-13~07-19）給玩家「特定時段 limited event」感
+- **連結 boho earth-tone palette**：gingham（紅白格紋）+ rust 顏色 + 編織籃 + apple = iter#205 fringe_ribbon / iter#207 straw_hat 同色系延伸
+- **數值區隔**：summer_breeze +energy 20 / +mood 8（純涼快感）/ picnic_blanket +mood 20 / +hunger 12 / +energy 5 / coin 15（emotional + nutritional 多 stat boost — 野餐是「打開零食」narrative）
+- **gold style + weight 25**：對標 sakura / valentine 等節日 high-tier — 野餐是夏日 emotional peak
+
+**動作**：
+
+1. **新增 `assets/svg/event-picnic-blanket.svg`（30 行 SVG）**：
+   - viewBox 100×100 對標既有 20 個 event SVG
+   - 色票嚴守 CLAUDE.md §5：奶油 #FFE8C8（blanket 主色 + basket 上半）+ 棕 #8B5A2B（描邊 + basket 編織紋）/ 暗紅 #B23A48（gingham check + apple — boho rust accent）+ #8B2030（apple 描邊）/ 橘 #FF9F43（basket 下半 — earth tone）/ 綠 #3E8C4A（apple stem leaf）/ 黃 #FFD86B（pastry triangle 三明治 + ✨）/ 粉 #FFC8D6（地面陰影）/ 粉 #FFB7B7（♥ accent）
+   - 結構：粉色橢圓地面陰影 + **diamond-perspective tilted 野餐墊 path**（4 點四邊形模擬 perspective 平鋪視角）+ **diagonal gingham 4 條斜線 + 4 顆 rust dots**（跟 perspective 對齊的 check pattern）+ **左側 woven basket**（橢圓底 + path 四邊形上半 + 2 條 weave detail line + handle arc）+ apple peeking out（circle + 葉柄）+ **右側 sandwich wedge**（三角形 path）+ ✨♥ corner accent
+   - **diamond perspective + diagonal gingham** 是這件 SVG 的設計亮點：跟既有 valentine（俯視愛心）/ xmas（正面禮物盒）視覺距離大，提升 dex 多樣性
+
+2. **`src/cfg.js` seasonalEvents.pool 加第 13 條**：
+   ```
+   { id:"picnic_blanket", art:"assets/svg/event-picnic-blanket.svg", weight:25,
+     label:"夏日野餐墊", apply:"picnic_blanket",
+     applyEffects:{ stats:{mood:20, hunger:12, energy:5}, coin:15, coinReason:"夏日野餐" },
+     applyToastKey:"seasonal.picnic_blanket",
+     applyToast:"🧺 攤開野餐墊~ 夏日午後好滿足",
+     applyToastStyle:"gold",
+     dateRange: { from: "07-13", to: "07-19" } }
+   ```
+   - 加在 pinwheel 後（boho 軸 + 7 月日曆位置標識）
+   - **3-stat boost + coin 15**：emotional + nutritional + slight energy = 野餐 narrative full payoff
+   - **dateRange 7 天**：跟 valentine（4 天）/ carnation（5 天）/ 紅包（7 天）narrow window 模式一致
+   - **gold style** + weight 25：節日 mid-high tier
+
+3. **`src/i18n.js` 雙語 1 條**：
+   - zh-TW: `seasonal.picnic_blanket` = "🧺 攤開野餐墊~ 夏日午後好滿足"
+   - en: `seasonal.picnic_blanket` = "🧺 Blanket spread out~ A perfect summer afternoon"
+   - 「Blanket spread out」對應「攤開野餐墊」 — 動詞短語保 picnic 動感
+
+4. **`sw.js`：CACHE_VERSION iter207 → iter209**（iter#208 純 docs round 跳 cache bump，本輪 +2）
+
+**lint chain 報表**：
+- check-assets：97 → **98** asset references resolve
+- 7 step + 8/8 smoke + i18n-shadow 23 src + i18n-coverage 175 keys ✅
+
+**美學軸覆蓋更新（iter#209）**：
+| 軸 | event | form | accessory | 件數 |
+|----|-------|------|-----------|------|
+| coquette / 美食家 | tea / macaron + carnation(s) | gourmet | chef_hat / strawberry_clip | 6 |
+| cottagecore | 5 events + sakura(s) | — | flower / pin_butterfly / lace_collar | 9 |
+| 智慧 / sage | book / message_bottle | sage | glasses_thin | 4 |
+| balletcore | rose_bouquet / pointe_shoe | diva | ribbon_tie | 4 |
+| fairycore | dewdrop / moonlight | divine | wings_fairy | 4 |
+| cleangirl | bubble / towel | healthy | blush | 4 |
+| y2k | pixel_heart + redenvelope(s) | — | star_clip / cd_pendant | 4 |
+| 元氣 | rainbow / confetti_pop + pinwheel(s) + rainbow_heart(s) | fighter | party_hat | 6 |
+| **boho** | dried_herbs + **picnic_blanket（本輪 seasonal）** | — | fringe_ribbon / straw_hat | **4** ⬆ from 3 |
+
+boho 軸從 3 → **4 件**（首次擁有 seasonal layer），跟智慧 / balletcore / fairycore / cleangirl / y2k 並列 4 件層次。
+
+**season pool 7 月覆蓋更新**：
+- 既有：summer_breeze（07-01~08-31）
+- **本輪 picnic_blanket（07-13~07-19）** — 7 月中段 narrow window 增加事件密度
+- 7 月覆蓋：07-01~07-12 summer_breeze 單獨 / 07-13~07-19 兩 events 重疊（summer_breeze + picnic_blanket）/ 07-20~08-31 summer_breeze 單獨
+
+**i18n 進度跳躍**：
+- 種子翻譯：409 + 1 = **410 條** zh-TW + 410 條 en（**首破 410**）
+- functional sites：~253 + 1 = ~254 處
+- seasonal events 全 i18n functional（13/13 applyToastKey）
+
+**v0.4 backlog 結算（iter#209）**：
+- ✅ 10th finalForm warmheart 完整封閉
+- ✅ axis-second-event 6 軸補完
+- ✅ 跨 pet memorial 進階 UI
+- ✅ 新美學軸 boho 軸成形
+- ✅ GDD §5.5 canonical sync
+- ✅ **boho 軸首 seasonal（本輪 — boho 軸從 3 → 4 件）**
+- ⏳ iter#210 retrospective-210（下一輪）
+
+**未來 follow-up**（不在本輪）：
+- iter#210 retrospective-210（v0.4 完整 arc retrospective — 涵蓋 iter#190-209）
+- v0.5 candidates：minimalist / kawaii-decora / dark academia 軸 / 跨軸 mixing-mode 成就 / 智慧 / balletcore / fairycore / cleangirl 軸 seasonal 補完
+
+**驗證**：
+- `node --check src/{cfg,i18n}.js` → ✅
+- `./scripts/run-checks.sh` → 全綠 7 step + check-assets 98 paths
+
+**影響檔案**：`assets/svg/event-picnic-blanket.svg`（新）、`src/cfg.js`、`src/i18n.js`、`sw.js`、`docs/iteration-log.md`
+
+---
+
 ## 2026-04-30 13:31 · Session A — GDD §5.5 美學軸地圖 sync：v0.4 ship 完整反映（warmheart / 6 axis-second-events / boho 軸）
 
 **觸發**：cron 第 208 輪 — iter#207 boho 軸成形達標後，retrospective 與 GDD canonical 文件之間 12 cron 輪累積差異（iter#196-207 期間 ship 1 個 form + 6 events + 3 boho items）。retrospective-190 §3.4 教訓「retrospective 過時 risk」需要主動 corrective — 本輪兌現對 GDD §5.5 axis map 同步。3 連 boho ship 後切到 docs work 是健康 rotation。

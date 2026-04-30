@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <!-- cleangirl seasonal: spa bath salts jar with sprig.
+       Cottagecore-spa palette + cleangirl freshness per CLAUDE.md TA. -->
+  <!-- Soft pink shadow under jar -->
+  <ellipse cx="50" cy="86" rx="26" ry="3.5" fill="#FFC8D6" opacity="0.55"/>
+  <!-- Glass jar body — apothecary style, slight taper -->
+  <path d="M 28 36 L 28 80 Q 28 84 32 84 L 68 84 Q 72 84 72 80 L 72 36 Z"
+        fill="#FFF8E7" fill-opacity="0.7"
+        stroke="#FF89A7" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Jar neck (narrower section above body) -->
+  <rect x="34" y="28" width="32" height="10" rx="1.5" fill="#FFF8E7" stroke="#FF89A7" stroke-width="2"/>
+  <!-- Cork stopper -->
+  <rect x="36" y="18" width="28" height="12" rx="2" fill="#8B5A2B" stroke="#5C3A1B" stroke-width="1.5"/>
+  <!-- Salt grains inside jar — pink + white scattered crystals -->
+  <g stroke="#FFD86B" stroke-width="0.5">
+    <rect x="34" y="48" width="3" height="3" fill="#FFB7B7" transform="rotate(20 35.5 49.5)"/>
+    <rect x="44" y="52" width="3" height="3" fill="#FFFFFF" transform="rotate(-15 45.5 53.5)"/>
+    <rect x="56" y="48" width="3" height="3" fill="#FFB7B7" transform="rotate(30 57.5 49.5)"/>
+    <rect x="62" y="56" width="3" height="3" fill="#FFFFFF" transform="rotate(-25 63.5 57.5)"/>
+    <rect x="38" y="62" width="3" height="3" fill="#FFFFFF" transform="rotate(15 39.5 63.5)"/>
+    <rect x="48" y="64" width="3" height="3" fill="#FFB7B7" transform="rotate(-5 49.5 65.5)"/>
+    <rect x="58" y="68" width="3" height="3" fill="#FFFFFF" transform="rotate(20 59.5 69.5)"/>
+    <rect x="34" y="72" width="3" height="3" fill="#FFB7B7" transform="rotate(-30 35.5 73.5)"/>
+    <rect x="46" y="74" width="3" height="3" fill="#FFFFFF" transform="rotate(10 47.5 75.5)"/>
+    <rect x="60" y="76" width="3" height="3" fill="#FFB7B7" transform="rotate(-15 61.5 77.5)"/>
+  </g>
+  <!-- Salt level fill tint (subtle pink wash on bottom 60%) -->
+  <path d="M 30 50 L 70 50 L 70 80 Q 70 82 68 82 L 32 82 Q 30 82 30 80 Z"
+        fill="#FFD8DD" opacity="0.45"/>
+  <!-- Sage / lavender sprig sticking out of jar opening -->
+  <line x1="50" y1="18" x2="48" y2="2" stroke="#3E8C4A" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M 46 8 q -3 -1 -2 -4 q 3 -1 4 2 q 0 2 -2 2 z" fill="#9D7BD8" stroke="#3E8C4A" stroke-width="0.8" stroke-linejoin="round"/>
+  <path d="M 50 12 q 3 -1 2 -4 q -3 -1 -4 2 q 0 2 2 2 z" fill="#9D7BD8" stroke="#3E8C4A" stroke-width="0.8" stroke-linejoin="round"/>
+  <!-- Tiny tag on jar neck -->
+  <rect x="34" y="40" width="14" height="6" rx="1" fill="#FFFFFF" stroke="#FF89A7" stroke-width="0.8"/>
+  <!-- "SPA" text on tag (use placeholder dots since text rendering is unreliable in tiny SVG) -->
+  <circle cx="38" cy="43" r="0.6" fill="#FF89A7"/>
+  <circle cx="41" cy="43" r="0.6" fill="#FF89A7"/>
+  <circle cx="44" cy="43" r="0.6" fill="#FF89A7"/>
+  <!-- Sparkle accents -->
+  <text x="80" y="40" font-size="9" fill="#FFD86B">✨</text>
+  <text x="14" y="44" font-size="8" fill="#FFB7B7">♥</text>
+</svg>

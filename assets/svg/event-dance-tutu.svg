@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <!-- balletcore seasonal: layered tutu skirt for International Dance Day (04-29).
+       Pink palette + tulle fluff softened for cottagecore TA per CLAUDE.md §1. -->
+  <!-- Soft pink ground shadow -->
+  <ellipse cx="50" cy="86" rx="34" ry="3.5" fill="#FFC8D6" opacity="0.55"/>
+  <!-- Tutu silhouette: 3 layered horizontal "puffs" for tulle layers -->
+  <!-- Bottom layer (widest, softest pink) -->
+  <ellipse cx="50" cy="76" rx="34" ry="9" fill="#FFD8DD" stroke="#FF89A7" stroke-width="2"/>
+  <!-- Middle layer (mid pink) -->
+  <ellipse cx="50" cy="68" rx="28" ry="8" fill="#FFC8D6" stroke="#FF89A7" stroke-width="2"/>
+  <!-- Top layer (deeper pink, smallest) -->
+  <ellipse cx="50" cy="60" rx="22" ry="6" fill="#FFB7B7" stroke="#FF89A7" stroke-width="2"/>
+  <!-- Bodice (corset-like top) -->
+  <path d="M 38 38 L 62 38 L 60 56 Q 50 60 40 56 Z"
+        fill="#B23A48" stroke="#8B2030" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Bodice criss-cross laces -->
+  <line x1="44" y1="42" x2="56" y2="48" stroke="#FFD86B" stroke-width="1.2"/>
+  <line x1="56" y1="42" x2="44" y2="48" stroke="#FFD86B" stroke-width="1.2"/>
+  <line x1="44" y1="48" x2="56" y2="54" stroke="#FFD86B" stroke-width="1.2"/>
+  <line x1="56" y1="48" x2="44" y2="54" stroke="#FFD86B" stroke-width="1.2"/>
+  <!-- Tulle ruffle dots — random small circles on tutu layers for texture -->
+  <circle cx="22" cy="74" r="1.4" fill="#FFFFFF" opacity="0.7"/>
+  <circle cx="36" cy="78" r="1.2" fill="#FFFFFF" opacity="0.7"/>
+  <circle cx="50" cy="80" r="1.4" fill="#FFFFFF" opacity="0.7"/>
+  <circle cx="64" cy="78" r="1.2" fill="#FFFFFF" opacity="0.7"/>
+  <circle cx="78" cy="74" r="1.4" fill="#FFFFFF" opacity="0.7"/>
+  <circle cx="30" cy="68" r="1.2" fill="#FFFFFF" opacity="0.6"/>
+  <circle cx="70" cy="68" r="1.2" fill="#FFFFFF" opacity="0.6"/>
+  <!-- Tiny rose at waist -->
+  <circle cx="50" cy="58" r="2.5" fill="#FF89A7" stroke="#B23A48" stroke-width="0.8"/>
+  <circle cx="50" cy="58" r="1" fill="#FFB7B7"/>
+  <!-- Sparkle accents (stage glamour) -->
+  <text x="14" y="22" font-size="11" fill="#FFD86B">✦</text>
+  <text x="80" y="22" font-size="9" fill="#FFB7B7">♥</text>
+  <text x="84" y="58" font-size="8" fill="#FFD86B">✨</text>
+</svg>
