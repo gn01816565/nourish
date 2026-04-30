@@ -75,9 +75,13 @@
       ["form_warmheart",dexUnlocked.has("warmheart")],
       ["form_drifter",  dexUnlocked.has("drifter")],
       ["form_curator",  dexUnlocked.has("curator")],
+      ["form_farmhand", dexUnlocked.has("farmhand")],
+      ["form_netizen",  dexUnlocked.has("netizen")],
+      ["form_scholar",  dexUnlocked.has("scholar")],
+      ["form_maximalist", dexUnlocked.has("maximalist")],
       ["collect_3",     dexUnlocked.size >= 3],
       ["collect_5",     dexUnlocked.size >= 5],
-      ["collect_all",   dexUnlocked.size >= 12],
+      ["collect_all",   dexUnlocked.size >= 16],
       ["rich",          (state.economy?.totalEarned || 0) >= 500],
       ["perfect_day",   (state.pet.traits?.perfectStreakMinutes || 0) >= 30],
       ["dressup_first", Object.keys(ownedAcc).length >= 1],
@@ -94,6 +98,9 @@
       // iter#222 cross-axis mixing achievements (per GDD §5.5 跨軸 mixing-mode)
       ["axis_mixer",    appearanceAxes(appearance).size >= 2],
       ["rainbow_collector", ownedAxes(ownedAcc).size >= 4],
+      // iter#253 跨軸成就升級階梯
+      ["mixing_master", appearanceAxes(appearance).size >= 3],
+      ["rainbow_master", ownedAxes(ownedAcc).size >= 8],
       // Excludes itself from the count to avoid the awkward "25 → unlock master,
       // which makes 26, but master required 25" pre-state (we want the player
       // to have 25 *non-master* achievements first).

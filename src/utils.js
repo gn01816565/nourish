@@ -49,7 +49,11 @@
   // the "可進化" sentinel for inline UI use. iter#128 R-1 step 2.
   function formatTime(ms, terse = false) {
     if (ms === Infinity) return "∞";
-    if (ms <= 0) return terse ? "" : "可進化";
+    if (ms <= 0) {
+      if (terse) return "";
+      const tr = window.NourishI18n ? window.NourishI18n.t : (k) => k;
+      return tr("tooltip.canEvolve");
+    }
     const s = Math.ceil(ms / 1000);
     const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), ss = s % 60;
     if (h > 0) return `${h}h ${m}m`;

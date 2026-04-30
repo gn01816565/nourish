@@ -282,7 +282,7 @@
 
     // sleep overlay
     document.getElementById("stage").classList.toggle("sleeping", state.pet.isSleeping);
-    $("sleep-label").textContent = state.pet.isSleeping ? "起床" : "睡眠";
+    $("sleep-label").textContent = state.pet.isSleeping ? t("btn.wake") : t("btn.sleep");
 
     // wants bubble
     const wantEl = $("want-bubble");

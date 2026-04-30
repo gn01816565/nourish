@@ -56,14 +56,15 @@
     const C = cfg();
     if (Date.now() - (state.settings.lastNotifyAt || 0) < C.timing.notifyCooldownMs) return;
     const s = state.pet.stats;
-    const name = state.pet.name || "啾啾";
+    const t = window.NourishI18n ? window.NourishI18n.t : (k) => k;
+    const name = state.pet.name || t("pet.defaultName");
     let body = null;
-    if (s.hunger < C.thresholds.low) body = `${name} 肚子好餓…`;
-    else if (s.mood < C.thresholds.low) body = `${name} 心情很差，需要陪陪`;
-    else if (s.clean < C.thresholds.low) body = `${name} 想洗澡了`;
-    else if (s.energy < C.thresholds.low && !state.pet.isSleeping) body = `${name} 累壞了`;
+    if (s.hunger < C.thresholds.low) body = t("notify.body.hungry", { name });
+    else if (s.mood < C.thresholds.low) body = t("notify.body.sad", { name });
+    else if (s.clean < C.thresholds.low) body = t("notify.body.dirty", { name });
+    else if (s.energy < C.thresholds.low && !state.pet.isSleeping) body = t("notify.body.tired", { name });
     if (!body) return;
-    show("啾啾日常", body);
+    show(t("app.title"), body);
     state.settings.lastNotifyAt = Date.now();
   }
 

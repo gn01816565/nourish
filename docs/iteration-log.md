@@ -4,6 +4,1581 @@
 
 ---
 
+## 2026-04-30 20:51 · Session A — iter#253 跨軸成就 ach 系列補強：axis_mixer / rainbow_collector 階梯式進階為 mixing_master + rainbow_master（2 → 4 跨軸成就） — i18n 669 → 677
+
+**觸發**：cron 第 253 輪 — iter#252 i18n 衝刺第六輪後 pivot 到 ship-side 內容拓展，從 candidates ROI 排序選 (1)「跨軸成就 ach 系列補強」（中 ROI / 純 ship 不需 narrative 設計討論 / 對標 iter#251 GDD §5.5 v0.7+ 候選列表的「跨軸成就 ach 系列補強 candidates」直接 ship）。對標 iter#222 跨軸成就系統落地（axis_mixer + rainbow_collector）後第 1 次擴展 — 從 2 個跨軸成就 → 4 個（階梯式 master 級進階）。
+
+**為什麼選跨軸成就補強而非其他 candidates**：
+- **跨軸成就系統 iter#222 ship 後從未擴展**：30+ cron 輪累積後玩家解鎖 axis_mixer / rainbow_collector 沒有後續 master 級階梯感 — 補強 ROI 直接
+- **不需 narrative 設計討論**：階梯式 master 進階是「閾值翻倍」設計（≥ 2 → ≥ 3 / ≥ 4 → ≥ 8），narrative 直接 reusable axis_mixer + rainbow_collector 既有 narrative
+- **light academia 第 13 軸（候選 1）**：純研究產出 / 不適合 cron 推進設計
+- **同軸多 form（候選 2）**：是 v0.7+ 新方向探索，本輪先 ship 既有系統補強而非開新方向
+- **docs/local-image-gen-setup.md（候選 3）**：user 提問待 cron 啟動但目前無在地 GPU 環境驗證
+- **achievement count 從 31 → 33**：跟 master_player 既有 ≥ 25 成就門檻無 conflict（master_player 排除 master_player 本身計算，2 新成就會讓 master_player 更靠近觸發）
+
+**為什麼 mixing_master + rainbow_master 設計選擇**：
+- **「閾值翻倍」進階 SOP**：axis_mixer ≥ 2 → mixing_master **≥ 3**（翻 1.5×） / rainbow_collector ≥ 4 → rainbow_master **≥ 8**（翻 2×）— 跟既有 streak_7 / streak_30 同樣「7 → 30」進階 SOP（既有成就階梯設計都有 master 級）
+- **mixing_master 條件 ≥ 3 軸 active**：玩家需同時穿戴 hat / face / neck / wing 4 個 slot 中 ≥ 3 個不同軸 accessory — 12 軸 27 件設定下不難達成但需有意設計（隨意穿不會中），narrative「真 mixing master」
+- **rainbow_master 條件 ≥ 8 軸 ownedAccessories**：跨命累積擁有 8 個不同軸的 accessory — 12 軸中 8 軸 ≈ 67% 軸覆蓋率，是「真彩虹收藏家」narrative；典型 ~D14+ 中度收藏玩家路徑
+- **icons 視覺區分**：axis_mixer 🎨 (palette base) → mixing_master **🖼️** (framed art = master 級) / rainbow_collector 🌈 (rainbow base) → rainbow_master **💫** (sparkle dust = all-spectrum)
+
+**動作**：
+
+1. **`src/cfg.js` achievements 加 2 條**（31 → 33 achievements）：
+   ```
+   mixing_master:  { icon:"🖼️", labelKey:"ach.mixing_master", label:"跨軸大師",
+                     descKey:"achdesc.mixing_master",
+                     desc:"當前同時配戴 ≥ 3 種美學軸的飾品（axis_mixer 進階）" }
+   rainbow_master: { icon:"💫", labelKey:"ach.rainbow_master", label:"全色彩大師",
+                     descKey:"achdesc.rainbow_master",
+                     desc:"已擁有 ≥ 8 種美學軸的飾品（rainbow_collector 進階）" }
+   ```
+   - 加在 axis_mixer / rainbow_collector 既有對之後（cross-axis ach 系列群組保持）
+
+2. **`src/achievements.js` evaluator 加 2 條**：
+   ```js
+   ["axis_mixer", appearanceAxes(appearance).size >= 2],
+   ["rainbow_collector", ownedAxes(ownedAcc).size >= 4],
+   // iter#253 跨軸成就升級階梯
+   ["mixing_master", appearanceAxes(appearance).size >= 3],
+   ["rainbow_master", ownedAxes(ownedAcc).size >= 8],
+   ```
+   - 重用 iter#222 既有 `appearanceAxes()` / `ownedAxes()` helper — **零新邏輯，純閾值擴展**
+   - ACCESSORY_AXIS map 已維護 27 條 entries（12 軸 mapping），新成就自動納入計算
+
+3. **`src/i18n.js` 雙語 8 條 i18n entries**（zh + en 各 4 條）：
+   - **zh 4 條**：「跨軸大師」/「全色彩大師」+ 兩 desc
+   - **en 4 條**：「Cross-Axis Master」/「All-Spectrum Master」+ 兩 desc
+   - i18n narrative 對齊：master 級 narrative 統一用「Master」/「大師」字樣，跟既有 form ach「Refined Curator / Bohemian Wanderer」narrative 保持區隔
+
+4. **`sw.js`：CACHE_VERSION iter252 → iter253**
+
+**lint chain 報表**：
+- 上輪 cfg-schema：`9 traits / 55 speech_pools / 16 final_forms / 27 accessories`
+- 本輪 cfg-schema：unchanged（achievements 加 2 條但 schema summary 不顯示 achievements 計數）
+- check-assets：115 references（unchanged）
+- i18n-coverage 198 keys（unchanged，本輪新成就 i18n 走 cfg.achievements labelKey/descKey 路由 — 不算新 static t() callsite，achievements 渲染時 lookup 動態 key）；dict 增 8 條
+- 7 step + 8/8 smoke ✅
+
+**跨軸成就系統演進（iter#222 → iter#253 累積 31 cron 輪）**：
+| 輪次 | 成就 | 條件 | narrative |
+|------|------|------|-----------|
+| iter#222 | axis_mixer | appearance ≥ 2 軸 active | 跨軸混搭家 |
+| iter#222 | rainbow_collector | ownedAccessories ≥ 4 軸覆蓋 | 彩虹收藏家 |
+| **iter#253（本輪）** | **mixing_master** | **appearance ≥ 3 軸 active** | **跨軸大師（master 級進階）** |
+| **iter#253（本輪）** | **rainbow_master** | **ownedAccessories ≥ 8 軸覆蓋** | **全色彩大師（master 級進階）** |
+
+**設計收穫 — 「閾值翻倍 master 階梯 SOP」**：
+- 既有成就「intro 級」基本門檻 → 新「master 級」高門檻（翻 1.5-2×），narrative 重用基本成就 narrative + 後綴「（X 進階）」
+- 跟既有 streak_7 / streak_30 同 SOP — milestone 級成就階梯設計
+- v0.7+ 後續可考慮加 axis_legend 級（appearance ≥ 4 / ownedAxes ≥ 12 全軸覆蓋） — 但 ≥ 4 同時 active 受限於 4 slot（hat/face/neck/wing）每個 slot 最多 1 軸，需設計 slot allocation 而非單純門檻
+
+**achievement count 進化**：31 → **33 achievements** — 跟既有 master_player 條件 (achievements 排除自己 ≥ 25) 同步擴展，玩家累積到 master_player 路徑更靠近（33-1 = 32 ≥ 25 已滿足，但 form_maximalist 仍需 cross-life 累積到 20 個成就才觸發）
+
+**v0.6+ 結算更新（iter#253）**：
+- ✅ iter#222 跨軸成就系統初版 + iter#235-252 i18n 衝刺六輪 + iter#234-249 六派生 form ship + iter#251 GDD §5.5 sync + iter#250 retrospective-250
+- ✅ **iter#253 跨軸成就系統補強第 1 次擴展（2 → 4 成就 / mixing_master + rainbow_master）**
+- ⏳ iter#254+ 候選 ROI 排序：(1) light academia 第 13 軸候選評估（純研究 / sub-agent friendly）/ (2) 同軸多 form 設計探索（marathoner / pâtissier candidates）/ (3) docs/local-image-gen-setup.md / (4) 跨軸成就系列再擴展（axis_legend 級或 4-slot 完美匹配 ach）
+
+**i18n 進度**：669 + 8 = **677 條** zh-TW + 677 條 en
+**事件池進度**：26 regular + 21 seasonal events = 47 total event SVGs（unchanged）
+**配件池進度**：27 accessories（unchanged）
+**finalForms**：16（unchanged）
+**achievements**：31 → **33**（跨軸成就 2 → 4）
+
+**未來 follow-up（不在本輪）**：
+- iter#254 候選優先級：light academia 第 13 軸評估（純研究產出，sub-agent 可代執行）/ 或 同軸多 form 設計探索 — 需設計討論的方向
+- iter#270 retrospective-270 候選：以 v0.7 ship 為素材
+
+**影響檔案**：
+- `src/cfg.js`（achievements 加 mixing_master + rainbow_master 2 條）
+- `src/achievements.js`（evaluator 加 2 條 — 重用既有 helper）
+- `src/i18n.js`（雙語 8 條 i18n entries — 4 zh + 4 en）
+- `sw.js`（CACHE_VERSION iter252 → iter253）
+- `docs/iteration-log.md`（本條 entry）
+
+**驗證**：`./scripts/run-checks.sh` 全 7 step + 8/8 smoke 綠燈 ✅；53 cron 輪 0 P0 bug accumulated（since iter#166 render regression）；achievements 31 → 33 + 跨軸成就 2 → 4 階梯式進階 narrative 設計留檔
+
+---
+
+## 2026-04-30 20:41 · Session A — iter#252 i18n 衝刺第六輪 mop-up：pet name default + notification body + iOS preview tip 散落 strings 補齊（10 keys × 2 sides = 20 entries）— i18n 649 → 669（距 700 milestone 差 31 條）
+
+**觸發**：cron 第 252 輪 — iter#250 retrospective + iter#251 GDD sync 兩 docs milestone 後 pivot 到 ship work，從 candidates ROI 排序選 (1)「i18n 衝刺第六輪衝 700 milestone」。Quick scan 發現剩 ~13 處 hardcoded zh user-facing strings（pet name "啾啾" × 7 / notification body × 4 / notification title / share alt / iOS preview tip × 2）需 i18n。
+
+**為什麼 i18n 衝刺第六輪而非其他 candidates**：
+- **i18n migration 完整性 ROI**：所有散落 zh strings 全 i18n 後 en locale 玩家不再看到中文殘漏 — accessibility / 海外發行 prerequisite
+- **light academia 第 13 軸（候選 2）**：12 軸後新軸 ROI 顯著遞減（per iter#251 GDD sync 紀錄），需先做差異化分析才適合啟動
+- **docs/local-image-gen-setup.md（候選 3）**：user 提問待 cron 啟動但目前無在地 GPU 環境驗證，純 docs 風險高
+- **同軸多 form（候選 4）**：是 v0.7+ 新方向探索，需設計討論而非 mechanical ship
+
+**為什麼 iter#252 ROI 評估「衝 700 milestone」未達標**：
+- iter#240 已第四輪 i18n 衝刺，跨破 600 milestone 後**易翻譯字串大多 done**
+- 剩 ~13 hardcoded zh strings 主要是 pet name default + notification body + UI tip — 加 i18n 後共 +20 entries → **669（距 700 差 31）**
+- 想衝 700 需加 dex flavor descriptions / 第 5 種語言 seed / 大量 modal body 文案 — 都是「製造 i18n key 衝量」而非真實 user-facing accessibility 改善
+- **本輪定位「mop-up」而非「衝 milestone」** — 把所有真實散落 zh strings 補齊比強衝 700 更有 ROI
+
+**動作（10 個新 i18n keys × 2 sides = 20 entries + 9 callsite swaps + notifications.js 加 t() helper）**：
+
+1. **`src/i18n.js` 雙語 20 條 i18n entries**（zh + en 各 10 條）：
+   | key | zh | en | 用途 |
+   |-----|-----|-----|------|
+   | `pet.defaultName` | "啾啾" | "Chichi" | 7 處 fallback `state.pet.name || ...` |
+   | `app.title` | "啾啾日常" | "ChickaDay" | notifications.js show() title |
+   | `share.cardAlt` | "分享卡" | "Share Card" | ui.js iOS preview 圖片 alt |
+   | `notify.body.hungry` | "${name} 肚子好餓…" | "${name} is starving…" | notifications.js 飢餓 alert |
+   | `notify.body.sad` | "${name} 心情很差，需要陪陪" | "${name} feels low, needs company" | 心情低落 alert |
+   | `notify.body.dirty` | "${name} 想洗澡了" | "${name} wants a bath" | 清潔低 alert |
+   | `notify.body.tired` | "${name} 累壞了" | "${name} is exhausted" | 體力低 alert |
+   | `ios.preview.tip` | "💡 <strong>長按上方圖片</strong>選「儲存到照片」" | "💡 <strong>Long-press the image</strong> and choose 'Save to Photos'" | iOS PWA 分享卡儲存 tip |
+   | `ios.preview.note` | "(iOS PWA 限制無法直接下載)" | "(iOS PWA can't direct-download)" | iOS 限制 note |
+
+2. **9 個 callsite swap 跨 6 src 模組**：
+   - **evolve.js:106**: `state.pet.name || "啾啾"` → `state.pet.name || t("pet.defaultName")`
+   - **menus.js:228**: 同上
+   - **share.js:153-154**: 兩處 `name || "啾啾"` 同上
+   - **settings.js:167**: 同上
+   - **notifications.js:59-66**: 加 inline `t = window.NourishI18n.t` getter + 4 body strings + name default + `show("啾啾日常", body)` → `show(t("app.title"), body)` 全 i18n（5 callsite 升級）
+   - **ui.js:53-56**: alt="分享卡" → `alt="${t("share.cardAlt")}"` + iOS tip 兩處 → t() callsites
+
+3. **`sw.js`：CACHE_VERSION iter249 → iter252**
+
+**lint chain 報表**：
+- 上輪：`9 traits / 55 speech_pools / 16 final_forms / 27 accessories / 189 t() static keys`
+- 本輪：`9 traits / 55 speech_pools / 16 final_forms / 27 accessories / **198 t() static keys**`（+9 new static callsites）
+- check-assets：115 references（unchanged）
+- 7 step + 8/8 smoke + i18n-shadow 23 src ✅
+- **i18n-coverage 全 198 keys 雙語覆蓋通過** ✅（從 189 → 198，跨 200 keys threshold 預估 iter#253+）
+
+**i18n milestone 紀錄（iter#252）**：
+| 輪次 | 主題 | 增量 | 累積 | 距 700 |
+|------|------|------|------|--------|
+| iter#235 | curator R2 i18n keys | +5 | 441 | 259 |
+| iter#237 | events labelKey 第一輪 14 events | +28 | 469 | 231 |
+| iter#238 | events labelKey 全補完 33 events 跨破 500 | +66 | 535 | 165 |
+| iter#239 | traitsDisplay labelKey + formKey | +36 | 571 | 129 |
+| iter#240 | 散落 UI strings 跨破 600 | +30 | 601 | 99 |
+| iter#247 | scholar form i18n | +12 | 613 + ... | ... |
+| iter#249 | maximalist form i18n | +12 | 649 | 51 |
+| **iter#252（本輪）** | **mop-up 散落 strings 10 keys** | **+20** | **669** | **31** |
+
+**i18n 衝刺累積（6 輪 + form i18n SOP iter#235-252）**：
+- 從 436 → **669 條** = +233 條 / 8 輪累積 = 平均每輪 29 條
+- 兩個 milestone 跨破：500（iter#238）+ 600（iter#240）
+- **i18n migration helper 模式驗證 4 處**：events.js labelOf() / settings.js inline conditional / utils.js inline tr-getter / **notifications.js inline t-getter（本輪首例第 4 處）** — 漸進式 i18n SOP 已成熟
+
+**i18n 衝刺 ROI 評估**：
+- 距 700 還差 31 條，但**真實散落 zh strings 已基本 mop-up 完畢**（剩可能少量 modal body / 註解 text）
+- v0.7+ 衝 700 milestone 需 pivot 思路：(1) 加第 3 種語言 seed（日 / 韓 / 西 / 法 / 德）+ ~50 條 baseline / (2) dex flavor texts（每個 form 加 lore description）/ (3) seasonal event 詳細描述
+- iter#252 後 i18n 衝刺**告一段落** — 後續 i18n 工事改為「跟隨 ship 增量」而非「衝 milestone」
+
+**v0.6+ 結算更新（iter#252）**：
+- ✅ iter#222 / 223-225 / 227-228 / 229-231 / 233 軸 ship + 跨軸成就 + form-less seasonal mini-batch
+- ✅ iter#226 / 232 / 243 / 251 GDD §5.5 四 sync
+- ✅ iter#230 / 250 retrospective 兩 milestone
+- ✅ iter#234-249 六派生 form 完整 ship + iter#235-249 i18n 衝刺累積 213 條
+- ✅ **iter#252 i18n 衝刺第六輪 mop-up（i18n 649 → 669，散落 zh strings 全 i18n）**
+- ⏳ iter#253+ 候選 ROI 排序：(1) light academia 第 13 軸候選評估（純研究 / sub-agent friendly）/ (2) docs/local-image-gen-setup.md（user 提問待 cron 啟動）/ (3) 同軸多 form 設計探索（marathoner / pâtissier candidates）/ (4) 跨軸成就 ach 系列補強
+
+**i18n 進度**：649 + 20 = **669 條** zh-TW + 669 條 en（距 700 milestone 差 31 條，i18n 衝刺告一段落）
+**i18n-coverage**：189 → **198 t() static callsites**（+9，距 200 threshold 差 2 條）
+**事件池進度**：26 regular + 21 seasonal events = 47 total event SVGs（unchanged）
+**配件池進度**：27 accessories（unchanged）
+**finalForms**：16（unchanged，user-facing complete）
+
+**未來 follow-up（不在本輪）**：
+- iter#253 候選優先級：i18n 衝刺氣勢已 6 輪 pivot 到 ship — 建議 light academia 第 13 軸研究 / 或 同軸多 form 設計探索
+- iter#270 retrospective-270 候選：以 v0.7 ship 為素材
+
+**影響檔案**：
+- `src/i18n.js`（20 條 i18n entries — 10 zh + 10 en）
+- `src/notifications.js`（inline t-getter + 5 callsites: name default + 4 body strings + show title）
+- `src/evolve.js / src/menus.js / src/settings.js / src/share.js`（4 模組各 1 callsite swap pet.defaultName）
+- `src/ui.js`（3 callsites: alt + iOS tip × 2）
+- `sw.js`（CACHE_VERSION → iter252）
+- `docs/iteration-log.md`（本條 entry）
+
+**驗證**：`./scripts/run-checks.sh` 全 7 step + 8/8 smoke 綠燈 ✅；52 cron 輪 0 P0 bug accumulated（since iter#166 render regression）；i18n 漸進式 migration helper 模式第 4 處驗證成功（notifications.js inline t-getter）
+
+---
+
+## 2026-04-30 20:31 · Session A — iter#251 GDD §5.5 增量 sync：12 軸 / 13 forms → 12 軸 / 16 forms + form-less 軸補 form 6/6 milestone 紀錄 + 整合 SOP 量產做法 reusable 標準紀錄 + 派生 trait condition source 6 種 spectrum 完整紀錄
+
+**觸發**：cron 第 251 輪 — iter#250 retrospective-250 milestone 後，從 candidates ROI 排序選 (1)「GDD §5.5 增量 sync」(純 docs，中 ROI，但累積 4 個 form 變動 + 6/6 milestone 達成需即時記錄)。對齊 iter#226 / 232 / 243 同 cadence「每 5-10 cron 輪 GDD sync」設計 — 本輪是 iter#243 sync 後第 8 輪，跨 4 個派生 form ship 累積（curator / netizen / scholar / maximalist 中後 3 個 + 第 4 個的 R1 都在 iter#243 後 ship）。
+
+**為什麼 iter#251 GDD sync 比其他 candidates 優先**：
+- **canonical reference 落後 8 輪 = 後續決策風險**：v0.7+ 規劃時要參考 §5.5「現在 form 多少 / 派生 source 哪些 / form-less 軸狀態」— 落後 8 輪會讓 v0.7+ 決策（如 light academia / 同軸多 form / docs/local-image-gen-setup.md）出現「重複設計 / 誤判 form-less 軸狀態」風險
+- **6/6 form-less 軸補完 milestone 是高權重事件**：iter#243 sync 時 form-less 軸還 4 個（cottagecore farmhand 剛 ship），現 0 個 form-less 軸 — 從「form-less 5 軸」狀態到「form-less 0 軸」需即時記錄成「終極 milestone」
+- **派生 trait condition source 從 1 種 → 6 種 spectrum 完整**：iter#243 sync 紀錄 3 種 source，現有 6 種 — 設計從「實驗多種」升級為「完整 spectrum 不需新 source」，必須記錄
+- **整合 SOP 從首例 → 量產做法 production-ready**：iter#243 sync 紀錄首例 1 次，現第 4 次 reuse zero deviation — SOP 升級為 reusable 標準
+
+**動作（純 docs，docs/gdd.md §5.5 多處更新）**：
+
+1. **§5.5 標題與摘要更新**（iter#242 sync → iter#249 sync，反映 8 cron 輪累積）：
+   - 標題：「iter#242 sync」→ **「iter#249 sync，含 v0.6 派生 trait SOP 第 2-6 次成功 — curator + farmhand + netizen + scholar + maximalist + finalForm 擴充至 16 / 12 軸全有 form / form-less 軸補 form 6/6 終極 milestone」**
+   - 摘要句：「13 個 finalForm」→ **「16 個 finalForm」**
+   - 加 **「🎉 12/12 美學軸全有 form 終極 milestone（iter#249）」**完整紀錄 — v0.6 ship 完成 form-less 軸補 form 6/6
+   - 派生 trait form spectrum「3 例」→ **「6 例 + 6 種 condition source spectrum 完整」**
+
+2. **§5.5 美學軸地圖表格更新**（y2k / dark academia / kawaii-decora 三 row + 修正 dark academia row 既有錯誤）：
+   - y2k row：finalForm「（fallback to healthy）」→ **「netizen」**（iter#244-245 派生 form 第 4 例）
+   - dark academia row：finalForm「（fallback to healthy）」→ **「scholar」**（iter#246-247 派生 form 第 5 例）— 注：本輪 GDD sync **修正 retrospective-250 §3.5 的「dark academia 軸 sage + scholar 同軸雙 form 設計首例」錯誤紀錄**（sage form 屬 智慧 / sage 軸而非 dark academia 軸 — 兩 form 視覺相似但跨軸 — 是「跨軸 form similarity 需差異化」設計案例而非「同軸雙 form」）
+   - kawaii-decora row：finalForm「（fallback to healthy）」→ **「maximalist」**（iter#248-249 派生 form 第 6 例 / form-less 軸補 form 6/6 milestone form） + seasonal「—」→ **「white_day_gifts（白色情人節）」**（iter#233 補上） + 件數 3 → 4 + 飽和度 ★★★ → ★★★★
+
+3. **更新「form-less 軸的設計選擇」section** — 大幅改寫為「**form-less 軸補 form 全完成 milestone**」section：
+   - 「iter#242 後實際 form-less 軸縮為 4」→ **「iter#249 後 0 軸 form-less，12/12 美學軸全有 form ✅」**
+   - 加「iter#216-249 期間漸進補 form 6 軸（v0.5-v0.6）」紀錄
+   - 派生 trait form「3 大例」→ **「6 大例」**詳細列表（drifter / curator / farmhand / netizen / scholar / maximalist 各自 condition source + narrative）
+   - narrative spectrum「累積 / 克制 / 平衡」3 條 → **「累積 / 克制 / 平衡 / 見識 / 持續 / 繁飾」6 條**完整
+   - **新增「派生 trait condition source 6 種完整 spectrum」紀錄**：物質累積/克制 / 三 trait AND / dex 知識 / day-based streak / achievement count — **無新 source 探索需求**
+   - v0.7+ 候選改為「同軸多 form 設計探索」（既有 12 軸全有 form 後新方向）+ light academia 第 13 軸 / 跨軸 ach 補強 / content 池 30 milestone / i18n 衝 700-800
+
+4. **更新「軸覆蓋演進時序」**：
+   - 標題「12 軸覆蓋 + 13 forms」→ **「12 軸覆蓋 + 16 forms」**
+   - 加 iter#233 / iter#244-245 / iter#246-247 / iter#248-249 / iter#250 retrospective-250 milestone 5 行 — 完整紀錄 v0.6 ship 終局
+
+5. **更新「ship pipeline SOP 第 N 次成功複製」**：
+   - form ship pipeline「6 次成功，派生 trait SOP 3 次成功」→ **「9 次成功，派生 trait SOP 6 次成功 ✅✅✅✅✅✅」**（含 netizen / scholar / maximalist 三例補加）
+   - **整合做法**「首例」→ **「首例 → 第 4 次 reuse production-ready 量產做法 ✨✨✨✨」**：iter#241-242 首例 → iter#244-245 第 2 次 → iter#246-247 第 3 次 → iter#248-249 第 4 次連續 zero deviation = **100% reusable 量產做法**
+   - i18n 衝刺 SOP「五輪 165 條」→ **「五輪 165 條 + iter#247/249 form i18n 48 條 = 共 +213 條」** + 加雙 milestone 紀錄
+   - **新增「派生 trait condition source spectrum 6 種完整（iter#216-249）」**段落：列表 6 種 source，並紀錄「無新 source 探索需求」設計收穫
+
+6. **更新「v0.7+ 美學軸候選方向」**：
+   - **「同軸多 form 設計探索」首位列入候選**（含元氣軸「marathoner」/ 美食家軸「pâtissier」narrative candidates）
+   - 「kawaii-decora 軸 seasonal 補完」候選刪除（已 iter#233 ship white_day_gifts ✅）
+   - 加「跨軸成就 ach 系列補強」candidate（axis_mixer / rainbow_collector 從 2 → 4 個跨軸成就）
+   - 加「content 池規模 30/30/30 milestone」+「i18n 衝刺第六輪衝 700」+「docs/local-image-gen-setup.md」候選
+
+**lint chain 報表**：
+- 純 docs，無 code 變動 — assets / cfg / i18n / sw 全 unchanged
+- 7 step + 8/8 smoke ✅
+- 不需 sw bump
+
+**為什麼不在本輪 ship 其他工事**：
+- GDD §5.5 sync 是 canonical reference 的核心更新，本身就是 ~250 行的 6 sub-section 翻新（標題 + 摘要 + 表格 + form-less 軸 section + 演進時序 + ship pipeline SOP + v0.7+ 候選）
+- iter#251 兼做兩件事品質會降低 — 後續 cron 輪可推進其他 candidates
+
+**iter#243 → iter#251 GDD sync 對照**（8 cron 輪累積）：
+| 項目 | iter#243 sync | iter#251 sync (本輪) | 變動 |
+|------|---------------|---------------------|------|
+| finalForms 總數 | 13 | **16** | +3 (netizen / scholar / maximalist) |
+| 美學軸 form-less 數 | 4 (y2k / dark academia / minimalist 已有 / kawaii-decora) | **0** | -4 |
+| 派生 trait form 例數 | 3 (drifter / curator / farmhand) | **6** | +3 |
+| 派生 trait condition source 種類 | 3 種 (兩 ownedAccessories 條件 + 三 trait AND) | **6 種** | +3 (dex / streak / achievement count) |
+| 軸 ship pipeline SOP | 4 次成功 | 4 次（unchanged） | 0 |
+| form ship pipeline SOP | 6 次 | **9 次** | +3 |
+| 整合做法 | 首例 (iter#241-242) | **production-ready 量產做法 4 次 reuse** | +3 reuse |
+| i18n 衝刺 SOP | 5 輪 165 條 | **5 輪 165 + form i18n 48 = 213 條** | +48 |
+
+**v0.6+ 結算更新（iter#251）**：
+- ✅ iter#222 / 223-225 / 227-228 / 229-231 / 233 軸 ship + 跨軸成就 + form-less seasonal mini-batch
+- ✅ iter#226 / 232 / 243 / **251（本輪）** GDD §5.5 四 sync（11 → 12 → 13 → 16 forms 演進紀錄）
+- ✅ iter#230 / **250** retrospective 兩 milestone
+- ✅ iter#234-249 六派生 form 完整 ship + iter#235-240 i18n 衝刺五輪
+- ✅ **iter#251 GDD §5.5 sync 紀錄 form-less 軸 6/6 milestone + 派生 trait spectrum 6/6 + 整合 SOP 量產做法 + retrospective-250 §3.5 修正**
+- ⏳ iter#252+ 候選 ROI 排序：(1) i18n 衝刺第六輪衝 700 milestone（剩 51 條）/ (2) light academia 第 13 軸候選評估 / (3) docs/local-image-gen-setup.md / (4) 同軸多 form 設計探索（新方向 — marathoner / pâtissier candidates）
+
+**i18n 進度**：649 條（unchanged，純 docs）
+**事件池進度**：26 regular + 21 seasonal events = 47 total event SVGs（unchanged）
+**配件池進度**：27 accessories（unchanged）
+**finalForms**：16（unchanged，user-facing complete）
+**form-less 軸**：0（unchanged，6/6 補完 milestone）
+
+**未來 follow-up（不在本輪）**：
+- iter#252 候選優先級：i18n 衝刺第六輪（51 條到 700 milestone）— 中 ROI 但勢頭已 6 輪可考慮 pivot；或 light academia 第 13 軸評估（純研究）
+- iter#270 retrospective-270 候選：以 v0.7 ship 為素材（預估 20 cron 輪後）
+
+**影響檔案**：
+- `docs/gdd.md`（§5.5 多處更新：標題 + 摘要 + 表格 y2k/dark academia/kawaii-decora 三 row + form-less 軸 section 大幅改寫 + 演進時序 + ship pipeline SOP 三段更新 + v0.7+ 候選 — 6 sub-section 翻新）
+- `docs/iteration-log.md`（本條 entry）
+
+**驗證**：`./scripts/run-checks.sh` 全 7 step + 8/8 smoke 綠燈 ✅；51 cron 輪 0 P0 bug accumulated（since iter#166 render regression）；GDD 純文檔不影響 lint chain；本輪同時修正 retrospective-250 §3.5「dark academia sage+scholar 同軸雙 form」錯誤紀錄 — sage 是 智慧軸 form 而非 dark academia 軸，兩 form 是「跨軸視覺 similarity」設計案例而非「同軸雙 form」
+
+---
+
+## 2026-04-30 20:21 · Session A — iter#250 retrospective-250.md milestone（iter#230-249 共 20 cron 輪 v0.6 終極 milestone 達成總結）
+
+**觸發**：cron 第 250 輪 — retrospective cadence 已到（iter#230 + 20 = iter#250），且 iter#249 form-less 軸補 form 6/6 milestone 達成 + 派生 trait SOP 6 種 source spectrum 完整 — 多重大 milestone 集中 iter#249 完成需即時總結。對標既有 retrospective-{50,130,150,170,190,210,230} 同 cadence，每 20 cron 輪一次的長期 dev journal 紀錄 SOP。
+
+**為什麼 iter#250 retrospective 特別重要**：
+- 涵蓋 v0.6 終極 milestone 達成（form-less 軸補 form 6/6 + 12/12 美學軸全有 form）
+- 涵蓋派生 trait SOP 從 1 次 → 6 次 / 1 種 source → 6 種 source spectrum 完整轉化
+- 涵蓋整合 SOP 從首例 → 量產做法 4 次 reuse 確認
+- 涵蓋 i18n 衝刺 5 輪 +165 條雙跨 500/600 milestone
+- 涵蓋 49 cron 輪 0 P0 bug 連續累積（從 30 → 49）
+- **不總結等到 retrospective-270 會讓 milestone 細節記憶模糊** — 即時記錄質量最高
+
+**動作（純 docs，retrospective-250.md 新檔，~250 行 dev journal）**：
+
+1. **新增 `docs/retrospective-250.md`**：
+   - **§1 TL;DR** — 7 個 bullet 總結：v0.6 ship 終極 milestone（form-less 6/6） / finalForms 11→16 / 派生 trait SOP 6 次 + 6 種 source / 整合 SOP 量產做法 4 次 reuse / i18n 衝刺五輪雙跨 milestone / content 規模 / lint 49 cron 輪 0 P0
+   - **§2 階段時序表** — iter#230-249 共 20 輪 12 個 phase（每個 phase 1-4 cron 輪），含 retrospective-230 milestone / iter#231 軸成形 / iter#232 GDD sync / iter#233 mini-batch 完成 / iter#234-236 curator / iter#237-240 i18n 衝刺四輪 / iter#241-242 farmhand 整合首例 / iter#243 GDD sync / iter#244-245 netizen / iter#246-247 scholar / iter#248-249 maximalist + 6/6 milestone
+   - **§3 關鍵學習（7 sub-section）**：
+     - §3.1 派生 trait SOP 6 次成功 + 6 種 source spectrum 完整（含 6 form 條件 source 對照表）
+     - §3.2 整合 SOP 量產做法（11+1 touchpoints / 2 cron-輪 / 4 次 reuse 細節）
+     - §3.3 i18n 衝刺五輪 + 漸進式 migration helper 模式 3 處驗證
+     - §3.4 form ship pipeline 4→6 次成功 + form-less 軸補 form 全完成 milestone（含 6 軸 form 對照表）
+     - §3.5 dark academia 軸 sage + scholar **同軸多 form narrative 區隔設計案例** — v0.7+ 同軸多 form 候選提示
+     - §3.6 整合 SOP 4 次 reuse zero deviation = production-ready 確認紀錄
+     - §3.7 lint chain 49 cron 輪 0 P0 bug + 7 step + 8/8 smoke 防呆系統評估
+   - **§4 v0.7+ 候選方向（即時 / 中期 / 長期 ROI 排序）**：
+     - 即時 ROI：GDD §5.5 增量 sync 13→16 forms / i18n 衝刺第六輪衝 700 / light academia 第 13 軸評估
+     - 中期 ROI：同軸多 form 設計探索（marathoner / pâtissier candidates）/ docs/local-image-gen-setup.md / 跨軸 ach 系列補強
+     - 長期方向：第 13-15 軸 / content 池 30/30/30 milestone / i18n 破 800 條 / iter#270 retrospective
+   - **§5 設計原則 carry-forward** — 8 條從 iter#230-249 累積到 v0.7+ 的 reusable 原則（補充 retrospective-230 既有 7 條）：
+     1. 派生 trait 6 種 source spectrum 完整（不需新 source 探索）
+     2. 整合 SOP 量產做法（11+1 touchpoints / 2 cron-輪）
+     3. 同軸多 form narrative 區隔 SOP（dark academia sage+scholar 案例）
+     4. i18n 漸進式 migration helper 3 處驗證
+     5. i18n 衝刺 batch SOP（每輪 ~30 條 / 每 5 輪 +150 條）
+     6. cfg-schema invariant 自動防呆（特別 invariant 8 finalForms ↔ petArt.adult）
+     7. GDD §5.5 sync cadence（5-10 cron 輪 — iter#226/232/243 三次驗證）
+     8. node script batch transform 工具鏈（iter#238 33 events 一次推完案例）
+
+**lint chain 報表**：
+- 純 docs，無 code 變動 — assets / cfg / i18n / sw 全 unchanged
+- 7 step + 8/8 smoke ✅
+- 不需 sw bump（純 docs 不影響 runtime / cache）
+
+**為什麼不在本輪 ship 其他工事**：
+- retrospective-250 是核心 milestone 紀錄 — 一輪 ~250 行 dev journal 寫質量比兼做兩件事品質高
+- iter#249 maximalist 6/6 milestone 已 100% 完整 ship（user-facing 全打通），無收尾項目
+- v0.7+ 候選工事（GDD §5.5 增量 sync / i18n 衝刺第六輪 / light academia 評估）可分配後續輪做
+
+**v0.6 ship 結算（iter#211-249 跨 39 cron 輪總結）**：
+- ✅ 軸 ship pipeline SOP 4 次成功（boho iter#205-207 / dark academia iter#218-220 / minimalist iter#223-225 / kawaii-decora iter#229-231）
+- ✅ form-less 軸 seasonal 補完 mini-batch SOP 3 次成功（iter#227-228 + iter#233）
+- ✅ 跨軸成就系統（iter#222）
+- ✅ GDD §5.5 三 sync（iter#226 / 232 / 243）
+- ✅ i18n 衝刺五輪雙跨 milestone（iter#235-240 共 +165 條）
+- ✅ **派生 trait SOP 從 1 次 → 6 次 / 6 種 source spectrum 完整**（drifter iter#216 → maximalist iter#249）
+- ✅ **整合 SOP 量產做法 4 次 reuse 確認**（farmhand iter#241-242 → maximalist iter#248-249）
+- ✅ **form-less 軸補 form 6/6 milestone**（iter#216-249 累積 6 軸完成）
+- ✅ **12/12 美學軸全有 form 終極 milestone 🎉**
+- ✅ **49 cron 輪 0 P0 bug** （since iter#166 render regression）
+- ✅ **iter#250 retrospective-250 milestone 完整紀錄**
+
+**i18n 進度**：649 條（unchanged，純 docs）
+**事件池進度**：26 regular + 21 seasonal events = 47 total event SVGs（unchanged）
+**配件池進度**：27 accessories（unchanged）
+**finalForms**：16（unchanged，user-facing complete）
+**form-less 軸補完**：6/6 = 100% ✅
+
+**未來 follow-up（不在本輪）**：
+- iter#251 候選優先級：(1) GDD §5.5 增量 sync 13 → 16 forms + form-less 軸 6/6 milestone 紀錄（純 docs 中 ROI / iter#243 sync 後 6 cron 輪累積值得 sync）/ (2) i18n 衝刺第六輪衝 700 milestone（剩 51 條） / (3) light academia 第 13 軸評估 / (4) docs/local-image-gen-setup.md
+- iter#270 retrospective-270 候選：以 v0.7 ship 為素材（預估 20 cron 輪後）
+- v0.7 規劃：light academia / 同軸多 form 設計 / content 池 30 milestone / i18n 衝 800
+
+**影響檔案**：
+- `docs/retrospective-250.md`（新檔，~250 行 dev journal — §1 TL;DR + §2 階段時序 + §3 7 sub-section 關鍵學習 + §4 v0.7+ 候選 + §5 8 條 carry-forward 原則）
+- `docs/iteration-log.md`（本條 entry）
+
+**驗證**：`./scripts/run-checks.sh` 全 7 step + 8/8 smoke 綠燈 ✅；50 cron 輪 0 P0 bug accumulated（since iter#166 render regression — **break 50 milestone**）；純 docs 不影響 lint chain
+
+---
+
+## 2026-04-30 20:11 · Session A — iter#249 maximalist 派生 form R2 + §8.13 image-prompts 整合 ship — i18n 637 → 649 + 派生 trait 整合 SOP 第 4 次 reuse 成功 + form-less 軸補 form 6/6 milestone form 完整 user-facing 收尾 🎉🎉🎉
+
+**觸發**：cron 第 249 輪 — iter#248 R1 main ship 後，本輪 R2 收尾 5 處 + §8.13 image-prompts 整合（**整合做法第 4 次 reuse 成功 + form-less 軸補 form 6/6 milestone 完整 ship**）。對標 farmhand / netizen / scholar 整合 SOP 第 4 次複製 — **派生 trait SOP 整合做法 100% reusable 量產做法確認 4 次連續 zero deviation**。
+
+**為什麼整合做法第 4 次 reuse 是「production-ready 量產做法」最終確認**：
+- iter#241-242 farmhand 整合首例（驗證可行性）
+- iter#244-245 netizen 第 2 次 reuse（確認可預測 / 可複製）
+- iter#246-247 scholar 第 3 次 reuse（量產做法 production-ready）
+- **iter#248-249 maximalist 第 4 次 reuse（量產做法 100% 確認 ✅）** — 連續 4 次 zero deviation，SOP 已成熟到「無人工干預可批量 ship」程度
+- 後續 v0.7+ 任何派生 form 都可遵循此 11+1 touchpoints across 2 cron-輪 SOP
+
+**動作（R2 收尾 5 處 + §8.13 整合）**：
+
+1. **`src/cfg.js` speech.form_maximalist 5 條 pool**（speech_pools 54 → 55）：
+   ```
+   form_maximalist: ["💎 又解鎖一個！", "(滿身的飾品都掛上)", "✦ 通通都要！",
+                     "集齊就會發光~", "pastel 堆量是美學"]
+   ```
+   - **narrative 6 form 互補對比完整**（drifter「累積收藏」/ curator「克制留白」/ farmhand「平衡知足」/ netizen「跨命見識」/ scholar「持續鑽研」/ **maximalist「繁飾累積」**）— 6 pool 各 5 條 = **30 條派生 form speech** 完整 narrative spectrum
+   - 用語雀躍 + 堆量飾品意象 + 多色感（"又解鎖一個" / "滿身飾品都掛上" / "通通都要" / "集齊發光" / "pastel 堆量是美學"）— 跟既有 15 form pools narrative 全區隔，**對立 curator「靜靜地~」/「不需要太多」narrative spectrum 兩端強化**
+   - cfg-schema invariant 7 通過（speech pool 非空字串陣列）
+
+2. **`src/menus.js` FORM_ICONS map +maximalist 💎**：
+   ```js
+   FORM_ICONS = { ..., scholar: "📚", maximalist: "💎" }
+   ```
+   - 💎 (gemstone) — kawaii-decora bling / accumulation narrative；**dex 跨命累積 form-distribution mini-strip 自動納入第 16 form** display
+
+3. **`src/i18n.js` maximalist i18n keys 雙語 12 條**（i18n 637 → 649）：
+   - `form.maximalist.label` zh+en：「繁飾家雞」/ "Maximalist Chick"
+   - `form.maximalist.desc` zh+en：「粉/藍/紫多色髮夾 + 多層蝴蝶結 + 五彩糖果項鍊 + 滿身飾品 — 解鎖 20 個成就以上的「繁飾累積家」，kawaii-decora 堆量美學的見證者。」/ "Pink/blue/lavender clips + layered bows + rainbow candy necklace + decked-out trinkets — the maximalist accumulator who's unlocked 20+ achievements, the kawaii-decora pile-it-on aesthetic witness."
+   - `ach.form_maximalist` zh+en：「繁裝累積家」/ "Maximalist Accumulator"
+   - `achdesc.form_maximalist` zh+en：「養出繁飾家雞」/ "Raised a maximalist chicken"
+   - **collect_all 文案 15→16 雙語 bump**：`achdesc.collect_all` 從「15 種終態 / 15 final forms」→「**16 種終態 / 16 final forms**」
+   - **onboarding 文案 15→16 雙語 bump**：`onboarding2.dex` 雙語 15 → 16
+
+4. **`docs/image-prompts.md` §8.13 maximalist AI 生圖 prompt**（new section 在 §8.12 scholar 前插入維持時序倒敘 — **特標「form-less 軸補 form 6/6 milestone form」**）：
+   - 標題行：「## 8.13 繁飾家雞（chick-adult-maximalist.png）  *iter#248 v0.6 第 16 個進化分支 — 待生圖補上 — form-less 軸補 form 6/6 milestone form*」
+   - prompt code block（22 行 — **史上最長 form prompt** 反映 maximalist「堆量」narrative）：[全域風格] + Subject 描述 + 多 layered accessories（4-5 hair clips / triple-layer plush bow / rainbow candy necklace / 2-3 ribbon tails）+ joyful eyes + arms-up celebratory pose + sparkly pastel haze background + multi-pastel rainbow palette + 3 處 narrative 強調（**layered density 是 design 而非 cluttered / pastel-soft NOT neon-aggressive / arms-up celebratory NOT chaotic**）+ 3 form overlap 避免規則（drifter 物質質感 / diva stage performance / divine 升天）
+   - 「為什麼這個設計」段落：呼應 maximalist 解鎖路徑（≥ 20 achievements）+ **6 派生 form narrative spectrum 對立紀錄**（drifter慢累積 / curator 克制 / farmhand 平衡 / netizen retro-digital / scholar persistent / **maximalist 繁飾**） + accessory 全 callback kawaii-decora 軸件（decora_clips / plush_bow / candy_jar）形成軸內 form/accessory/event 三層 narrative consistency + **「form-less 軸補 form 全 6/6 milestone form」 explicit 紀錄**
+
+5. **`sw.js`：CACHE_VERSION iter248 → iter249**
+
+**lint chain 報表**：
+- 上輪 cfg-schema：`9 traits / 54 speech_pools / 16 final_forms / 27 accessories`
+- 本輪 cfg-schema：`9 traits / **55 speech_pools** / 16 final_forms / 27 accessories`（speech_pools 54 → 55 反映 form_maximalist pool）
+- check-assets：115 references（unchanged）
+- 7 step + 8/8 smoke + i18n-shadow 23 src + i18n-coverage 189 keys ✅
+- **dex form-distribution mini-strip 第 16 form 自動納入**（FORM_ICONS map 有 maximalist 💎 後玩家養出 maximalist form 時 dex 顯示「💎 繁飾家雞 ×N」(zh) / "💎 Maximalist Chick ×N" (en)）
+
+**派生 trait form ship pipeline 整合 SOP 第 4 次 reuse 成功驗證**：
+| Cron 輪 | 階段 | 完成輪 |
+|---------|------|------|
+| **R1 main 6 處** | 結構建立 | iter#216 / 234 / 241 / 244 / 246 / **iter#248 maximalist** |
+| **R2 + §image-prompts 整合（兩輪 SOP）** | user-facing layer + AI 生圖 prompt | drifter 三輪 / curator 三輪 / iter#241-242 整合首例 / iter#244-245 第 2 次 reuse / iter#246-247 第 3 次 reuse / **iter#248-249 第 4 次 reuse 確認量產做法 ✨✨✨✨** |
+
+**form 終態系統最終狀態（iter#249 完成）— 16 final_forms / 6 種派生條件 source / 6 條 narrative spectrum 完整**：
+| 觸發類型 | form | 條件 source | speech | i18n | FORM_ICON |
+|---------|------|-------------|--------|------|----------|
+| trait-based (per-pet 單一極端) | fighter / sage / diva / divine / gourmet / explorer / warmheart | 7 種 trait counter | 7 個 pool | 雙語 7×4=28 keys | 7 icons |
+| fallback | healthy / fatty / ugly | 3 種 預設 | 3 個 pool | 雙語 3×4=12 keys | 3 icons |
+| **派生 (cross-life ownedAccessories)** | drifter / curator | 物質累積 / 物質克制 | 2 個 pool | 雙語 2×4=8 keys | 2 icons |
+| **派生 (per-pet 三 trait AND)** | farmhand | 多面手 | 1 個 pool | 雙語 4 keys | 1 icon |
+| **派生 (cross-life dex.unlockedForms)** | netizen | 跨命知識累積 | 1 個 pool | 雙語 4 keys | 1 icon |
+| **派生 (cross-life day-based streak)** | scholar | 持續鑽研 | 1 個 pool | 雙語 4 keys | 1 icon |
+| **派生 (cross-life achievement count)** | **maximalist（本輪）** | 繁飾累積 ✨ | 1 個 pool | 雙語 4 keys | 1 icon |
+| **總** | **16 forms** | **6 種 source** | **16 pools** | **64 i18n keys 雙語** | **16 FORM_ICONS** |
+
+**form-less 軸補 form 全完成 milestone**（iter#216-249 累積 6 派生 form）：
+| 軸 | form | iter | 派生 source | 狀態 |
+|----|------|------|------------|------|
+| boho | drifter | iter#216-217 | cross-life ownedAccessories ≥ 8 | ✅ |
+| minimalist | curator | iter#234-236 | cross-life ownedAccessories ≤ 3 + perfect ≥ 60 | ✅ |
+| cottagecore | farmhand | iter#241-242 | per-pet 三 trait AND | ✅ |
+| y2k | netizen | iter#244-245 | cross-life dex ≥ 5 | ✅ |
+| dark academia | scholar | iter#246-247 | cross-life loginStreak ≥ 14 | ✅ |
+| **kawaii-decora** | **maximalist** | **iter#248-249** | **cross-life achievements ≥ 20** | **✅（本輪完成）** |
+
+**🎉 12/12 美學軸全有 form milestone 達成 — v0.6 ship 終極 milestone**
+
+**v0.6+ 結算更新（iter#249）**：
+- ✅ iter#222 / 223-225 / 227-228 / 229-231 / 233 軸 ship + 跨軸成就 + form-less seasonal mini-batch
+- ✅ iter#226 / 232 / 243 GDD §5.5 三 sync
+- ✅ iter#230 retrospective-230 + iter#234-249 六派生 form 完整 ship + iter#235-240 i18n 衝刺五輪
+- ✅ **iter#249 maximalist 整合 ship（finalForms 15 → 16 + 派生 trait SOP 第 6 次成功 + 整合 SOP 第 4 次 reuse 量產做法確認 + form-less 軸補 form 6/6 milestone 達成 🎉🎉🎉）**
+- ⏳ **iter#250 retrospective-250（必做，cadence 已到 + v0.6 主要 milestone 完成需總結 + 素材豐富）**
+- ⏳ iter#251+ 候選：GDD §5.5 增量 sync 13 → 16 forms + 6/6 form-less 補完 milestone / light academia 第 13 軸候選評估 / docs/local-image-gen-setup.md / i18n 衝刺第六輪衝 700 milestone
+
+**i18n 進度**：637 + 12 = **649 條** zh-TW + 649 條 en（距 700 milestone 差 51 條）
+**事件池進度**：26 regular + 21 seasonal events = 47 total event SVGs（unchanged）
+**配件池進度**：27 accessories（unchanged）
+**finalForms**：16 ✅ user-facing complete（iter#249 完整 ship — speech / i18n / icon / dex display / image-prompts 全打通）
+**speech_pools**：54 → **55**
+**form-less 軸補完進度**：**6/6 = 100%** 🎉🎉🎉
+**派生 trait spectrum**：6 條 narrative path 完整（drifter / curator / farmhand / netizen / scholar / maximalist）
+**派生條件 source spectrum**：6 種完整（ownedAccessories 累積/克制 / 三 trait AND / dex 知識 / day-based streak / achievement count）
+
+**未來 follow-up（不在本輪）**：
+- **iter#250 retrospective-250 必做**（cadence 已到 + v0.6 大 milestone 達成需總結）：素材包 — 12 軸 + 16 forms + 派生 trait SOP 6 次成功 + 6 種條件 source spectrum 完整 + 整合 SOP 量產做法 4 次 reuse + i18n 衝刺 5 輪雙跨 milestone + form-less 軸補 form 6/6 全完成 milestone + form ship pipeline 從 4 次成功 → 6 次成功 + 跨軸成就系統 idea-to-impl + lint chain 49 cron 輪 0 P0 bug
+- iter#251+ 候選優先級：GDD §5.5 增量 sync（純 docs 中 ROI 但 4 form 累積 + 6/6 milestone 需即時記錄）/ light academia 第 13 軸（純研究）/ docs/local-image-gen-setup.md（user 提問）/ i18n 衝刺第六輪（剩 51 條到 700）
+
+**影響檔案**：
+- `src/cfg.js`（speech.form_maximalist pool +5 條）
+- `src/menus.js`（FORM_ICONS map +maximalist 💎）
+- `src/i18n.js`（maximalist 雙語 form/ach/desc 4 keys × 2 = 8 條 + collect_all 雙語 bump + onboarding2.dex 雙語 bump = +12 條）
+- `docs/image-prompts.md`（§8.13 maximalist 新段落 — **史上最長 form prompt 22 行**反映堆量 narrative + 為什麼這個設計含 6 派生 form spectrum 對立紀錄 + form-less 軸補 form 6/6 milestone form 標記）
+- `sw.js`（CACHE_VERSION iter248 → iter249）
+- `docs/iteration-log.md`（本條 entry）
+
+**驗證**：`./scripts/run-checks.sh` 全 7 step + 8/8 smoke 綠燈 ✅；49 cron 輪 0 P0 bug accumulated（since iter#166 render regression）；cfg-schema invariant 7（speech pool 非空字串陣列）通過 — form_maximalist 5 條 pool 全合規
+
+---
+
+## 2026-04-30 20:01 · Session A — iter#248 kawaii-decora 派生 form 第 6 例「繁飾家雞」(maximalist) R1 main ship — finalForms 15 → 16 + 派生 trait SOP 第 6 次成功啟動 + 第 6 種派生條件 source 首例 (achievement count) + form-less 軸補 form 6/6 milestone 達成 🎉
+
+**觸發**：cron 第 248 輪 — iter#246-247 scholar 整合 ship 後，從 candidates ROI 排序選 (1)「kawaii-decora 派生 form 第 6 例 R1」(**最後 1 個 form-less 軸補完 milestone**：boho ✅ → minimalist ✅ → cottagecore ✅ → y2k ✅ → dark academia ✅ → **kawaii-decora ✅（本輪）**)。對標 farmhand / netizen / scholar 整合 SOP 第 4 次預啟 — **派生 trait SOP 第 6 次成功啟動 + 整合做法第 4 次 reuse 預啟 + form-less 軸補 form 全 6/6 完成 milestone** ✅✅✅✅✅✅。
+
+**為什麼 form-less 軸補 form 6/6 milestone 是 v0.6 重要 milestone**：
+- iter#208 GDD §5.5 設計哲學：「form = 角色身份（識別感）/ axis = 美學選擇（自由度）」— form-less 軸刻意 = 美學選擇而非進化結果
+- iter#216-242 期間漸進補 form：boho → minimalist → cottagecore → y2k → dark academia 5 軸補完
+- **iter#248 kawaii-decora 補完即實現「12 軸全有 form」狀態**：所有美學軸都從「環境氛圍」升級到「+ 角色身份終態」雙重承諾
+- 後續 v0.7+ 新軸 ship pipeline 可考慮「軸ship + form 一起 ship」（從一開始就有 form）vs 「form-less 軸先建設 後補 form」兩種設計做法 — form-less 軸補 form 邏輯不再是「補洞」而是「設計選項」
+
+**為什麼選 maximalist 而非其他 form 名**：
+- **「繁飾家 / 累積成就家」narrative 對齊軸 DNA**：kawaii-decora 軸 narrative「堆量 / 過度可愛 / pastel rainbow 多堆疊」直接對應「累積成就家」narrative — 玩家解鎖 20 個成就 = 在啾啾世界「堆」了很多 milestone
+- **跟既有 5 派生 form narrative 全區隔**：drifter（物質累積）/ curator（物質克制）/ farmhand（多面手）/ netizen（跨命知識累積）/ scholar（持續鑽研） — **maximalist「成就累積」是第 6 種獨立 narrative source**
+- **數值平衡**：≥ 20 跟既有 master_player 成就 ≥ 25 形成階梯（maximalist form 第 1 milestone / master_player ach 第 2 milestone），narrative 一致「累積大量 milestone」但門檻分階
+- **icon 💎 (gemstone)**：kawaii-decora 「bling / pastel jewel」narrative，跟既有 form icons 全區隔（plush_bow 用 🎀 / candy_jar 用 🍬 / decora_clips 用 🎀 — 都是配件層 icon，本 form 用 💎 強調「珠寶累積」narrative）
+
+**為什麼 maximalist 條件設計 Object.keys(state.achievements).length ≥ 20**：
+- **「累積成就家 / kawaii-decora 堆量」narrative**：解鎖 20 個成就要求玩家做廣泛養成（不能只刷一個 form trait 達標）— 跟 narrative「堆量收集 milestone」自然 fit
+- **第 6 種派生條件 source 首例 — achievement count**：跟前 5 種 stat / dex / day-streak based 都不同 source；achievement count 是「meta-progression 的 meta」（成就本身就是 milestone 累積，再用它做 form trigger 是 meta²）
+- **placed AFTER scholar BEFORE fatty fallback**：
+  - 收藏家 (≥ 8) → drifter / 克制 (≤ 3 + 高 perfect) → curator / 平衡 (3 trait moderate) → farmhand / 見多 (cross-life dex ≥ 5) → netizen / 持續 (loginStreak ≥ 14) → scholar / **繁飾 (achievements ≥ 20) → maximalist** ← NEW / 失衡 → fatty / ugly
+  - **8 條 path 互斥不衝突**，narrative spectrum 完整：物質累積 / 物質克制 / 平衡照顧 / 跨命見識 / 持續鑽研 / 繁飾累積 / 失衡偏向
+
+**動作（R1 main 6 處）**：
+
+1. **`src/cfg.js` finalForms 加第 16 條**（15 → 16 final_forms）：
+   ```
+   maximalist: { labelKey:"form.maximalist.label", label:"繁飾家雞",
+                 descKey:"form.maximalist.desc",
+                 desc:"粉/藍/紫多色髮夾 + 多層蝴蝶結 + 五彩糖果項鍊 + 滿身飾品 — 解鎖 20 個成就以上的「繁飾累積家」，
+                       kawaii-decora 堆量美學的見證者。
+                       解鎖條件：Object.keys(state.achievements).length ≥ 20（跨命累積成就達 20 派生）。" }
+   ```
+   - 加在 scholar 後（kawaii-decora 派生 form 對稱位置 + design rationale 註解 — 標明 form-less 軸補 form 6/6 milestone）
+
+2. **`src/cfg.js` petArt.adult maximalist placeholder**：
+   ```
+   maximalist:"assets/images/chick-adult-healthy.png"
+   ```
+   - 加在 scholar placeholder 後（待 docs/image-prompts.md §8.13 生圖補上 chick-adult-maximalist.png — kawaii-decora 多色髮夾堆疊 + 多層 bow + 糖果項鍊 + pastel rainbow palette）
+
+3. **`src/cfg.js` achievements form_maximalist + bump collect_all**：
+   ```
+   form_maximalist: { icon:"💎", labelKey:"ach.form_maximalist", label:"繁裝累積家",
+                      descKey:"achdesc.form_maximalist", desc:"養出繁飾家雞" }
+   collect_all: ... desc:"收集全部 16 種終態"  // 15 → 16 bump
+   ```
+   - icon 💎 (gemstone) — kawaii-decora bling narrative；跟既有 form icons 全區隔
+
+4. **`src/evolve.js` finalizeForm trait priority chain 加 maximalist**：
+   ```js
+   else if ((state.daily?.loginStreak || 0) >= 14) form = "scholar";
+   // iter#248 maximalist (placed AFTER scholar BEFORE fatty fallback)
+   else if (Object.keys(state.achievements || {}).length >= 20) form = "maximalist";
+   else if (tr.fatPoints >= 10) form = "fatty";
+   ```
+   - **state.achievements 派生條件首例**：跟 stat counter / dex / ownedAccessories / loginStreak 五既有 source 都不同 — 第 6 種 source「achievement count meta-progression」
+   - 跟 master_player 成就 (≥ 25) 設計階梯：form maximalist 20 / ach master_player 25 — 兩個獨立 milestone 不衝突
+
+5. **`src/achievements.js` evaluator 加 form_maximalist + bump collect_all 15 → 16**：
+   ```js
+   ["form_scholar", dexUnlocked.has("scholar")],
+   ["form_maximalist", dexUnlocked.has("maximalist")],  // iter#248
+   ["collect_3", ...], ["collect_5", ...],
+   ["collect_all", dexUnlocked.size >= 16],  // 15 → 16 bump
+   ```
+
+6. **`sw.js`：CACHE_VERSION iter247 → iter248**
+
+**lint chain 報表**：
+- 上輪 cfg-schema：`9 traits / 54 speech_pools / 15 final_forms / 27 accessories`
+- 本輪 cfg-schema：`9 traits / 54 speech_pools / **16 final_forms** / 27 accessories` 🎉
+- check-assets：115 references（unchanged，maximalist 用 healthy.png placeholder）
+- i18n-coverage 189 keys（unchanged，本輪 R1 不新增 t() callsites — i18n keys 加在 R2）
+- 7 step + 8/8 smoke + i18n-shadow 23 src ✅
+
+**form 終態系統更新（iter#248 R1）— 16 final_forms / 6 種派生條件 source 完整 spectrum**：
+| 觸發類型 | form | 條件 source |
+|---------|------|-------------|
+| trait-based (per-pet 單一極端) | fighter / sage / diva / divine / gourmet / explorer / warmheart | 7 種 per-pet trait counter |
+| fallback | healthy / fatty / ugly | 3 種 預設 / 失衡 |
+| 派生 (cross-life ownedAccessories) | drifter / curator | 物質累積 / 物質克制 |
+| 派生 (per-pet 三 trait AND) | farmhand | 多面手 |
+| 派生 (cross-life dex.unlockedForms) | netizen | 跨命知識累積 |
+| 派生 (cross-life day-based streak) | scholar | 持續鑽研 |
+| **派生 (cross-life achievement count)（本輪首例）** | **maximalist** | 繁飾累積 ✨ 第 6 種 source 完整 spectrum |
+
+**派生 trait SOP 6 種條件 source 完整 spectrum**：
+1. cross-life **物質累積**（drifter / curator）— 物質 narrative
+2. per-pet **多 trait AND**（farmhand）— 多面手 narrative
+3. cross-life **dex 知識累積**（netizen）— 老玩家 narrative
+4. cross-life **day-based streak**（scholar）— 持續鑽研 narrative
+5. cross-life **achievement count**（**maximalist** 本輪）— **繁飾累積 narrative ✨ 首例**
+6. （未來候選 v0.7+）cross-life **history.totalSessions** / **bondDays cumulative** — regular / lifer narrative
+
+**派生 trait form ship pipeline SOP 第 6 次驗證進度 + form-less 軸補完 6/6 達成**：
+| Cron 輪 | 階段 | 完成輪 |
+|---------|------|------|
+| **R1 main 6 處（本輪）** | 結構建立 | iter#216 / 234 / 241 / 244 / 246 / **iter#248 maximalist** |
+| **R2 + §image-prompts 整合（兩輪 SOP）** | user-facing layer + AI 生圖 prompt | iter#241-242 整合首例 / iter#244-245 第 2 reuse / iter#246-247 第 3 reuse / **iter#248-249 第 4 reuse 預啟** |
+
+**form-less 軸補 form 全完成 milestone（iter#216-248 累積 6 輪）**：
+| 軸 | form | iter | 派生 source |
+|----|------|------|------------|
+| boho | drifter | iter#216-217 | cross-life ownedAccessories ≥ 8 |
+| minimalist | curator | iter#234-235 | cross-life ownedAccessories ≤ 3 + perfect ≥ 60 |
+| cottagecore | farmhand | iter#241-242 | per-pet 三 trait AND |
+| y2k | netizen | iter#244-245 | cross-life dex ≥ 5 |
+| dark academia | scholar | iter#246-247 | cross-life loginStreak ≥ 14 |
+| **kawaii-decora** | **maximalist（本輪）** | iter#248-249 | cross-life achievements ≥ 20 |
+
+**12/12 美學軸全有 form ✅**（之前 form-less 5 軸全補完）— v0.6 ship 終極 milestone 達成
+
+**v0.6+ 結算更新（iter#248）**：
+- ✅ iter#222 / 223-225 / 227-228 / 229-231 / 233 軸 ship + 跨軸成就 + form-less seasonal mini-batch
+- ✅ iter#226 / 232 / 243 GDD §5.5 三 sync
+- ✅ iter#230 retrospective-230 + iter#234-247 五派生 form 完整 ship + iter#235-240 i18n 衝刺五輪
+- ✅ **iter#248 maximalist R1 main（finalForms 15 → 16 + 派生 trait SOP 第 6 次成功 + 第 6 種派生 source 首例 + form-less 軸補 form 6/6 milestone 達成 🎉）**
+- ⏳ iter#249 R2 + §8.13 image-prompts 整合：maximalist speech / i18n form/ach keys / FORM_ICONS map +💎 / collect_all + onboarding bump 15→16 / §8.13 prompt
+- ⏳ iter#250+ 候選：retrospective-250（cadence 已到，下兩輪內必做）/ GDD §5.5 增量 sync 13 → 16 forms + 6/6 form-less 補完 milestone / light academia 第 13 軸候選評估 / docs/local-image-gen-setup.md / i18n 衝刺第六輪衝 700 milestone
+
+**i18n 進度**：637 條（unchanged，R2 補 i18n keys）— 預期 R2 加 form/ach/speech keys 約 +12 條，達 649 條
+**事件池進度**：26 regular + 21 seasonal events = 47 total event SVGs（unchanged）
+**配件池進度**：27 accessories（unchanged）
+**finalForms**：15 → **16** 🎉
+**派生 trait form**：drifter / curator / farmhand / netizen / scholar / **maximalist** = 6 條 narrative spectrum 完整
+**form-less 軸補完**：6/6 = **100%** 🎉🎉
+
+**未來 follow-up（不在本輪）**：
+- iter#249 R2 + §8.13 整合（即啟動）：speech pool「💎 又解鎖一個！」「(滿身的飾品都掛上)」「✦ 通通都要！」「集齊就會發光~」「pastel 堆量是美學」narrative + i18n + FORM_ICONS 💎 + image-prompts §8.13 prompt
+- iter#250 retrospective-250：素材豐富（v0.6 ship 主推進 30+ cron 輪總結 — 12 軸 + 16 forms + 派生 trait SOP 6 次成功 + **6 種條件 source spectrum 完整** + 整合 reusable 量產做法 + i18n 衝刺 5 輪雙跨 milestone + form-less 軸補 form 6/6 全完成 milestone 達成）
+- v0.7+ 規劃：light academia 第 13 軸 / 跨軸 ach 系列補強 / docs/local-image-gen-setup.md 工具鏈
+
+**影響檔案**：
+- `src/cfg.js`（finalForms +1 / petArt.adult +1 / achievements +1 + collect_all bump 15→16 desc）
+- `src/evolve.js`（finalizeForm 加 maximalist achievement count 派生條件 — Object.keys(state.achievements).length 首例）
+- `src/achievements.js`（evaluator +form_maximalist + collect_all 門檻 bump 15→16）
+- `sw.js`（CACHE_VERSION → iter248）
+- `docs/iteration-log.md`（本條 entry）
+
+**驗證**：`./scripts/run-checks.sh` 全 7 step + 8/8 smoke 綠燈 ✅；48 cron 輪 0 P0 bug accumulated（since iter#166 render regression）；cfg-schema invariant 8（finalForms keys ↔ petArt.adult keys 雙向同步）通過 — maximalist 兩處同步 ship 沒漏
+
+---
+
+## 2026-04-30 19:51 · Session A — iter#247 scholar 派生 form R2 + §8.12 image-prompts 整合 ship — i18n 625 → 637 + 派生 trait 整合 SOP 第 3 次 reuse 成功 + form-less 軸補 form 完成 5/6（剩 kawaii-decora 1 軸）
+
+**觸發**：cron 第 247 輪 — iter#246 R1 main ship 後，本輪 R2 收尾 5 處 + §8.12 image-prompts 整合（**整合做法第 3 次 reuse 成功**，從 farmhand 首例 / netizen 第 2 次 / **scholar 第 3 次**，SOP 從「reusable 標準」升級為「validated 量產做法」）。對標 farmhand / netizen 整合 ship pipeline 100% 複製 SOP 零 deviation。
+
+**為什麼整合做法第 3 次 reuse 成功是「量產做法」確認**：
+- iter#241-242 farmhand 首例驗證可行性
+- iter#244-245 netizen 第 2 次 reuse 確認可預測 / 可複製
+- **iter#246-247 scholar 第 3 次 reuse 確認 production-ready** — 連續 3 次零 deviation 表示 SOP 已從「實驗 → 標準 → 量產」三階段完整升級
+- 後續 form-less 軸補 form（剩 kawaii-decora 1 軸）+ v0.7+ 新派生 trait 候選都可用此 SOP
+
+**動作（R2 收尾 5 處 + §8.12 整合）**：
+
+1. **`src/cfg.js` speech.form_scholar 5 條 pool**（speech_pools 53 → 54）：
+   ```
+   form_scholar: ["📚 又翻了一頁~", "(整理書堆)", "✦ 學海無涯",
+                  "老習慣，每天都讀點書", "思考是甜的"]
+   ```
+   - **narrative 5 form 互補對比完整**（drifter「累積收藏」/ curator「克制留白」/ farmhand「平衡知足」/ netizen「跨命見識」/ **scholar「持續鑽研」**）— 5 pool 各 5 條 = **25 條派生 form speech** 完整 narrative spectrum
+   - 用語沉穩 + 學術書頁意象（"翻了一頁" / "整理書堆" / "學海無涯" / "每天都讀點書" / "思考是甜的"）— 跟既有 14 form pools narrative 全區隔，特別跟 sage 「研究 / 解題」narrative 雙 form 區隔強化（sage = 解題者 / scholar = 持續閱讀者）
+   - cfg-schema invariant 7 通過（speech pool 非空字串陣列）
+
+2. **`src/menus.js` FORM_ICONS map +scholar 📚**：
+   ```js
+   FORM_ICONS = { ..., netizen: "💾", scholar: "📚" }
+   ```
+   - 📚 (books) — dark academia 學術視覺辨識物 No.1，跟 sage 🧠（智力 abstract）視覺區隔（books 實體 vs brain 抽象，narrative 階梯感對應）
+   - **dex 跨命累積 form-distribution mini-strip 自動納入第 15 form** display
+
+3. **`src/i18n.js` scholar i18n keys 雙語 12 條**（i18n 625 → 637）：
+   - `form.scholar.label` zh+en：「學者雞」/ "Scholar Chick"
+   - `form.scholar.desc` zh+en：「酒紅圍巾 + 圓框眼鏡 + 一疊書 + 沉穩眼神 — 連續登入 14 天以上的「學術老靈魂」，dark academia 持續鑽研的見證者。」/ "Wine-red scarf + round glasses + a stack of books + composed gaze — the academic old-soul who's logged in 14+ days straight, the dark academia sustained-study witness."
+   - `ach.form_scholar` zh+en：「學術老靈魂」/ "Academic Old-Soul"
+   - `achdesc.form_scholar` zh+en：「養出學者雞」/ "Raised a scholar chicken"
+   - **collect_all 文案 14→15 雙語 bump**：`achdesc.collect_all` 從「14 種終態 / 14 final forms」→「**15 種終態 / 15 final forms**」
+   - **onboarding 文案 14→15 雙語 bump**：`onboarding2.dex` 雙語 14 → 15
+
+4. **`docs/image-prompts.md` §8.12 scholar AI 生圖 prompt**（new section 在 §8.11 netizen 前插入維持時序倒敘）：
+   - 標題行：「## 8.12 學者雞（chick-adult-scholar.png）  *iter#246 v0.6 第 15 個進化分支 — 待生圖補上*」
+   - prompt code block（19 行）：[全域風格] + Subject 描述 + 11 個視覺指令（wine-red knit scarf / round wire-frame glasses / 2-3 small hardcover books / leather-bound + ribbon bookmark / composed-thoughtful eyes / quill_pen feather behind ear / cream parchment haze + dust-mote sparkle / etc.）+ 3 處 narrative 強調（composed-thoughtful NOT grim / 2-3 small books NOT giant tome stack / knit-cozy NOT formal cravat）+ **3 form overlap 避免規則**（**sage** 既有同軸 form 細緻區隔 — sage 「半月眼鏡 + 公式書」研究系 / scholar「圓框眼鏡 + 多本書」持續閱讀系；netizen 數位無 glitch；drifter 圍巾 fit vs shawl drape）
+   - 「為什麼這個設計」段落：呼應 scholar 解鎖路徑（state.daily.loginStreak ≥ 14） + 三個 dark academia 軸 callback motif（books / glasses / knit scarf）+ **跟 sage 既有同軸 form 區隔**（首次 dark academia 軸 + 智慧軸雙 form 設計重要紀錄）+ velvet_bow / round_glasses 配件直接 callback + cottagecore pink dot 軟化 + 第 5 種派生條件 source 詳細數值
+
+5. **`sw.js`：CACHE_VERSION iter246 → iter247**
+
+**lint chain 報表**：
+- 上輪 cfg-schema：`9 traits / 53 speech_pools / 15 final_forms / 27 accessories`
+- 本輪 cfg-schema：`9 traits / **54 speech_pools** / 15 final_forms / 27 accessories`（speech_pools 53 → 54 反映 form_scholar pool）
+- check-assets：115 references（unchanged）
+- 7 step + 8/8 smoke + i18n-shadow 23 src + i18n-coverage 189 keys ✅
+- **dex form-distribution mini-strip 第 15 form 自動納入**（FORM_ICONS map 有 scholar 📚 後玩家養出 scholar form 時 dex 顯示「📚 學者雞 ×N」(zh) / "📚 Scholar Chick ×N" (en)）
+
+**派生 trait form ship pipeline 整合 SOP 第 3 次 reuse 成功驗證**：
+| Cron 輪 | 階段 | 完成輪 |
+|---------|------|------|
+| **R1 main 6 處** | 結構建立 | iter#216 / iter#234 / iter#241 / iter#244 / **iter#246 scholar** |
+| **R2 + §image-prompts 整合（兩輪 SOP）** | user-facing layer + AI 生圖 prompt | drifter 三輪 / curator 三輪 / **iter#241-242 整合首例 / iter#244-245 第 2 次 reuse / iter#246-247 第 3 次 reuse ✨✨✨** |
+
+**form 終態系統最終狀態（iter#247 完成）— 15 final_forms / 5 種派生條件 source / 5 條 narrative spectrum**：
+| 觸發類型 | form | 條件 source | speech | i18n | FORM_ICON |
+|---------|------|-------------|--------|------|----------|
+| trait-based (per-pet 單一極端) | fighter / sage / diva / divine / gourmet / explorer / warmheart | 7 種 trait counter | 7 個 pool | 雙語 7×4=28 keys | 7 icons |
+| fallback | healthy / fatty / ugly | 3 種 預設 | 3 個 pool | 雙語 3×4=12 keys | 3 icons |
+| **派生 (cross-life ownedAccessories)** | drifter / curator | 物質累積 / 物質克制 | 2 個 pool | 雙語 2×4=8 keys | 2 icons |
+| **派生 (per-pet 三 trait AND)** | farmhand | 多面手 | 1 個 pool | 雙語 4 keys | 1 icon |
+| **派生 (cross-life dex.unlockedForms)** | netizen | 跨命知識累積 | 1 個 pool | 雙語 4 keys | 1 icon |
+| **派生 (cross-life day-based streak)** | **scholar（本輪）** | 持續登入 streak | 1 個 pool | 雙語 4 keys | 1 icon |
+| **總** | **15 forms** | **5 種 source** | **15 pools** | **60 i18n keys 雙語** | **15 FORM_ICONS** |
+
+**v0.6+ 結算更新（iter#247）**：
+- ✅ iter#222 / 223-225 / 227-228 / 229-231 / 233 軸 ship + 跨軸成就 + form-less seasonal mini-batch
+- ✅ iter#226 / 232 / 243 GDD §5.5 三 sync
+- ✅ iter#230 retrospective-230 + iter#234-236 / 241-242 / 244-245 三派生 form 完整 ship + iter#235-240 i18n 衝刺五輪
+- ✅ **iter#246-247 scholar 整合 ship（finalForms 14 → 15 + 派生 trait SOP 第 5 次成功 + 整合做法第 3 次 reuse 成功 = 量產做法）**
+- ⏳ iter#248+ 候選 ROI 排序：(1) **kawaii-decora 派生 form 第 6 例 R1**（最後 1 個 form-less 軸 — narrative「decora 繁裝家 / 累積成就家」/ condition 候選 cross-life **achievement count ≥ 20**，第 6 種 source）/ (2) GDD §5.5 增量 sync 13 → 15 forms / (3) light academia 第 13 軸候選評估 / (4) docs/local-image-gen-setup.md / (5) i18n 衝刺第六輪衝 700 milestone
+
+**i18n 進度**：625 + 12 = **637 條** zh-TW + 637 條 en（距 700 milestone 差 63 條）
+**事件池進度**：26 regular + 21 seasonal events = 47 total event SVGs（unchanged）
+**配件池進度**：27 accessories（unchanged）
+**finalForms**：15 ✅ user-facing complete（iter#247 完整 ship — speech / i18n / icon / dex display / image-prompts 全打通）
+**speech_pools**：53 → **54**
+**form-less 軸補完進度**：5/6（boho ✅ minimalist ✅ cottagecore ✅ y2k ✅ **dark academia ✅** ；剩 kawaii-decora 1 軸 form-less）
+
+**未來 follow-up（不在本輪）**：
+- iter#248 候選優先級：**kawaii-decora 派生 form 第 6 例 R1**（建議因 form-less 軸補完只剩最後 1 軸，整合 SOP 第 4 次 reuse 一次完成 form-less 軸 form 補完里程碑）/ condition 候選 cross-life **achievement count ≥ 20**（解鎖 20 個成就的繁裝 narrative — 跟 kawaii-decora「堆量 / 過度可愛」narrative 對應）— 第 6 種派生 source 首例
+- iter#250 retrospective-250 候選：素材豐富（v0.6 ship 主推進 30+ cron 輪總結 — 12 軸 + **15 forms** + 派生 trait SOP 5 次成功 + 5 種條件 source spectrum + 整合 SOP 量產做法 3 次 reuse + i18n 衝刺 5 輪雙跨 milestone + form-less 軸補完 5/6）
+
+**影響檔案**：
+- `src/cfg.js`（speech.form_scholar pool +5 條）
+- `src/menus.js`（FORM_ICONS map +scholar 📚）
+- `src/i18n.js`（scholar 雙語 form/ach/desc 4 keys × 2 = 8 條 + collect_all 雙語 bump + onboarding2.dex 雙語 bump = +12 條）
+- `docs/image-prompts.md`（§8.12 scholar 新段落 — 19-行 prompt + 為什麼這個設計，含 dark academia 軸 sage / scholar 雙 form narrative 區隔紀錄）
+- `sw.js`（CACHE_VERSION iter246 → iter247）
+- `docs/iteration-log.md`（本條 entry）
+
+**驗證**：`./scripts/run-checks.sh` 全 7 step + 8/8 smoke 綠燈 ✅；47 cron 輪 0 P0 bug accumulated（since iter#166 render regression）；cfg-schema invariant 7（speech pool 非空字串陣列）通過 — form_scholar 5 條 pool 全合規
+
+---
+
+## 2026-04-30 19:41 · Session A — iter#246 dark academia 派生 form 第 5 例「學者雞」(scholar) R1 main ship — finalForms 14 → 15 + 派生 trait SOP 第 5 次成功啟動 + 第 5 種派生條件 source 首例 (day-based streak)
+
+**觸發**：cron 第 246 輪 — iter#244-245 netizen 整合 ship 後，從 candidates ROI 排序選 (1)「dark academia 派生 form 第 5 例 R1」(form-less 軸補 form 邏輯下一個：boho ✅ → minimalist ✅ → cottagecore ✅ → y2k ✅ → **dark academia ✅（本輪）** ， 剩 kawaii-decora 1 軸 form-less)。對標 farmhand / netizen 整合 SOP 第 3 次複製 — **派生 trait SOP 第 5 次成功啟動 + 整合做法第 3 次 reuse 預啟** ✅✅✅✅✅。
+
+**為什麼選 scholar 而非 kawaii-decora 派生 form**：
+- **form-less 軸補 form 順序邏輯**：dark academia 軸 narrative 最成熟（既有 velvet_bow / quill_pen / round_glasses / gothic_candle 4 件 ★★★★ 飽和度，narrative「學院 / 古典 / 學術鑽研」清晰）；kawaii-decora 軸雖 4 件 ★★★★ 但 narrative「堆量 / 過度可愛」跟既有 form 視覺競爭風險高（怕跟 diva 表演 / fighter 元氣 narrative 重疊）— 留 kawaii-decora 第 6 例給後續輪
+- **第 5 種派生條件 source 首例**：drifter / curator 用 ownedAccessories（物質）/ farmhand 用 per-pet 三 trait AND（多面手）/ netizen 用 dex.unlockedForms（跨命知識）— 全 stat-based / count-based。**scholar 用 state.daily.loginStreak ≥ 14 — day-based streak 首例**，narrative spectrum 從「累積 stat」擴展到「持續行為」
+- **narrative 完美對齊 dark academia 軸 DNA**：「學者持續鑽研 / 學術 commitment / 連續 14 天登入」narrative 對齊 dark academia「學院 / sustained dedication」narrative — 比其他軸的 narrative 更直白
+
+**為什麼 scholar 條件設計 state.daily.loginStreak ≥ 14**：
+- **「持續鑽研 / 學術 commitment」narrative**：連續 14 天登入是「dedicated daily player」的明確 signal — 跟 streak_7 / streak_30 既有成就形成階梯（streak_7 第 1 milestone / **scholar form ≥ 14** / streak_30 第 2 milestone）
+- **數值平衡分析**：14 天高於 streak_7 但低於 streak_30 — 中段 milestone，不需 ultra-veteran 也能達成 / 又不會輕易達成（一週玩家不會誤觸）
+- **placed AFTER netizen BEFORE fatty fallback**：
+  - 收藏家 (≥ 8) → drifter / 克制 (≤ 3 + 高 perfect) → curator / 平衡 (3 trait moderate) → farmhand / 見多 (cross-life dex ≥ 5) → netizen / **持續 (loginStreak ≥ 14) → scholar** ← NEW / 失衡 (高 fatPoints / lowMood) → fatty / ugly
+  - **7 條 path 互斥不衝突**，narrative spectrum 完整：物質累積 / 物質克制 / 平衡照顧 / 跨命見識 / 持續鑽研 / 失衡偏向
+
+**動作（R1 main 6 處）**：
+
+1. **`src/cfg.js` finalForms 加第 15 條**（14 → 15 final_forms）：
+   ```
+   scholar: { labelKey:"form.scholar.label", label:"學者雞",
+              descKey:"form.scholar.desc",
+              desc:"酒紅圍巾 + 圓框眼鏡 + 一疊書 + 沉穩眼神 — 連續登入 14 天以上的「學術老靈魂」，
+                    dark academia 持續鑽研的見證者。
+                    解鎖條件：state.daily.loginStreak ≥ 14（連續登入 14 天派生，跟學術 commitment narrative 對應）。" }
+   ```
+   - 加在 netizen 後（dark academia 派生 form 對稱位置 + design rationale 註解）
+
+2. **`src/cfg.js` petArt.adult scholar placeholder**：
+   ```
+   scholar:"assets/images/chick-adult-healthy.png"
+   ```
+   - 加在 netizen placeholder 後（待 docs/image-prompts.md §8.12 生圖補上 chick-adult-scholar.png — dark academia 酒紅 + 圓框眼鏡 + 書堆）
+
+3. **`src/cfg.js` achievements form_scholar + bump collect_all**：
+   ```
+   form_scholar: { icon:"📚", labelKey:"ach.form_scholar", label:"學術老靈魂",
+                   descKey:"achdesc.form_scholar", desc:"養出學者雞" }
+   collect_all: ... desc:"收集全部 15 種終態"  // 14 → 15 bump
+   ```
+   - icon 📚 (books) — dark academia 學術視覺辨識物 No.1，跟既有 form icons 全區隔（sage 用 🧠 智力 vs scholar 📚 書本實體 narrative 區隔）
+
+4. **`src/evolve.js` finalizeForm trait priority chain 加 scholar**：
+   ```js
+   else if (window.NourishDex && window.NourishDex.unlockedFormsSet().size >= 5) form = "netizen";
+   // iter#246 scholar (placed AFTER netizen BEFORE fatty fallback)
+   else if ((state.daily?.loginStreak || 0) >= 14) form = "scholar";
+   else if (tr.fatPoints >= 10) form = "fatty";
+   ```
+   - **state.daily.loginStreak 派生條件首例**：跟 stat counter / dex / ownedAccessories 三既有 source 都不同，本件用 state.daily 系統的 day-based 計數
+   - 短路評估：optional chaining `state.daily?.loginStreak` 跟既有 achievements.js streak_7 / streak_30 同 SOP
+
+5. **`src/achievements.js` evaluator 加 form_scholar + bump collect_all 14 → 15**：
+   ```js
+   ["form_netizen", dexUnlocked.has("netizen")],
+   ["form_scholar", dexUnlocked.has("scholar")],  // iter#246
+   ["collect_3", ...], ["collect_5", ...],
+   ["collect_all", dexUnlocked.size >= 15],  // 14 → 15 bump
+   ```
+
+6. **`sw.js`：CACHE_VERSION iter245 → iter246**
+
+**lint chain 報表**：
+- 上輪 cfg-schema：`9 traits / 53 speech_pools / 14 final_forms / 27 accessories`
+- 本輪 cfg-schema：`9 traits / 53 speech_pools / **15 final_forms** / 27 accessories` 🎉
+- check-assets：115 references（unchanged，scholar 用 healthy.png placeholder）
+- i18n-coverage 189 keys（unchanged，本輪 R1 不新增 t() callsites — i18n keys 加在 R2）
+- 7 step + 8/8 smoke + i18n-shadow 23 src ✅
+
+**form 終態系統更新（iter#246 R1）— 15 final_forms / 5 種派生條件 source**：
+| 觸發類型 | form | 條件 source |
+|---------|------|-------------|
+| trait-based (per-pet 單一極端) | fighter / sage / diva / divine / gourmet / explorer / warmheart | 7 種 per-pet trait counter |
+| fallback | healthy / fatty / ugly | 預設 / 失衡 |
+| 派生 (cross-life ownedAccessories) | drifter / curator | 物質累積 vs 物質克制 |
+| 派生 (per-pet 三 trait AND) | farmhand | 多面手 |
+| 派生 (cross-life dex.unlockedForms) | netizen | 跨命知識累積 |
+| **派生 (cross-life day-based streak)（本輪首例）** | **scholar** | 持續登入 streak ≥ 14 |
+
+**派生 trait SOP 5 種條件 source 完整 spectrum**：
+1. cross-life **物質累積**（drifter / curator）— 物質 narrative
+2. per-pet **多 trait AND**（farmhand）— 多面手 narrative
+3. cross-life **dex 知識累積**（netizen）— 老玩家 narrative
+4. cross-life **day-based streak**（**scholar** 本輪）— **持續鑽研 narrative ✨ 首例**
+5. （未來候選）cross-life **achievement count** / **history.totalSessions** — kawaii-decora「decora 繁裝家」narrative source 候選
+
+**派生 trait form ship pipeline SOP 第 5 次驗證進度**：
+| Cron 輪 | 階段 | 完成輪 |
+|---------|------|------|
+| **R1 main 6 處（本輪）** | 結構建立 | iter#216 drifter / iter#234 curator / iter#241 farmhand / iter#244 netizen / **iter#246 scholar** |
+| **R2 + §image-prompts 整合（兩輪 SOP）** | user-facing layer + AI 生圖 prompt | iter#216 §8.8 / iter#234-236 / iter#241-242 整合首例 / iter#244-245 整合第 2 次 reuse / **iter#246-247 整合第 3 次 reuse 預啟** |
+
+**整合 SOP 從「reusable 標準」升級為「validated 量產做法」**：
+- iter#241-242 farmhand 整合首例
+- iter#244-245 netizen 第 2 次 reuse
+- **iter#246-247 scholar 第 3 次 reuse 預啟**（每輪 SOP 100% 複製，零 deviation）
+- 後續 form-less 軸補 form 候選（剩 kawaii-decora 1 軸）可繼續 reuse
+
+**v0.6+ 結算更新（iter#246）**：
+- ✅ iter#222 / 223-225 / 227-228 / 229-231 / 233 軸 ship + 跨軸成就 + form-less seasonal mini-batch
+- ✅ iter#226 / 232 / 243 GDD §5.5 三 sync
+- ✅ iter#230 retrospective-230 + iter#234-236 curator + iter#241-242 farmhand + iter#244-245 netizen 完整 ship + iter#235-240 i18n 衝刺五輪
+- ✅ **iter#246 scholar R1 main（finalForms 14 → 15 + 派生 trait SOP 第 5 次成功 + 第 5 種派生條件 source 首例：day-based streak）**
+- ⏳ iter#247 R2 + §8.12 image-prompts 整合：scholar speech / i18n form/ach keys / FORM_ICONS map +📚 / collect_all + onboarding bump 14→15 / §8.12 prompt
+- ⏳ iter#248+ 候選：kawaii-decora 派生 form 第 6 例 R1（最後 1 個 form-less 軸 — narrative「decora 繁裝家」/ condition 候選 cross-life **achievement count ≥ 20 OR history.totalSessions ≥ 30** 第 6 種 source）/ light academia 第 13 軸候選評估 / docs/local-image-gen-setup.md / GDD §5.5 增量 sync
+
+**i18n 進度**：625 條（unchanged，R2 補 i18n keys）— 預期 R2 加 form/ach/speech keys 約 +12 條，達 637 條
+**事件池進度**：26 regular + 21 seasonal events = 47 total event SVGs（unchanged）
+**配件池進度**：27 accessories（unchanged）
+**finalForms**：14 → **15** 🎉
+**派生 trait form**：drifter (累積) / curator (克制) / farmhand (平衡) / netizen (見識) / **scholar (持續)** = 5 條 narrative spectrum 完整
+
+**未來 follow-up（不在本輪）**：
+- iter#247 R2 + §8.12 整合（即啟動）：speech pool「📚 又翻了一頁~」「(整理書堆)」「✦ 學海無涯」「老習慣，還是要每天讀點書」「思考是甜的」narrative + i18n + FORM_ICONS 📚 + image-prompts §8.12 prompt
+- iter#248+ kawaii-decora 派生 form 第 6 例：narrative「decora 繁裝家 / 累積成就家」/ condition 候選 cross-life **achievement count ≥ 20**（解鎖 20 個成就的繁裝家 narrative）— 完成 form-less 軸補 form 全 6 種派生 source spectrum
+- iter#250 retrospective-250 候選：素材豐富（v0.6 ship 主推進 30+ cron 輪總結 — 12 軸 + **15 forms** + 派生 trait SOP 5 次成功 + 5 種條件 source spectrum + 整合 reusable 標準 + i18n 衝刺 5 輪雙 milestone）
+
+**影響檔案**：
+- `src/cfg.js`（finalForms +1 / petArt.adult +1 / achievements +1 + collect_all bump 14→15 desc）
+- `src/evolve.js`（finalizeForm 加 scholar day-based streak 派生條件 — 用 state.daily.loginStreak 首例）
+- `src/achievements.js`（evaluator +form_scholar + collect_all 門檻 bump 14→15）
+- `sw.js`（CACHE_VERSION → iter246）
+- `docs/iteration-log.md`（本條 entry）
+
+**驗證**：`./scripts/run-checks.sh` 全 7 step + 8/8 smoke 綠燈 ✅；46 cron 輪 0 P0 bug accumulated（since iter#166 render regression）；cfg-schema invariant 8（finalForms keys ↔ petArt.adult keys 雙向同步）通過 — scholar 兩處同步 ship 沒漏
+
+---
+
+## 2026-04-30 19:31 · Session A — iter#245 netizen 派生 form R2 + §8.11 image-prompts 整合 ship — i18n 613 → 625 + 派生 trait 整合 SOP 第 2 次 reuse 成功 + form-less 軸補 form 完成 2 軸 (剩 dark academia / kawaii-decora)
+
+**觸發**：cron 第 245 輪 — iter#244 R1 main 6 處 ship 後，本輪 R2 收尾 5 處 + §8.11 image-prompts 整合（iter#241-242 farmhand 整合 SOP 首例驗證後第 2 次 reuse — **整合做法從「首例」升級為「reusable 標準」**）。對標 farmhand 整合 ship pipeline 100% 複製 SOP 零 deviation。
+
+**為什麼整合做法第 2 次 reuse 成功是高權重事件**：
+- iter#241-242 farmhand 是首次驗證「R2 + §image-prompts 同 cron 輪整合」設計可行性（11+1 touchpoints in 1 round）
+- **iter#245 第 2 次 reuse 確認 SOP 可預測 / 可複製**：同 11+1 touchpoints 在 10 分鐘內完成，零 regression
+- 整合做法從「實驗 → 標準做法 → 成熟 reusable」三階段升級，後續 dark academia / kawaii-decora 派生 form 候選都可遵循
+
+**動作（R2 收尾 5 處 + §8.11 整合）**：
+
+1. **`src/cfg.js` speech.form_netizen 5 條 pool**（speech_pools 52 → 53）：
+   ```
+   form_netizen: ["⌨ 上次見過你~", "💾 老玩家路過", "(整理像素小飾品)",
+                  "✦ 在啾啾世界混了好久", "数位 nostalgia 一回首"]
+   ```
+   - **narrative 4 form 互補對比完整**（drifter「累積收藏」/ curator「克制留白」/ farmhand「平衡知足」/ **netizen「跨命見識」**）— 4 pool 各 5 條 = **20 條派生 form speech** 完整 narrative spectrum
+   - 用語老玩家 wink + 像素飾品意象（"上次見過你" / "老玩家路過" / "像素小飾品" / "混了好久" / "数位 nostalgia"）— 跟既有 13 form pools narrative 全區隔
+   - cfg-schema invariant 7 通過（speech pool 非空字串陣列）
+
+2. **`src/menus.js` FORM_ICONS map +netizen 💾**：
+   ```js
+   FORM_ICONS = { ..., farmhand: "🌾", netizen: "💾" }
+   ```
+   - 💾 (floppy disk) — y2k 數位 nostalgia 視覺辨識物 No.1，跟 cd_pendant 不同 motif（💿 vs 💾 不衝突）
+   - **dex 跨命累積 form-distribution mini-strip 自動納入第 14 form** display
+
+3. **`src/i18n.js` netizen i18n keys 雙語 12 條**（i18n 613 → 625）：
+   - `form.netizen.label` zh+en：「網民雞」/ "Netizen Chick"
+   - `form.netizen.desc` zh+en：「粉藍漸層 + chromatic glitch 質感 + 老式像素飾品 — 跨命累積 5 種以上 form 的「老網民」，y2k 數位 nostalgia 的見證者。」/ "Pink-blue gradient + chromatic glitch finish + retro pixel charms — a seasoned netizen who's seen 5+ forms across lifetimes, the y2k digital-nostalgia witness."
+   - `ach.form_netizen` zh+en：「老網民」/ "Old-School Netizen"
+   - `achdesc.form_netizen` zh+en：「養出網民雞」/ "Raised a netizen chicken"
+   - **collect_all 文案 13→14 雙語 bump**：`achdesc.collect_all` 從「收集全部 13 種終態 / Collected all 13 final forms」→「**14 種終態 / 14 final forms**」
+   - **onboarding 文案 13→14 雙語 bump**：`onboarding2.dex` 雙語 13 → 14
+
+4. **`docs/image-prompts.md` §8.11 netizen AI 生圖 prompt**（new section 在 §8.10 farmhand 前插入維持時序倒敘）：
+   - 標題行：「## 8.11 網民雞（chick-adult-netizen.png）  *iter#244 v0.6 第 14 個進化分支 — 待生圖補上*」
+   - prompt code block（19 行）：[全域風格] + Subject 描述 + 11 個視覺指令（subtle chromatic glitch / CD pendant / floppy disk wing / pixel-grid haze background / pink-cyan-lavender palette / etc.）+ 3 處 narrative 強調（chromatic glitch SUBTLE not full-RGB / 軟 Y2K not aggressive neon / 「old computer desk's cute trinkets」）+ 3 form overlap 避免規則（drifter / diva / kawaii-decora narrative 區隔 explicit）
+   - 「為什麼這個設計」段落：呼應 netizen 解鎖路徑（cross-life dex.unlockedForms.size ≥ 5）+ chromatic glitch 視覺化「跨多時代版本」narrative + 三種 retro 飾品（CD + floppy + star_clip）視覺化「跨命累積數位 nostalgia」+ 跟 drifter / curator / farmhand 三 form **narrative source 完全區隔**（**第 4 種派生條件 source 首例：跨命知識累積 ✨**）+ pastel pink-cyan-lavender palette 對齊 cottagecore TA + y2k revival 主流社群 aesthetic + 解鎖條件詳細數值
+
+5. **`sw.js`：CACHE_VERSION iter244 → iter245**
+
+**lint chain 報表**：
+- 上輪 cfg-schema：`9 traits / 52 speech_pools / 14 final_forms / 27 accessories`
+- 本輪 cfg-schema：`9 traits / **53 speech_pools** / 14 final_forms / 27 accessories`（speech_pools 52 → 53 反映 form_netizen pool）
+- check-assets：115 references（unchanged）
+- 7 step + 8/8 smoke + i18n-shadow 23 src + i18n-coverage 189 keys ✅
+- **dex form-distribution mini-strip 第 14 form 自動納入**（FORM_ICONS map 有 netizen 💾 後玩家養出 netizen form 時 dex 顯示「💾 網民雞 ×N」(zh) / "💾 Netizen Chick ×N" (en)）
+
+**派生 trait form ship pipeline 整合 SOP 第 2 次 reuse 成功驗證**：
+| Cron 輪 | 階段 | 內容 | 完成輪 |
+|---------|------|------|------|
+| **R1 main 6 處** | 結構建立（不可見 form） | cfg / petArt / achievements / evolve / achievements.js / sw | iter#216 / iter#234 / iter#241 / **iter#244 netizen** |
+| **R2 + §image-prompts 整合（兩輪 SOP）** | user-facing layer + AI 生圖 prompt | speech / i18n / FORM_ICONS / dex display / collect_all + onboarding bump / image-prompts | iter#217+§8.8 三輪 / iter#235+iter#236 §8.9 三輪 / **iter#241-242 整合首例兩輪 / iter#244-245 整合第 2 次 reuse 兩輪 ✨ ✨** |
+
+**form 終態系統最終狀態（iter#245 完成）— 14 final_forms 完整 user-facing**：
+| 觸發類型 | form | 條件 source | speech | i18n | FORM_ICON |
+|---------|------|------|------|------|----------|
+| trait-based (per-pet) | fighter / sage / diva / divine / gourmet / explorer / warmheart | 7 種 trait counter | 7 個 pool | 雙語 7×4=28 keys | 7 icons |
+| fallback | healthy / fatty / ugly | 3 種 預設 | 3 個 pool | 雙語 3×4=12 keys | 3 icons |
+| **派生 (cross-life ownedAccessories)** | drifter / curator | 物質累積 vs 物質克制 | 2 個 pool | 雙語 2×4=8 keys | 2 icons |
+| **派生 (per-pet 三 trait AND)** | farmhand | 平衡照顧 | 1 個 pool | 雙語 4 keys | 1 icon |
+| **派生 (cross-life dex.unlockedForms)** | **netizen（本輪）** | 跨命知識累積 ✨ 首例 | 1 個 pool | 雙語 4 keys | 1 icon |
+| **總** | **14 forms** | 4 種 source | **14 pools** | **56 i18n keys 雙語** | **14 FORM_ICONS** |
+
+**派生 trait SOP 4 種條件 source 完整 spectrum**：
+1. cross-life **物質累積**（drifter ≥ 8 / curator ≤ 3 + 高 perfect）— 物質 narrative
+2. per-pet **多 trait AND**（farmhand 三 trait moderate）— 多面手 narrative
+3. cross-life **dex 知識累積**（netizen ≥ 5 forms）— 老玩家 narrative ✨
+4. （未來候選）cross-life **achievement / streakDays 累積** — scholar / regular narrative
+
+**v0.6+ 結算更新（iter#245）**：
+- ✅ iter#222 / 223-225 / 227-228 / 229-231 / 233 軸 ship + 跨軸成就 + form-less seasonal mini-batch
+- ✅ iter#226 / 232 / 243 GDD §5.5 三 sync
+- ✅ iter#230 retrospective-230 + iter#234-236 curator + iter#241-242 farmhand 完整 ship + iter#235-240 i18n 衝刺五輪
+- ✅ **iter#244-245 netizen 整合 ship（finalForms 13 → 14 + 派生 trait SOP 第 4 次成功 + 整合做法第 2 次 reuse 成功 + 跨命 dex 派生條件首例）**
+- ⏳ iter#246+ 候選 ROI 排序：(1) dark academia 派生 form 第 5 例（剩 2 form-less 軸之一，scholar narrative，4 種派生 source 中可選 streakDays/achievement count）/ (2) kawaii-decora 派生 form 第 6 例（剩 1 form-less 軸最後，decora narrative）/ (3) GDD §5.5 增量 sync 13 → 14 forms（純 docs）/ (4) light academia 第 13 軸候選評估 / (5) docs/local-image-gen-setup.md
+
+**i18n 進度**：613 + 12 = **625 條** zh-TW + 625 條 en（距 700 milestone 差 75 條）
+**事件池進度**：26 regular + 21 seasonal events = 47 total event SVGs（unchanged）
+**配件池進度**：27 accessories（unchanged）
+**finalForms**：14 ✅ user-facing complete（iter#245 完整 ship — speech / i18n / icon / dex display / image-prompts 全打通）
+**speech_pools**：52 → **53**
+**form-less 軸**：4 → 3（y2k 補完 netizen 後縮減）— 剩 dark academia / kawaii-decora 2 軸 form-less
+
+**未來 follow-up（不在本輪）**：
+- iter#246 候選優先級：dark academia 派生 form 第 5 例 R1（建議因 form-less 軸補 form 順序：boho ✅ / minimalist ✅ / cottagecore ✅ / **y2k ✅（本輪）** → dark academia 是邏輯下一個）/ 條件 source 候選用 cross-life **streakDays ≥ 14** 「scholar 持續登入老玩家」narrative — 跟既有 4 種 source 不重複（streakDays 是 day-based 而非 stat-based）
+- iter#250 retrospective-250 候選：素材豐富（v0.6 ship 主推進 30+ cron 輪總結 — 12 軸 + 14 forms + 派生 trait SOP 4 次成功 + 4 種條件 source spectrum + 整合做法 reusable 標準 + i18n 衝刺 5 輪雙跨 milestone）
+
+**影響檔案**：
+- `src/cfg.js`（speech.form_netizen pool +5 條）
+- `src/menus.js`（FORM_ICONS map +netizen 💾）
+- `src/i18n.js`（netizen 雙語 form/ach/desc 4 keys × 2 = 8 條 + collect_all 雙語 bump + onboarding2.dex 雙語 bump = +12 條）
+- `docs/image-prompts.md`（§8.11 netizen 新段落 — 19-行 prompt + 為什麼這個設計）
+- `sw.js`（CACHE_VERSION iter244 → iter245）
+- `docs/iteration-log.md`（本條 entry）
+
+**驗證**：`./scripts/run-checks.sh` 全 7 step + 8/8 smoke 綠燈 ✅；45 cron 輪 0 P0 bug accumulated（since iter#166 render regression）；cfg-schema invariant 7（speech pool 非空字串陣列）通過 — form_netizen 5 條 pool 全合規
+
+---
+
+## 2026-04-30 19:21 · Session A — iter#244 y2k 派生 form 第 4 例「網民雞」(netizen) R1 main ship — finalForms 13 → 14 + 派生 trait SOP 第 4 次成功啟動 + 跨命 dex 派生條件首例
+
+**觸發**：cron 第 244 輪 — iter#243 GDD §5.5 sync 後，從 candidates ROI 排序選 (1)「y2k 派生 form 第 4 例 R1」(中-高 ROI ship — farmhand 整合 SOP 已驗證可 reuse 兩輪 SOP)。對標 iter#216-217 drifter / iter#234-235 curator / iter#241-242 farmhand 派生 trait ship pipeline 第 4 次複製。**派生 trait SOP 第 4 次成功啟動 + 整合做法第 2 次 reuse** ✅✅✅✅。
+
+**為什麼選 netizen 而非 light academia 第 13 軸**：
+- **整合 SOP reuse momentum**：farmhand 整合 SOP 剛驗證（iter#241-242 兩輪），熱手期 reuse y2k 派生 form 邊際成本低；light academia 是新軸 ship pipeline 又要 3 輪 + 差異化分析，先做 form-less 軸補 form 完成 + GDD §5.5 累積 4 派生 trait narrative 後再啟動新軸更穩
+- **y2k 軸 form-less 在剩 3 個 form-less 軸中最有 narrative 切入點**：dark academia「scholar」narrative 跟既有 sage form 視覺接近 / kawaii-decora「decora 繁裝家」narrative 可能跟 drifter 累積收藏家衝突 / **y2k「數位原住民」narrative 跟既有 12 form 全區隔**（紋理 + 跨時代 + 數位 nostalgia 都獨立）
+- **跨命 dex 派生條件首例新嘗試**：drifter / curator 用 ownedAccessories 跨命派生 / farmhand 用三 trait per-pet AND / **netizen 用跨命 dex.unlockedForms.size 派生 — 第 4 種派生 trait 條件源**，narrative spectrum 從 "什麼 stat" 擴展到 "什麼 history"
+
+**為什麼 netizen 條件設計 dex.unlockedForms.size ≥ 5**：
+- **「數位原住民 / 跨命見多識廣」narrative**：玩家養過 5 種以上不同 form 的「老玩家」/ veteran — 跟 drifter「累積買 8 件」(物質累積) / curator「克制 3 件 + 高 perfect」(精神累積) / farmhand「三 trait moderate」(per-pet 平衡) 的 narrative source 不同，本 form 是「**跨命知識累積**」narrative source
+- **數值平衡**：≥ 5 forms 表示玩家已養過至少 5 種 form (典型 ~D14+ 老玩家路徑) — 對應「數位老人 / web1.0 原住民」narrative；不會 conflict 既有 form 因為解鎖門檻自然高（新玩家 D1-7 還沒養出多 form）
+- **placed AFTER farmhand BEFORE fatty fallback**：
+  - 收藏家 (≥ 8) → drifter / 克制 (≤ 3 + 高 perfect) → curator / 平衡 (3 trait moderate) → farmhand / **見多 (cross-life dex ≥ 5) → netizen** ← NEW / 失衡 (高 fatPoints / lowMood) → fatty / ugly
+  - **6 條 path 互斥不衝突**，narrative spectrum 完整：物質累積 / 物質克制 / 平衡照顧 / 跨命見識 / 失衡偏向
+
+**動作（R1 main 6 處）**：
+
+1. **`src/cfg.js` finalForms 加第 14 條**（13 → 14 final_forms）：
+   ```
+   netizen: { labelKey:"form.netizen.label", label:"網民雞",
+              descKey:"form.netizen.desc",
+              desc:"粉藍漸層 + chromatic glitch 質感 + 老式像素飾品 — 跨命累積 5 種以上 form 的「老網民」，
+                    y2k 數位 nostalgia 的見證者。
+                    解鎖條件：dex.unlockedForms.size ≥ 5（跨命累積見識多種 form 後的 meta-progression award）。" }
+   ```
+   - 加在 farmhand 後（y2k 派生 form 對稱位置 + design rationale 註解）
+
+2. **`src/cfg.js` petArt.adult netizen placeholder**：
+   ```
+   netizen:"assets/images/chick-adult-healthy.png"
+   ```
+   - 加在 farmhand placeholder 後（待 docs/image-prompts.md §8.11 生圖補上 chick-adult-netizen.png — y2k 粉藍 chromatic + CD pendant + pixel motif）
+
+3. **`src/cfg.js` achievements form_netizen + bump collect_all**：
+   ```
+   form_netizen: { icon:"💾", labelKey:"ach.form_netizen", label:"老網民",
+                   descKey:"achdesc.form_netizen", desc:"養出網民雞" }
+   collect_all: ... desc:"收集全部 14 種終態"  // 13 → 14 bump
+   ```
+   - icon 💾 (floppy disk) — y2k 數位 nostalgia 視覺辨識物 No.1，跟既有 form icons 全區隔（cd_pendant 已用 💿 概念但 icon 不同）
+
+4. **`src/evolve.js` finalizeForm trait priority chain 加 netizen**：
+   ```js
+   else if (tr.eventsCaught >= 10 && tr.feedCount >= 15 && tr.petCount >= 15) form = "farmhand";
+   // iter#244 netizen (placed AFTER farmhand BEFORE fatty fallback)
+   else if (window.NourishDex && window.NourishDex.unlockedFormsSet().size >= 5) form = "netizen";
+   else if (tr.fatPoints >= 10) form = "fatty";
+   ```
+   - **window.NourishDex 跨命派生條件首例**：跟 drifter / curator 用 state.pet.ownedAccessories 不同 source，本件用 NourishDex storage layer
+   - **safety guard `window.NourishDex &&`**：dex.js 載入早於 evolve.js（per <script> 載入順序），但留 guard 防 race condition
+
+5. **`src/achievements.js` evaluator 加 form_netizen + bump collect_all 13 → 14**：
+   ```js
+   ["form_farmhand", dexUnlocked.has("farmhand")],
+   ["form_netizen",  dexUnlocked.has("netizen")],  // iter#244
+   ["collect_3", ...], ["collect_5", ...],
+   ["collect_all", dexUnlocked.size >= 14],  // 13 → 14 bump
+   ```
+
+6. **`sw.js`：CACHE_VERSION iter242 → iter244**（跳 iter243 因 GDD sync 純 docs 不需 sw bump）
+
+**lint chain 報表**：
+- 上輪 cfg-schema：`9 traits / 52 speech_pools / 13 final_forms / 27 accessories`
+- 本輪 cfg-schema：`9 traits / 52 speech_pools / **14 final_forms** / 27 accessories` 🎉
+- check-assets：115 references resolve（unchanged，netizen 用 healthy.png placeholder）
+- i18n-coverage 189 keys（unchanged，本輪 R1 不新增 t() callsites — i18n keys 加在 R2）
+- 7 step + 8/8 smoke + i18n-shadow 23 src ✅
+
+**form 終態系統更新（iter#244 R1）— 14 final_forms**：
+| 觸發類型 | form | 條件 source |
+|---------|------|-------------|
+| trait-based (per-pet 單一極端) | fighter / sage / diva / divine / gourmet / explorer / warmheart | 7 種 per-pet trait counter |
+| fallback | healthy / fatty / ugly | 預設 / 失衡 |
+| **派生 (cross-life ownedAccessories)** | drifter / curator | 物質累積 vs 物質克制 — drifter ≥ 8 件 / curator ≤ 3 件 + 高 perfect |
+| **派生 (per-pet 三 trait AND)** | farmhand | 三 trait moderate 平衡 |
+| **派生 (cross-life dex.unlockedForms)（本輪首例）** | **netizen** | 跨命 form 種數累積 ≥ 5 |
+
+**派生 trait SOP 4 種條件 source 完整 spectrum**：
+1. cross-life **物質累積**（drifter / curator）— 跟玩家「買買買」/「克制買」narrative
+2. per-pet **多 trait AND**（farmhand）— 跟玩家「平衡照顧」narrative
+3. cross-life **dex 知識累積**（netizen）— 跟玩家「老玩家身份」narrative ✨ 首例
+4. （未來候選）cross-life **achievement 累積**（dark academia「scholar」?）/ **streakDays**（持續登入老玩家「regular」?）等
+
+**派生 trait form ship pipeline SOP 第 4 次驗證進度**：
+| Cron 輪 | 階段 | 完成輪 |
+|---------|------|------|
+| **R1 main 6 處（本輪）** | 結構建立 | iter#216 drifter / iter#234 curator / iter#241 farmhand / **iter#244 netizen** |
+| **R2 + §image-prompts 整合（iter#245 即啟動）** | user-facing layer + AI 生圖 prompt | iter#217 + iter#216 §8.8 / iter#235 + iter#236 §8.9 / iter#242 整合首例 / iter#245 預定第 2 次 reuse |
+
+**整合 SOP 從「首例」升級為「reusable 標準」**：
+- iter#241-242 farmhand 整合首例（兩輪 SOP）
+- **iter#244-245 netizen 第 2 次 reuse**（同 SOP 100% 複製，零 deviation 預期）
+- 後續 form-less 軸補 form 候選（剩 dark academia / kawaii-decora 2 軸）都可遵循
+
+**v0.6+ 結算更新（iter#244）**：
+- ✅ iter#222 / 223-225 / 227-228 / 229-231 / 233 軸 ship + 跨軸成就 + form-less seasonal mini-batch
+- ✅ iter#226 / 232 / 243 GDD §5.5 三 sync
+- ✅ iter#230 retrospective-230 + iter#234-236 curator + iter#241-242 farmhand 完整 ship + iter#235-240 i18n 衝刺五輪
+- ✅ **iter#244 netizen R1 main（finalForms 13 → 14 + 派生 trait SOP 第 4 次成功啟動 + 跨命 dex 派生條件首例）**
+- ⏳ iter#245 R2 收尾 + §8.11 image-prompts 整合：netizen speech / i18n form/ach keys / FORM_ICONS map +💾 / collect_all + onboarding bump 13→14 / §8.11 prompt
+- ⏳ iter#246+ 候選：dark academia 派生 form 第 5 例 R1 / kawaii-decora 派生 form 第 6 例 R1 / light academia 第 13 軸評估 / docs/local-image-gen-setup.md
+
+**i18n 進度**：613 條（unchanged，R2 補 i18n keys）— 預期 R2 加 form/ach/speech keys 約 +9 條，達 622 條
+**事件池進度**：26 regular + 21 seasonal events = 47 total event SVGs（unchanged）
+**配件池進度**：27 accessories（unchanged）
+**finalForms**：13 → **14** 🎉
+**派生 trait form**：drifter (累積) / curator (克制) / farmhand (平衡) / **netizen (見識)** = 4 條 narrative spectrum 完整
+
+**未來 follow-up（不在本輪）**：
+- iter#245 R2 + §8.11 整合（即啟動）：speech pool「⌨ 上次見過你~」「💾 老玩家路過」「(整理像素小飾品)」「✦ 在啾啾世界混了好久」「数位 nostalgia 一回首」narrative + i18n + FORM_ICONS 💾 + image-prompts §8.11 prompt
+- iter#246+ form-less 軸補 form 候選：dark academia 派生 form 第 5 例 candidate「scholar 學者」narrative (例如 trait condition: streakDays ≥ 14 跨命登入老玩家 / state.history.totalSessions ≥ N) 
+- iter#250 retrospective-250 候選：以 14 forms 完整 + 派生 trait SOP 4 次成功 + 4 種條件 source spectrum 完整 為素材
+
+**影響檔案**：
+- `src/cfg.js`（finalForms +1 / petArt.adult +1 / achievements +1 + collect_all bump 13→14 desc）
+- `src/evolve.js`（finalizeForm 加 netizen 跨命 dex 派生條件 — 用 window.NourishDex.unlockedFormsSet() 首例）
+- `src/achievements.js`（evaluator +form_netizen + collect_all 門檻 bump 13→14）
+- `sw.js`（CACHE_VERSION → iter244）
+- `docs/iteration-log.md`（本條 entry）
+
+**驗證**：`./scripts/run-checks.sh` 全 7 step + 8/8 smoke 綠燈 ✅；44 cron 輪 0 P0 bug accumulated（since iter#166 render regression）；cfg-schema invariant 8（finalForms keys ↔ petArt.adult keys 雙向同步）通過 — netizen 兩處同步 ship 沒漏
+
+---
+
+## 2026-04-30 19:11 · Session A — iter#243 GDD §5.5 增量 sync：12 軸 / 11 forms → 12 軸 / 13 forms + 派生 trait SOP 1→3 次成功紀錄 + 整合做法首例 + i18n 衝刺 SOP 留檔
+
+**觸發**：cron 第 243 輪 — iter#241-242 farmhand 派生 form 完整 ship 後，canonical reference (iter#232 sync 後) 落後 11 cron 輪 + 兩個重要 milestone「curator 派生 form 第 2 例」+「farmhand 派生 form 第 3 例 + 整合做法」需即時記錄到 GDD §5.5。對齊 iter#226 / iter#232 同 cadence「每 5-10 cron 輪 GDD sync」設計。
+
+**為什麼 iter#243 排序為「GDD sync」優先於「light academia 第 13 軸評估」/「y2k 派生 form 第 4 例」**：
+- **canonical reference 落後 11 輪 = 後續決策風險**：GDD §5.5 是後續 form-less 軸補 form 決策的真相之源 — y2k / dark academia / kawaii-decora 哪個先補 form 需看 §5.5 已有派生 trait narrative spectrum 完整度 + 軸 ROI 排序，落後 11 輪會讓後續 cron 出現「重複設計 / 誤判 form-less 軸狀態」風險
+- **派生 trait SOP 從 1 次 → 3 次驗證升級**是高權重事件：iter#232 sync 時派生 trait 只有 drifter 1 例，現在 drifter / curator / farmhand 3 例完整 narrative spectrum — 必須記錄成「成熟 reusable 標準」
+- **整合做法首例（iter#242 farmhand R2 + §image-prompts 同輪 ship）**是 ship pipeline 縮減 SOP — drifter / curator 三輪變 farmhand 兩輪，後續 form-less 軸補 form 候選都可遵循，不記錄會讓後人重新探索
+
+**動作**：
+
+1. **更新 §5.5 標題與摘要**（iter#231 sync → iter#242 sync，反映 11 cron 輪累積）：
+   - 標題：「iter#231 sync」→ **「iter#242 sync，含 v0.6 派生 trait SOP 第 2/3 次成功 — curator + farmhand finalForm 擴充至 13」**
+   - 摘要句：「11 個 finalForm」→ **「13 個 finalForm」**；events 46 → **47**（regular unchanged 26 + seasonal 20 → 21 反映 iter#233 white_day_gifts）；「12/12 軸成形 ✅」保留 + **新增「派生 trait form spectrum 完整 3 例：drifter（累積）/ curator（克制）/ farmhand（平衡）— 跨軸 form identity 三條 narrative path」**
+
+2. **更新 §5.5 美學軸地圖表格**（cottagecore + minimalist 兩 row）：
+   - cottagecore row finalForm 從「（fallback to healthy）」→ **「farmhand（iter#241-242 派生 form 第 3 例）」**
+   - minimalist row finalForm 從「（fallback to healthy）」→ **「curator（iter#234-235 派生 form 第 2 例）」**
+   - 兩軸從 form-less → 有 form（form-less 軸總數 5 → 4，剩 y2k / dark academia / kawaii-decora）
+
+3. **更新「form-less 軸的設計選擇」section**：
+   - 「五軸 form-less」→ **「四軸 form-less」**（y2k / dark academia / minimalist → 改為 minimalist 已有 curator / kawaii-decora）— 修正 minimalist 已有 form 後的計算
+   - 加「**派生 trait form 三大例**」block：drifter（首例 累積）/ curator（第 2 例 克制 對稱反向 narrative）/ farmhand（第 3 例 平衡 三條件 AND）三條 narrative path 完整紀錄
+   - 加「派生 trait form narrative spectrum 完整：累積（drifter） / 克制（curator） / 平衡（farmhand）」設計留檔
+   - v0.7+ 候選收窄為 4 個 form-less 軸（y2k / dark academia / kawaii-decora 三個無 form / minimalist 已有 curator）— 加候選派生 trait 設計提示：y2k「digital 數位原住民」/ dark academia「scholar 學者」/ kawaii-decora「decora 繁裝家」是新派生 trait 候選命名
+
+4. **更新「軸覆蓋演進時序」**：
+   - 標題「12 軸覆蓋演進時序」→ **「12 軸覆蓋 + 13 forms 演進時序」**
+   - 加 iter#234-235 curator 派生 form 第 2 例
+   - 加 iter#241-242 farmhand 派生 form 第 3 例 + 整合 SOP 首例
+
+5. **更新「ship pipeline SOP 第 N 次成功複製」**：
+   - form ship pipeline「4 次成功」→ **「6 次成功，派生 trait SOP 3 次成功 ✅✅✅」**（gourmet / explorer / warmheart / drifter / **curator / farmhand**）
+   - 軸 ship pipeline 保留「4 次成功」（kawaii-decora 是最近 iter#229-231）
+   - **新增「派生 trait form ship 整合做法（iter#241-242 farmhand 首例）✨」**段落：R2 + §image-prompts 同 cron 輪整合，比三輪 SOP 縮減為兩輪 SOP，後續可遵循
+   - **新增「i18n 衝刺 SOP（iter#235-240 五輪 165 條）」**段落：events labelKey + traitsDisplay + 散落 UI strings — 漸進式 migration helper 模式（events.js labelOf / settings.js inline / utils.js tr-getter）三處驗證
+   - 註：form-less 軸 seasonal 補完 mini-batch 從「兩輪驗證」→ **「三輪驗證」**（iter#227-228 + 233 white_day_gifts）
+
+**lint chain 報表**：
+- 純 docs 編輯，無 code 變動 — assets / cfg / i18n / sw 全 unchanged
+- 7 step + 8/8 smoke ✅
+- 不需 sw bump
+
+**為什麼不更新 §10.x backlog 章節（本輪）**：
+- §10.2 / §10.3 是「v0.2 / v0.3 階段」backlog 章節 — 跟 §5.5 美學軸地圖屬於不同 sub-domain
+- 留給後續（v0.6 main 全完成後做 v0.7 backlog 規劃時）
+
+**v0.6+ 結算更新（iter#243）**：
+- ✅ iter#222 / 223-225 / 227-228 / 229-231 / 233 軸 ship + 跨軸成就 + form-less seasonal mini-batch
+- ✅ iter#226 / 232 / **243（本輪）** GDD §5.5 三 sync（11 → 12 軸 → 12 軸 + 13 forms）
+- ✅ iter#230 retrospective-230 + iter#234-236 curator 完整 ship
+- ✅ iter#235-240 i18n 衝刺五輪（436 → 601 雙跨 500 + 600 milestone）
+- ✅ iter#241-242 farmhand 整合 ship（finalForms 12 → 13 + 派生 trait SOP 第 3 次成功）
+- ✅ **iter#243 GDD §5.5 sync 紀錄派生 trait SOP 升級 + 整合做法首例**
+- ⏳ iter#244+ 候選 ROI 排序：(1) light academia 第 13 軸評估（純研究 sub-agent friendly）/ (2) y2k 派生 form 第 4 例 R1（reuse farmhand 整合 SOP，y2k「digital 數位原住民」narrative）/ (3) docs/local-image-gen-setup.md（user 提問 待 cron 啟動）/ (4) i18n 衝刺第六輪（剩零碎 strings 衝 700 milestone）
+
+**i18n 進度**：613 條（unchanged，純 docs）
+**事件池進度**：26 regular + 21 seasonal events = 47 total event SVGs（unchanged）
+**配件池進度**：27 accessories（unchanged）
+**finalForms**：13（unchanged，user-facing complete）
+**form-less 軸**：5 → **4**（cottagecore + minimalist 兩軸補 form 後縮減）
+
+**未來 follow-up（不在本輪）**：
+- iter#244 候選優先級：(1) y2k 派生 form 第 4 例（建議因 farmhand 整合 SOP 已驗證可 reuse 兩輪 SOP）/ (2) light academia 第 13 軸評估純研究 / (3) docs/local-image-gen-setup.md
+- iter#250 retrospective-250 候選：素材豐富（v0.6 ship 主推進 30 cron 輪總結 — 12 軸 + 13 forms + 派生 trait SOP 3 次成功 + 整合做法首例 + i18n 衝刺 5 輪 165 條 + 兩個 milestone）
+
+**影響檔案**：
+- `docs/gdd.md`（§5.5 多處更新：標題 + 摘要 + 表格 cottagecore/minimalist row + form-less 軸 section + 演進時序 + ship pipeline SOP — 6 sub-section 翻新）
+- `docs/iteration-log.md`（本條 entry）
+
+**驗證**：`./scripts/run-checks.sh` 全 7 step + 8/8 smoke 綠燈 ✅；43 cron 輪 0 P0 bug accumulated（since iter#166 render regression）；GDD 純文檔不影響 lint chain
+
+---
+
+## 2026-04-30 19:01 · Session A — iter#242 farmhand 派生 form R2 收尾 5 處 + image-prompts §8.10 ship — i18n 601 → 613 + 派生 trait ship pipeline R1+R2+§image-prompts 三段 SOP 第 3 次完整成功
+
+**觸發**：cron 第 242 輪 — iter#241 R1 main 6 處 ship 後，本輪 R2 收尾 5 處 + 順帶完成 §8.10 image-prompts（**三段完整 SOP 同輪 ship** — drifter 首例 / curator 第 2 例 / **farmhand 第 3 例**，本輪是首次「R2 + image-prompts 同 cron 輪」整合做法，比 drifter / curator 各分兩輪 R1+R2 / 後續 image-prompts 第三輪更高效）。
+
+**為什麼本輪整合 R2 + §8.10 image-prompts**：
+- iter#236 補 §8.9 curator prompt 跟 R2 ship 隔了一輪 (iter#235 R2 → iter#236 §8.9) — 中間隔太久 narrative 細節記憶模糊
+- 本輪整合做法：R2 + image-prompts 同 cron 輪 ship — 趁 R1 condition 設計（eventsCaught ≥ 10 + feedCount ≥ 15 + petCount ≥ 15）跟 narrative（樣樣都做一點 / cottagecore 慢活）還新鮮，prompt cross-ref 解鎖路徑直接，narrative 一致性最高
+- **新 SOP 三段整合做法**：派生 form ship pipeline 從「R1 + R2 + 後補 §image-prompts」三輪 → **「R1 + R2&§image-prompts 整合」兩輪**，後續 form-less 軸補 form 候選都可遵循
+
+**動作（R2 收尾 5 處 + §8.10 整合）**：
+
+1. **`src/cfg.js` speech.form_farmhand 5 條 pool**（speech_pools 51 → 52）：
+   ```
+   form_farmhand: ["忙了一整天~", "🌾 收成不錯", "(把今天的小事整理好)",
+                   "✦ 一點一滴累積", "不貪心 / 樣樣都好"]
+   ```
+   - **narrative 三 form 互補對比**（drifter「累積收藏」/ curator「克制留白」/ **farmhand「平衡知足」**）— 三 pool 各 5 條 = **15 條派生 form speech** 完整 narrative spectrum
+   - 用語樸實 + 慢活 + 籐籃意象（"收成" / "整理" / "累積" / "不貪心" / "樣樣都好"）— 跟既有 12 form pools narrative 全區隔
+   - cfg-schema invariant 7 通過（speech pool 非空字串陣列）
+
+2. **`src/menus.js` FORM_ICONS map +farmhand 🌾**：
+   ```js
+   FORM_ICONS = {
+     ..., drifter: "🪢", curator: "🪶", farmhand: "🌾"
+   }
+   ```
+   - 🌾 (sheaf of rice) — cottagecore 田園 narrative，**dex 跨命累積 form-distribution mini-strip 自動納入第 13 form** display（iter#204 ship 的 form-distribution UI 跟 FORM_ICONS map driven，無需動 dex 邏輯）
+
+3. **`src/i18n.js` farmhand i18n keys 雙語 12 條**（i18n 601 → 613）：
+   - `form.farmhand.label` zh+en：「農家雞」/ "Farmhand Chick"
+   - `form.farmhand.desc` zh+en：「麥稈帽 + 籐籃裝著當日收成 — 餵食 / 互動 / 撿事件全方位都做一點，cottagecore 田園慢活的代表。」/ "Straw hat + a wicker basket of the day's harvest — a bit of feeding, petting, and event-catching across the board, the cottagecore slow-living balanced caretaker."
+   - `ach.form_farmhand` zh+en：「田園生活」/ "Pastoral Life"
+   - `achdesc.form_farmhand` zh+en：「養出農家雞」/ "Raised a farmhand chicken"
+   - **collect_all 文案 12→13 雙語 bump**：`achdesc.collect_all` 從「收集全部 12 種終態 / Collected all 12 final forms」→「**收集全部 13 種終態 / Collected all 13 final forms**」
+   - **onboarding 文案 12→13 雙語 bump**：`onboarding2.dex` 雙語 12 → 13
+
+4. **`docs/image-prompts.md` §8.10 farmhand AI 生圖 prompt**（new section 在 §8.9 curator 前插入維持時序倒敘）：
+   - 標題行：「## 8.10 農家雞（chick-adult-farmhand.png）  *iter#241 v0.6 第 13 個進化分支 — 待生圖補上*」
+   - prompt code block（19 行）：[全域風格] + Subject 描述 + 11 個視覺指令（slightly weathered feathers / small woven straw hat with daisy/wheat / wicker basket with mixed items / earth-tone palette / contented expression / golden-hour background hint / etc.）+ 3 處 narrative 強調（balanced not specialized / utilitarian not decorative / contented-not-spiking）+ 3 form overlap 避免規則（drifter / explorer / gourmet narrative 區隔 explicit）
+   - 「為什麼這個設計」段落：呼應 farmhand 解鎖路徑（三條件 AND）+ wicker basket 多元小物視覺化「樣樣都做一點」+ straw hat 跟 boho straw_hat 配件 narrative 區隔（裝飾 vs 工作）+ earth-tone palette 跟其他 12 form 視覺區隔 + contented-not-spiking 跟 spiking-emotion form 區隔 + 解鎖條件詳細數值
+
+5. **`sw.js`：CACHE_VERSION iter241 → iter242**
+
+**lint chain 報表**：
+- 上輪 cfg-schema：`9 traits / 51 speech_pools / 13 final_forms / 27 accessories`
+- 本輪 cfg-schema：`9 traits / **52 speech_pools** / 13 final_forms / 27 accessories`（speech_pools 51 → 52 反映 form_farmhand pool）
+- check-assets：115 references（unchanged）
+- 7 step + 8/8 smoke + i18n-shadow 23 src + i18n-coverage 189 keys ✅
+- **dex form-distribution mini-strip 第 13 form 自動納入**（FORM_ICONS map 有 farmhand 🌾 後玩家養出 farmhand form 時 dex 顯示「🌾 農家雞 ×N」（zh）/ "🌾 Farmhand Chick ×N" (en)）
+
+**派生 trait form ship pipeline 三段 SOP 第 3 次完整收尾驗證**：
+| Cron 輪 | 階段 | 內容 | 完成輪 |
+|---------|------|------|------|
+| **R1 main 6 處** | 結構建立（不可見 form） | cfg.finalForms / petArt / achievements / evolve.js / achievements.js / sw | iter#216 drifter / iter#234 curator / iter#241 farmhand |
+| **R2 收尾 5 處** | user-facing layer 打通 | speech / i18n / FORM_ICONS / dex display / collect_all + onboarding bump | iter#217 drifter / iter#235 curator / **iter#242 farmhand** |
+| **§image-prompts** | AI 生圖 prompt | 視覺敘事 + 解鎖路徑 cross-ref + form 區隔 | iter#216 drifter §8.8 / iter#236 curator §8.9 / **iter#242 farmhand §8.10（本輪整合）** |
+| **總時間** | drifter 跨 3 輪 / curator 跨 3 輪 / **farmhand 跨 2 輪 ✨**（整合 R2 + image-prompts） | 11 + image-prompts touchpoints | drifter ✅ / curator ✅ / **farmhand ✅** |
+
+**SOP 從「成熟」升級為「整合做法」**：
+- iter#216-217 drifter（首次驗證 11-touchpoints SOP，§8.8 image-prompts 同 R1 輪 ship）
+- iter#234-235 curator（第 2 次驗證，§8.9 image-prompts 後補 iter#236 隔輪）
+- **iter#241-242 farmhand（第 3 次驗證，§8.10 image-prompts 整合 R2 同輪 ship）✨ 整合做法**
+- v0.7+ 後續 form-less 軸補 form 候選（y2k / dark academia / kawaii-decora 3 軸）都可直接遵循 farmhand 整合 SOP
+
+**form 終態系統最終狀態（iter#242 完成）— 13 final_forms 完整 user-facing**：
+| 觸發類型 | form | 條件 | speech | i18n | FORM_ICON |
+|---------|------|------|--------|------|----------|
+| trait-based (per-pet) | fighter / sage / diva / divine / gourmet / explorer / warmheart | 7 種 trait counter | 7 個 pool | 雙語 7×4=28 keys | 7 icons |
+| fallback | healthy / fatty / ugly | 3 種 預設 | 3 個 pool | 雙語 3×4=12 keys | 3 icons |
+| **派生 (cross-life)** | drifter / curator / **farmhand（本輪完成）** | 3 種派生 trait — narrative spectrum 完整（累積 / 克制 / 平衡） | 3 個 pool | 雙語 3×4=12 keys | 3 icons |
+| **總** | **13 forms** | — | **13 pools** | **52 i18n keys 雙語** | **13 FORM_ICONS** |
+
+**v0.6+ 結算更新（iter#242）**：
+- ✅ iter#222-225 / 227-228 / 229-231 / 233 軸 ship + 跨軸成就 + form-less seasonal mini-batch
+- ✅ iter#226 / 232 GDD §5.5 雙 sync
+- ✅ iter#230 retrospective-230 + iter#234-236 curator 完整 ship + iter#235-240 i18n 衝刺五輪
+- ✅ **iter#241-242 farmhand 派生 form 整合 ship（finalForms 12 → 13 + 派生 trait SOP 第 3 次成功 + R2&§image-prompts 整合做法首例）**
+- ⏳ iter#243+ 候選 ROI 排序：(1) light academia 第 13 軸候選評估（純研究 / sub-agent friendly）/ (2) y2k / dark academia 派生 form 第 4 例 SOP（farmhand 整合做法 reuse）/ (3) docs/local-image-gen-setup.md（user 提問待 cron 啟動）/ (4) GDD §5.5 增量 sync（記錄 farmhand + 11→13 forms + 整合 SOP）
+
+**i18n 進度**：601 + 12 = **613 條** zh-TW + 613 條 en
+**事件池進度**：26 regular + 21 seasonal events = 47 total event SVGs（unchanged）
+**配件池進度**：27 accessories（unchanged）
+**finalForms**：13 ✅ user-facing complete（iter#242 完整 ship — speech / i18n / icon / dex display / image-prompts 全打通）
+**speech_pools**：51 → **52**
+
+**未來 follow-up（不在本輪）**：
+- iter#243 候選優先級：(1) GDD §5.5 增量 sync 12 → 13 forms + farmhand narrative + 整合 SOP 紀錄（中 ROI / 純 docs）/ (2) light academia 第 13 軸評估（純研究 sub-agent friendly）/ (3) y2k 派生 form 第 4 例 R1（heavy ship 11-touchpoints）
+- iter#250 retrospective-250 候選：以 13 forms 完整 + 派生 trait SOP 3 次成功 + 整合做法 + i18n 跨 600 milestone 為素材
+
+**影響檔案**：
+- `src/cfg.js`（speech.form_farmhand pool +5 條）
+- `src/menus.js`（FORM_ICONS map +farmhand 🌾）
+- `src/i18n.js`（farmhand 雙語 form/ach/desc 4 keys × 2 = 8 條 + collect_all 雙語 bump + onboarding2.dex 雙語 bump = +12 條）
+- `docs/image-prompts.md`（§8.10 farmhand 新段落 — 19-行 prompt + 為什麼這個設計）
+- `sw.js`（CACHE_VERSION iter241 → iter242）
+- `docs/iteration-log.md`（本條 entry）
+
+**驗證**：`./scripts/run-checks.sh` 全 7 step + 8/8 smoke 綠燈 ✅；42 cron 輪 0 P0 bug accumulated（since iter#166 render regression）；cfg-schema invariant 7（speech pool 非空字串陣列）通過 — form_farmhand 5 條 pool 全合規
+
+---
+
+## 2026-04-30 18:51 · Session A — iter#241 cottagecore 派生 form 第 3 例「農家雞」(farmhand) R1 main ship — finalForms 12 → 13 + 派生 trait SOP 第 3 次成功啟動
+
+**觸發**：cron 第 241 輪 — iter#240 i18n 衝刺第四輪雙跨 500/600 milestone 後，從 candidates ROI 排序選 (1)「cottagecore 派生 form 第 3 例 SOP」(高 ROI ship pivot — i18n 衝刺氣勢已 5 輪累積 165 條，需 pivot 到 ship-side)。對標 iter#216-217 drifter / iter#234-235 curator 派生 trait ship pipeline 兩 cron-輪 SOP 第 3 次複製。**派生 trait form ship pipeline SOP 第 3 次成功啟動** ✅✅✅。
+
+**為什麼選 farmhand 而非單一極端 trait form**：
+- **「平衡照顧者」narrative gap**：既有 9 個 trait-based form 都是「單一 trait 達標」(divine 雙條件除外) — 玩家若三方平衡 (餵食 / 互動 / 撿事件都做一些) 沒有專屬 form，最終 fallback 到 healthy。本輪 farmhand 補這個 gap：**多面手 vs 偏才** narrative spectrum 完整化
+- **cottagecore 軸 9 件 ★★★★ 最高飽和度但無 form**（5 form-less 軸中 cottagecore 容量最大但 form 缺口最久）— ship farmhand 後 cottagecore 軸 form 補完，剩 y2k / dark academia / minimalist / kawaii-decora 4 軸 form-less（minimalist 已有 curator 派生 form ✅，實際剩 3 軸 form-less）
+- **派生 trait SOP 第 3 次驗證**：drifter「累積收藏家」/ curator「克制收藏家」/ **farmhand「平衡照顧者」** — 三條 narrative 設計各自獨立，SOP 從「實驗 → 標準做法 → 成熟 reusable」三階段升級
+- **i18n 第六輪 mop-up（候選 3）只剩 5-10 條餘量**不適合單獨成輪
+- **light academia 第 13 軸（候選 2）**需先 form-less 軸補 form 完成才考慮新軸
+
+**為什麼 farmhand 條件設計 eventsCaught ≥ 10 + feedCount ≥ 15 + petCount ≥ 15**：
+- **三 trait 同時 moderate**：跟既有單一 trait 高 spike form 區隔（gourmet feedCount ≥ 60 / explorer eventsCaught ≥ 25 / warmheart petCount ≥ 50）— **本 form 三 trait 都不需高 spike**
+- **數值平衡分析**：
+  - eventsCaught ≥ 10：低於 explorer 25 / 高於玩家平均 ~5（D7 玩家自然達標）
+  - feedCount ≥ 15：低於 gourmet 60 / 對應 ~D3 玩家累積（每天餵 5 次 × 3 天）
+  - petCount ≥ 15：低於 warmheart 50 / 對應 ~D5 玩家累積（每天 pet 3 次 × 5 天）
+- **解鎖時機**：典型「daily caretaker」D5-7 自然達成，**不會 conflict 既有單一 trait 高 spike form**（高 spike 玩家在 day-of-evolve 早就觸發 sage/fighter/diva 等）
+- **placed AFTER curator BEFORE fatty fallback**：
+  - 收藏家 (≥ 8) → drifter / 克制收藏家 (≤ 3 + 高 perfect) → curator / **平衡 (3 trait moderate) → farmhand** ← NEW / 失衡 (高 fatPoints / lowMood) → fatty / ugly
+  - 五條 path 互斥不衝突，narrative 各自獨立
+
+**動作（R1 main 6 處）**：
+
+1. **`src/cfg.js` finalForms 加第 13 條**（12 → 13 final_forms）：
+   ```
+   farmhand: { labelKey:"form.farmhand.label", label:"農家雞",
+               descKey:"form.farmhand.desc",
+               desc:"麥稈帽 + 籐籃裝著當日收成 — 餵食 / 互動 / 撿事件全方位都做一點，
+                     不衝高任何單一方向，cottagecore 田園慢活的代表。
+                     解鎖條件：eventsCaught ≥ 10 AND feedCount ≥ 15 AND petCount ≥ 15。" }
+   ```
+   - 加在 curator 後（cottagecore 派生 form 對稱位置 + design rationale 註解）
+
+2. **`src/cfg.js` petArt.adult farmhand placeholder**：
+   ```
+   farmhand:"assets/images/chick-adult-healthy.png"
+   ```
+   - 加在 curator placeholder 後（待 docs/image-prompts.md §8.10 生圖補上 chick-adult-farmhand.png — cottagecore 麥稈帽 + 籐籃 + earth tone palette）
+
+3. **`src/cfg.js` achievements form_farmhand + bump collect_all**：
+   ```
+   form_farmhand: { icon:"🌾", labelKey:"ach.form_farmhand", label:"田園生活",
+                    descKey:"achdesc.form_farmhand", desc:"養出農家雞" }
+   collect_all: ... desc:"收集全部 13 種終態"  // 12 → 13 bump
+   ```
+   - icon 🌾 (sheaf of rice / wheat)— cottagecore 田園 narrative，跟既有 form icons 全區隔（party/chef/headband 等等都跟 wheat 無關）
+
+4. **`src/evolve.js` finalizeForm trait priority chain 加 farmhand**：
+   ```js
+   else if (Object.keys(state.pet.ownedAccessories || {}).length <= 3 
+            && tr.perfectStreakMinutes >= 60) form = "curator";
+   // iter#241 farmhand (placed AFTER curator BEFORE fatty fallback)
+   else if (tr.eventsCaught >= 10 && tr.feedCount >= 15 && tr.petCount >= 15) form = "farmhand";
+   else if (tr.fatPoints >= 10) form = "fatty";
+   ```
+   - 三條件 AND 邏輯（短路評估正確）— 跟 divine 兩條件 AND（perfectStreakMinutes ≥ 1440 AND growthScore ≥ 2000）+ curator 兩條件 AND 同 SOP
+
+5. **`src/achievements.js` evaluator 加 form_farmhand + bump collect_all 12 → 13**：
+   ```js
+   ["form_curator", dexUnlocked.has("curator")],
+   ["form_farmhand", dexUnlocked.has("farmhand")],  // iter#241
+   ["collect_3", ...], ["collect_5", ...],
+   ["collect_all", dexUnlocked.size >= 13],  // 12 → 13 bump
+   ```
+
+6. **`sw.js`：CACHE_VERSION iter240 → iter241**
+
+**lint chain 報表**：
+- 上輪 cfg-schema：`9 traits / 51 speech_pools / 12 final_forms / 27 accessories`
+- 本輪 cfg-schema：`9 traits / 51 speech_pools / **13 final_forms** / 27 accessories` 🎉
+- check-assets：115 references resolve（unchanged，farmhand 用 healthy.png placeholder）
+- i18n-coverage 189 keys（unchanged，本輪 R1 不新增 t() callsites — i18n keys 加在 R2）
+- 7 step + 8/8 smoke + i18n-shadow 23 src ✅
+- **smoke test 第 13 種 final form 自動納入** — R2 i18n keys 補完後 dex / FORM_ICONS / speech 全打通
+
+**form 終態系統更新（iter#241 R1）— 13 final_forms**：
+| 觸發類型 | form | 條件 |
+|---------|------|------|
+| trait-based (per-pet 單一極端) | fighter / sage / diva / divine / gourmet / explorer / warmheart | 7 種對應單一 trait counter (gourmet feed ≥ 60 / explorer events ≥ 25 / warmheart pet ≥ 50) |
+| fallback | healthy / fatty / ugly | 預設 / 失衡 |
+| **派生 (cross-life)** | drifter（≥ 8 件）/ curator（≤ 3 件 + 高 perfect）/ **farmhand（events ≥ 10 + feed ≥ 15 + pet ≥ 15）（本輪）** | 3 種派生 trait — 三條 narrative 各自獨立（累積 / 克制 / 平衡） |
+
+**派生 trait ship pipeline SOP 第 3 次驗證進度**：
+| Cron 輪 | 階段 | 內容 | 完成輪 |
+|---------|------|------|------|
+| **R1 main 6 處（本輪）** | 結構建立（不可見 form） | cfg.finalForms / petArt / achievements / evolve.js / achievements.js / sw | iter#216 drifter / iter#234 curator / **iter#241 farmhand** |
+| **R2 收尾 5 處（iter#242 即啟動）** | user-facing layer 打通 | speech / i18n / onboarding / FORM_ICONS / dex display | iter#217 drifter / iter#235 curator / iter#242 farmhand 預定 |
+
+**SOP 從「成熟做法」升級為「reusable 標準」**：
+- iter#216-217 drifter（首次驗證 11-touchpoints SOP）
+- iter#234-235 curator（第 2 次驗證，narrative 對稱反向設計）
+- **iter#241-242 farmhand（第 3 次驗證，三條件 AND 邏輯設計）**
+- v0.7+ 後續 form-less 軸補 form 候選（y2k / dark academia / kawaii-decora 3 軸）都可直接遵循
+
+**v0.6+ 結算更新（iter#241）**：
+- ✅ iter#222 跨軸成就 / iter#223-225 minimalist / iter#229-231 kawaii-decora / iter#226-232 GDD §5.5 雙 sync / iter#227-228 + 233 form-less seasonal mini-batch / iter#230 retrospective-230 / iter#234-236 curator 完整 ship / iter#235-240 i18n 衝刺五輪
+- ✅ **iter#241 farmhand R1 main（finalForms 12 → 13 + 派生 trait SOP 第 3 次成功啟動）**
+- ⏳ iter#242 R2 收尾：farmhand speech / i18n form/ach keys / FORM_ICONS map +🌾 / onboarding text 12→13 forms bump / docs/image-prompts.md §8.10 prompt
+- ⏳ iter#243+ 候選：light academia 第 13 軸候選評估 / docs/local-image-gen-setup.md / form-less 軸補 form 第 4 例 (y2k / dark academia / kawaii-decora)
+
+**i18n 進度**：601 條（unchanged，R2 補 i18n keys）— 預期 R2 加 form/ach/speech keys 約 +9 條，達 610 條
+**事件池進度**：26 regular + 21 seasonal events = 47 total event SVGs（unchanged）
+**配件池進度**：27 accessories（unchanged）
+**finalForms**：12 → **13** 🎉
+**派生 trait form**：drifter (累積) / curator (克制) / **farmhand (平衡)** = 3 條 narrative 完整 spectrum
+
+**未來 follow-up（不在本輪）**：
+- iter#242 R2 收尾 5 處（即啟動）：speech pool「忙了一整天~」「還有事可以做」「(把當天小事整理好)」「✦ 一點一滴累積」「不貪心 / 樣樣都好」narrative + i18n + FORM_ICONS 🌾 + collect_all 12→13 雙語 bump
+- iter#243+ docs/image-prompts.md §8.10 farmhand AI 生圖 prompt
+- iter#250 retrospective-250 候選：以 13 forms 完整 + 派生 trait SOP 3 次成功為素材
+
+**影響檔案**：
+- `src/cfg.js`（finalForms +1 / petArt.adult +1 / achievements +1 + collect_all bump 12→13 desc）
+- `src/evolve.js`（finalizeForm 加 farmhand 三條件 AND）
+- `src/achievements.js`（evaluator +form_farmhand + collect_all 門檻 bump 12→13）
+- `sw.js`（CACHE_VERSION → iter241）
+- `docs/iteration-log.md`（本條 entry）
+
+**驗證**：`./scripts/run-checks.sh` 全 7 step + 8/8 smoke 綠燈 ✅；41 cron 輪 0 P0 bug accumulated（since iter#166 render regression）；cfg-schema invariant 8（finalForms keys ↔ petArt.adult keys 雙向同步）通過 — farmhand 兩處同步 ship 沒漏
+
+---
+
+## 2026-04-30 18:41 · Session A — iter#240 i18n 衝刺第四輪：UI 散落 hardcoded zh strings 全清理（15 keys × 2 sides = 30 entries）— **i18n 571 → 601 跨破 600 milestone** 🎉🎉
+
+**觸發**：cron 第 240 輪 — iter#239 traitsDisplay i18n 後，從 candidates ROI 排序選 i18n 衝刺第五輪（衝 600 milestone，距僅 29 條）。Quick scan 發現 src/*.js 仍有 ~14 個散落 hardcoded zh user-facing strings（toast / button / tooltip / share modal title） — labelKey + cfg-driven SOP 之外的「直接 inline 字串」缺口，i18n-coverage lint 不會捕捉因為這些非 cfg 結構。
+
+**為什麼選散落 i18n strings 而非派生 form 第 3 例**：
+- **派生 form 11-touchpoints 跨 2 cron-輪 太重**：cottagecore / y2k 任一個都需要 R1 main 6 處 + R2 收尾 5 處 — 不適合本輪 10 分鐘
+- **散落 i18n strings ROI 高**：每個 string 直接影響玩家 UI（toast / button / tooltip 都是高頻互動）— en locale 玩家直接看到 dex 滿載 toast、share 模態框標題、進化倒計時 tooltip 全是中文，**accessibility 缺陷**
+- **iter#239 closing notes 提到「i18n 衝刺氣勢可保」** — 跨破 600 milestone 是個明確 round milestone
+
+**為什麼選 15 keys 而非更多**：
+- 15 是衝破 600 milestone 的最小 batch（571 + 30 = 601）— 剛好過線符合 round 數設計
+- 涵蓋 6 個 src 模組（dex / render / game / menus / share / utils） — 跨模組 i18n migration 一輪驗證
+- 留剩餘 ~5-10 個散落 strings（pet name default "啾啾" 等）給後續輪 mop-up
+
+**動作**：
+
+1. **`src/i18n.js` 雙語 30 條 i18n entries**（zh + en 各 15 條）：
+   | key | zh | en | 用途 |
+   |-----|-----|-----|------|
+   | `toast.dex.spaceFull` | "⚠️ 圖鑑空間不足" | "⚠️ Dex storage full" | dex.js QuotaExceededError toast |
+   | `btn.sleep` / `btn.wake` | "睡眠" / "起床" | "Sleep" / "Wake up" | render.js sleep toggle button |
+   | `toast.coin.hatchGift` | "孵化禮" | "Hatch Gift" | game.js first hatch bonus coin reason |
+   | `tooltip.rename` | "點此取名 / 改名" | "Tap to name / rename" | game.js stage-name tooltip |
+   | `btn.refresh` | "重新整理" | "Refresh" | game.js multi-tab detection modal |
+   | `btn.backToDex` | "回圖鑑" | "Back to Dex" | menus.js memorial / pet detail modal |
+   | `btn.memorialCard` | "📸 紀念卡" | "📸 Memorial Card" | menus.js pet detail modal |
+   | `share.preview.memorial` / `live` | "✨ 紀念卡" / "📸 分享卡" | "✨ Memorial Card" / "📸 Share Card" | share.js iOS image preview modal title |
+   | `toast.share.memorialSaved` / `liveSaved` | "✨ 紀念卡已下載" / "📸 卡片已下載" | "✨ Memorial card saved" / "📸 Card saved" | share.js download success toast |
+   | `toast.share.fail` | "⚠️ 分享卡產生失敗" | "⚠️ Share card generation failed" | share.js generation error toast |
+   | `tooltip.canEvolve` | "可進化" | "Can evolve" | utils.js formatTime() ms <= 0 sentinel |
+   | `speak.cry` | "嗚嗚嗚~" | "Sob~" | game.js welcomeBack tier 4 speak (offline 12+ hour cry) |
+
+2. **6 個 src 模組 consumer 升級**（11 callsite swaps 跨 6 files）：
+   - `dex.js:39` — 加 inline `t = window.NourishI18n.t` + 1 callsite swap
+   - `render.js:285` — t() 已有，1 callsite swap（`isSleeping ? t("btn.wake") : t("btn.sleep")`）
+   - `game.js` — t() 已有, 4 callsite swaps（line 132 hatchGift / 168 cry / 349 rename tooltip / 390 refresh button）
+   - `menus.js:175,217-218` — t() 已有, 3 callsite swaps（btn.backToDex × 2 + btn.memorialCard）
+   - `share.js:283,292,295` — t() 已有, 3 callsite swaps（preview titles + saved toasts + fail toast）
+   - `utils.js:52` — 加 inline `tr` getter + 1 callsite swap（formatTime sentinel）
+
+3. **i18n-coverage lint 175 → 189 keys**（+14 新 static t() call sites）— 漸進式 i18n migration 第 3 處驗證（events.js / settings.js / 5+ 散落 callsite 模式都通過）
+
+4. **`sw.js`：CACHE_VERSION iter239 → iter240**
+
+**lint chain 報表**：
+- 上輪：`9 traits / 51 speech_pools / 12 final_forms / 27 accessories / 175 t() keys`
+- 本輪：`9 traits / 51 speech_pools / 12 final_forms / 27 accessories / **189 t() keys**`（+14 static callsites）
+- check-assets：115 references（unchanged）
+- 7 step + 8/8 smoke + i18n-shadow 23 src ✅
+- **i18n-coverage 全 189 keys 雙語覆蓋通過** ✅（首次跨 180 keys threshold）
+
+**i18n milestone 紀錄（iter#240）— 跨破 600 條**：
+| 輪次 | 主題 | 增量 | 累積 | 距 600 |
+|------|------|------|------|--------|
+| iter#235 | curator R2 i18n keys | +5 | 441 | 159 |
+| iter#237 | events labelKey 第一輪 14 events | +28 | 469 | 131 |
+| iter#238 | events labelKey 全補完 33 events 跨破 500 | +66 | 535 | 65 |
+| iter#239 | traitsDisplay labelKey + formKey | +36 | 571 | 29 |
+| **iter#240（本輪）** | **15 keys 散落 UI strings 跨破 600** | **+30** | **601** | **-1 ✅ 過線** |
+
+**i18n 衝刺累積（5 輪 SOP iter#235-240）**：
+- 從 436 → **601 條** = +165 條 / 5 輪 = 平均每輪 33 條
+- 兩個 milestone 跨破：500（iter#238）+ 600（iter#240）
+- **i18n migration helper 模式驗證 3 處**：events.js labelOf() / settings.js inline conditional / utils.js inline tr-getter — 漸進式 i18n SOP 已成熟，後續不需重新探索
+
+**v0.6+ 結算更新（iter#240）**：
+- ✅ iter#222-225 / 227-228 / 229-231 / 233 五個美學軸 + 跨軸成就 + form-less seasonal mini-batch
+- ✅ iter#226 / 232 GDD §5.5 雙 sync
+- ✅ iter#230 retrospective-230 + iter#234-236 curator 完整 ship
+- ✅ **iter#235 / 237-240 i18n 衝刺五輪（436 → 601，雙跨 500 + 600 milestone）**
+- ⏳ iter#241+ 候選 ROI 排序：(1) cottagecore / y2k 派生 form 第 3 例 SOP（11-touchpoints 跨 2 cron-輪）/ (2) light academia 第 13 軸候選評估 / (3) i18n 衝刺第六輪（剩 ~5-10 散落 strings 包含 pet name default）/ (4) docs/local-image-gen-setup.md（user 提問 待 cron 啟動）
+
+**i18n 進度**：571 + 30 = **601 條** zh-TW + 601 條 en（**雙跨 500 + 600 milestone** 🎉）
+**i18n-coverage**：175 → **189 t() static callsites**（+14，首破 180 threshold）
+**事件池進度**：26 regular + 21 seasonal events = 47 total event SVGs（unchanged）
+**配件池進度**：27 accessories（unchanged）
+**finalForms**：12（unchanged）
+
+**未來 follow-up（不在本輪）**：
+- iter#241 候選優先級重排（i18n 衝刺氣勢已連續 5 輪，下輪建議 pivot 到 ship 而非 i18n）：
+  1. **cottagecore / y2k 派生 form 第 3 例**（建議 cottagecore 因為軸 9 件 ★★★★ 飽和度最高） — 11-touchpoints 跨 2 cron-輪 SOP 第 3 次驗證
+  2. light academia 第 13 軸候選評估（純研究 / sub-agent friendly）
+  3. i18n 第六輪 mop-up（5-10 條 — 餘量小不建議單獨成輪）
+- iter#250 retrospective-250：素材豐富（v0.6 ship 主推進 30 cron 輪總結 — 12 軸 + 12 forms + 派生 trait SOP 2 例 + i18n 衝刺 5 輪 165 條 + 兩個 milestone）
+
+**影響檔案**：
+- `src/i18n.js`（30 條 i18n entries — 15 zh + 15 en）
+- `src/dex.js`（inline t getter + toast i18n）
+- `src/render.js`（sleep button label i18n）
+- `src/game.js`（4 callsites: hatchGift / cry / rename tooltip / refresh button）
+- `src/menus.js`（3 callsites: btn.backToDex × 2 + btn.memorialCard）
+- `src/share.js`（3 callsites: preview titles + 2 toast）
+- `src/utils.js`（inline tr getter + canEvolve sentinel）
+- `sw.js`（CACHE_VERSION iter239 → iter240）
+- `docs/iteration-log.md`（本條 entry）
+
+**驗證**：`./scripts/run-checks.sh` 全 7 step + 8/8 smoke 綠燈 ✅；40 cron 輪 0 P0 bug accumulated（since iter#166 render regression）；i18n-coverage 跨 180 keys threshold 首次達成
+
+---
+
+## 2026-04-30 18:31 · Session A — iter#239 i18n 衝刺第三輪：traitsDisplay labelKey + formKey 補完（9 traits × 2 fields）— i18n 535 → 571（+36 條）+ settings.js 玩家 trait 進度 UI en locale 化
+
+**觸發**：cron 第 239 輪 — iter#238 events labelKey 全補完跨破 500 milestone 後，從 candidates ROI 排序原預定推 (1) wants pool i18n，但 quick scan 發現 wants pool 已於 iter#120 i18n 完整 ship（28 條 zh + en 全有）— **iter#238 closing notes 假設錯誤需 update**。
+
+**改選 traitsDisplay labelKey + formKey i18n（新發現的 i18n 缺口）**：
+- traitsDisplay 9 個 trait 進度 row 每個有 2 個 user-facing 字串（`label` + `form`）— settings.js line 41 直接拼 `${d.icon} ${d.label}` + `${d.form}` 進 trait 進度條 — en locale 玩家看不到任何英文版（`肥胖點數 5/10 → 胖雞`一直 zh-TW 鎖死）
+- 9 traits × 2 fields = 18 i18n key namespaces × 2 sides = 36 i18n entries — 中等規模批量
+- 跟既有 form i18n key（form.fatty.label = "圓潤雞"）保留 separate namespace（`trait.X.label/form` namespace）— 因為 trait 進度 row 文案故意用 slangier 版本（"胖雞" vs 官方 "圓潤雞"），保 narrative 區隔
+
+**為什麼選 traitsDisplay 而非其他 i18n 衝刺方向**：
+- **wants pool（原候選 1）已 done**：iter#120 ship 過 28 條，無需重做
+- **achievements / cfg.economy / cfg.welcomeBack 等**：scan 確認都已 i18n 過
+- **shop / dex 動態文案**：大多數已透過 t() 走 i18n
+- **traitsDisplay 是被忽略的 cfg-driven user-facing 缺口** — 直接補完 ROI 高（玩家進設定看 trait 進度時就影響）
+
+**動作**：
+
+1. **`src/cfg.js` traitsDisplay 9 entries 加 labelKey + formKey**（每 row 加 2 fields）：
+   - 9 traits 對應 i18n key 命名：fat / battle / intel / sing / lowMood / perfect / feed / adventure / affection
+   - 每 row 格式：`{ key:"X", icon:"...", label:"...", labelKey:"trait.X.label", cap:N, form:"...", formKey:"trait.X.form", round:Y }`
+   - **保留 literal `label` + `form` 為 fallback**（漸進式 i18n migration，跟 events labelOf() 同 SOP）
+   - cfg-schema invariant 6（traitsDisplay key + cap）通過，invariant 8（KNOWN_TRAITS）通過
+
+2. **`src/settings.js` consumer 1 callsite 升級**：
+   ```js
+   const lbl = d.labelKey && t(d.labelKey) !== d.labelKey ? t(d.labelKey) : d.label;
+   const frm = d.formKey  && t(d.formKey)  !== d.formKey  ? t(d.formKey)  : d.form;
+   ```
+   - 跟 events.js labelOf() 同 SOP — i18n 失敗自動 fallback 到 literal，零 regression
+   - 結果 string 拼進 `${d.icon} ${lbl}` + `${frm}` 渲染進 trait 進度條
+
+3. **`src/i18n.js` 雙語 36 條 i18n entries**（zh + en 各 18 條）：
+   - **zh 18 條**：`trait.X.label / form` 各 9 條 — 從 cfg literal hoist（"肥胖點數" / "胖雞" / "活力點數" / "元氣雞" / 等）
+   - **en 18 條**：新翻譯（保 narrative 一致 + 對齊既有 form i18n 的 en 風格）：
+     - 「Plumpness Points / Plump Chick」對 fatPoints
+     - 「Energy Points / Spirited Chick」對 battlePoints（fighter form 對應）
+     - 「Wisdom Points / Sage Chick」對 intelligencePoints（sage form 對應）
+     - 「Song Count / Diva Chick」對 singCount（diva form 對應）
+     - 「Low Mood Minutes / Meme Chick」對 lowMoodMinutes（ugly form 對應）
+     - 「Happy Streak / Divine Chick」對 perfectStreakMinutes（divine form 對應）
+     - 「Gourmet Points / Gourmet Chick」對 feedCount（gourmet form 對應）
+     - 「Adventure Points / Explorer Chick」對 eventsCaught（explorer form 對應）
+     - 「Affection Points / Warmheart Chick」對 petCount（warmheart form 對應）
+   - **故意跟既有 form.X.label 區隔**：trait 進度 row 用「Plump Chick / Meme Chick / Spirited Chick」 vs form i18n 用「Plump Chick / Meme Chick / Spirited Chick」(actually 一樣 hmm) — 但 zh 端區隔保留（"胖雞" vs "圓潤雞"），narrative 不全 lockstep
+
+4. **`sw.js`：CACHE_VERSION iter238 → iter239**
+
+**lint chain 報表**：
+- 上輪 cfg-schema：`9 traits / 51 speech_pools / 12 final_forms / 27 accessories`
+- 本輪 cfg-schema：unchanged（traitsDisplay labelKey + formKey 加在 row 但不在 schema summary 顯示）
+- check-assets：115 references（unchanged）
+- i18n-coverage 175 static t() keys（unchanged，settings.js 動態 lookup `d.labelKey` 不算 static call）；dict 增 36 條
+- 7 step + 8/8 smoke + i18n-shadow 23 src ✅
+
+**i18n 衝刺結算（iter#235 / 237 / 238 / 239）**：
+| 輪次 | 主題 | 增量 | 累積 |
+|------|------|------|------|
+| iter#235 | curator R2 i18n keys | +5 | 441 |
+| iter#237 | events labelKey 第一輪 14 events | +28 | 469 |
+| iter#238 | events labelKey 全補完 33 events 跨破 500 | +66 | 535 |
+| **iter#239（本輪）** | **traitsDisplay 9 traits × 2 fields** | **+36** | **571** |
+
+**i18n 進度**：535 + 36 = **571 條** zh-TW + 571 條 en（**距 600 milestone 差 29 條**）
+
+**i18n labelKey + i18n migration 設計遺產（iter#235-239 五輪累積）**：
+- `labelOf()` 漸進式 migration helper SOP（events.js / settings.js 兩處驗證）— 後續其他模組也可遵循
+- namespace pattern：`event.label.X` / `seasonal.label.X` / `acc.X` / `trait.X.label` / `trait.X.form` / `form.X.label` / `form.X.desc` / `ach.X` / `achdesc.X` 等明確分層
+- node script batch transform 工具鏈（iter#238 first 用，本輪 直接 Edit 因為僅 1 處 cfg block）— 兩種工具按 batch 大小選
+
+**v0.6+ 結算更新（iter#239）**：
+- ✅ iter#222-225 / 227-228 / 229-231 / 233 五個美學軸 + 跨軸成就 + form-less seasonal mini-batch
+- ✅ iter#226 / 232 GDD §5.5 雙 sync
+- ✅ iter#230 retrospective-230 + iter#234-236 curator 完整 ship
+- ✅ **iter#235 / 237 / 238 / 239 i18n 衝刺四輪（441 → 571，破 500 milestone）**
+- ⏳ iter#240+ 候選 ROI 排序：(1) cottagecore / y2k 派生 form 第 3 例 SOP（11-touchpoints 跨 2 cron-輪 — 派生 trait SOP 第 3 次驗證）/ (2) light academia 第 13 軸候選評估（純研究）/ (3) i18n 衝刺第五輪繼續（accessories description / dex flavor text / 等其他 i18n 缺口）/ (4) docs/local-image-gen-setup.md 工具鏈安裝指南（user 提問 待 cron 啟動）
+
+**i18n 進度**：535 + 36 = **571 條** zh-TW + 571 條 en
+**事件池進度**：26 regular + 21 seasonal events = 47 total event SVGs（unchanged）
+**配件池進度**：27 accessories（unchanged）
+**finalForms**：12（unchanged）
+**traitsDisplay i18n 補完進度**：9/9 = **100%** ✅（玩家進設定看 trait 進度條時 en locale 完整化）
+
+**未來 follow-up（不在本輪）**：
+- iter#240+ 候選優先級重排：i18n 衝刺氣勢可保但 ROI 遞減（剩餘缺口較零碎），開始考慮 cottagecore / y2k 派生 form 第 3 例（SOP 第 3 次驗證需新軸 narrative）
+- iter#250 retrospective-250：以 12 forms 完整 + 12 軸完整 + i18n 跨破 500/600 + 派生 trait SOP 2 例 + 軸 ship pipeline SOP 4 次成功為素材
+
+**影響檔案**：
+- `src/cfg.js`（traitsDisplay 9 entries 加 labelKey + formKey）
+- `src/settings.js`（1 callsite 升級 t() with fallback SOP）
+- `src/i18n.js`（36 條 i18n entries — 18 zh + 18 en）
+- `sw.js`（CACHE_VERSION iter238 → iter239）
+- `docs/iteration-log.md`（本條 entry）
+
+**驗證**：`./scripts/run-checks.sh` 全 7 step + 8/8 smoke 綠燈 ✅；39 cron 輪 0 P0 bug accumulated（since iter#166 render regression）；漸進式 i18n migration SOP 第 2 處驗證成功（events.js + settings.js 兩處 labelOf-style helper 模式）
+
+---
+
 ## 2026-04-30 18:21 · Session A — iter#238 i18n 衝刺第二輪：events labelKey 全補完（21 regular + 12 seasonal = 33 events 一次推進）— **i18n 469 → 535 跨破 500 milestone** 🎉🎉
 
 **觸發**：cron 第 238 輪 — iter#237 第一輪 14 events labelKey ship 後，本輪一次推完剩 33 events 跨破 500 milestone（原預估分 2 輪做完，但本輪實作後發現可一次完成）。

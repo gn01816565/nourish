@@ -56,7 +56,7 @@
       healthy: "🐤", fatty: "🥯", ugly: "😆",
       fighter: "💪", sage: "🧠", diva: "🎤",
       divine: "✨", gourmet: "🍰", explorer: "🗺️", warmheart: "🤍",
-      drifter: "🪢", curator: "🪶",
+      drifter: "🪢", curator: "🪶", farmhand: "🌾", netizen: "💾", scholar: "📚", maximalist: "💎",
     };
     const formStripHTML = fullPastForBond.length === 0 ? "" : `
       <p class="muted center" style="margin:0 0 8px;font-size:12px;line-height:1.6;">
@@ -172,7 +172,7 @@
           季節事件依當下日期自動觸發，跨年累積收集。
         </p>
       `,
-      buttons: [{ label: "回圖鑑", close: false, action: () => { ui().closeModal(); openDex(); } }],
+      buttons: [{ label: t("btn.backToDex"), close: false, action: () => { ui().closeModal(); openDex(); } }],
     });
   }
 
@@ -214,8 +214,8 @@
         </p>
       `,
       buttons: [
-        { label: "📸 紀念卡", close: false, action: () => { ui().closeModal(); window.NourishShare.shareOrDownloadCard(p); } },
-        { label: "回圖鑑",   close: false, action: () => { ui().closeModal(); openDex(); } },
+        { label: t("btn.memorialCard"), close: false, action: () => { ui().closeModal(); window.NourishShare.shareOrDownloadCard(p); } },
+        { label: t("btn.backToDex"),    close: false, action: () => { ui().closeModal(); openDex(); } },
       ],
     });
   }
@@ -225,7 +225,7 @@
   function openNameDialog() {
     const A = api();
     const state = A.getState();
-    const current = state.pet.name || "啾啾";
+    const current = state.pet.name || t("pet.defaultName");
     ui().showModal({
       title: state.pet.nameSet ? t("modal.naming.titleEdit") : t("modal.naming.titleNew"),
       body: `<div style="display:flex;flex-direction:column;gap:10px;">

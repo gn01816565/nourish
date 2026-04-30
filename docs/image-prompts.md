@@ -113,6 +113,105 @@ sides. Sparkles ✦ and stars around. Serene smile, eyes gently closed or radian
 white feather highlights. Background remains transparent except for the soft glow.
 ```
 
+## 8.13 繁飾家雞（chick-adult-maximalist.png）  *iter#248 v0.6 第 16 個進化分支 — 待生圖補上，目前 cfg.petArt 暫指 healthy 占位 — form-less 軸補 form 6/6 milestone form*
+```
+[全域風格]
+Subject: a kawaii-decora "maximalist" chicken — the 6th and final form-less-axis derived
+form. Soft yellow body in standard chick-adult proportions. Decked out with MULTIPLE
+small accessories layered: 4-5 pastel hair clips on head (callback to decora_clips —
+star / cherry / heart / bow / candy motifs in pink/yellow/mint/lavender/cyan), a
+triple-layer plush bow at the neck (callback to plush_bow accessory: lavender base +
+mint middle + pink top), a rainbow candy necklace strand (callback to candy_jar event
+items as wearable charms), and 2-3 tiny ribbon tails dangling from the body. Bright
+joyful eyes (✦‿✦) showing "I have it ALL!" enthusiasm, big happy smile. Pose: arms-up
+celebratory or twirling, slight bounce energy. Tiny pink blush dots on cheeks. Background
+transparent with sparkly pastel haze (multiple tiny ✦ dots in pink/yellow/cyan/lavender
+scattered around). Mood: kawaii-decora-maximalist / Harajuku-pile-on / pastel-rainbow-
+"more is more" / accumulator-celebration. Soft pastel rainbow palette (pink + yellow +
+mint + lavender + cyan all together — TA「不過冷不過男性化」allows full pastel rainbow
+since the軸 narrative IS pastel rainbow). Critical: layered DENSITY is intentional —
+this is the ONLY form where "堆量" is the design narrative (vs minimalist curator's
+"only one"); BUT pastel-soft NOT neon-aggressive (cottagecore TA always); arms-up
+celebratory NOT chaotic-frantic. Avoid drifter overlap (drifter has woven-shawl earth-
+tones + dangling craft trinkets — analog/tactile material; maximalist has plastic-
+glossy pastel candy/jewelry — kawaii-modern material — narrative source 完全區隔);
+avoid diva overlap (no microphone / no spotlight — celebration is private aesthetic
+joy not stage performance); avoid divine overlap (no halo / no winged ascent — earthly
+maximalism not heavenly).
+```
+**為什麼這個設計**：呼應 maximalist 解鎖路徑（cross-life Object.keys(state.achievements).length ≥ 20）— 「累積 20 個成就的繁飾家」narrative 透過「4-5 顆髮夾 + 三層蝴蝶結 + 糖果項鍊 + 多 ribbon 尾」layered-density 視覺化「堆量收集 milestone」narrative；跟既有 5 派生 form 設計對立 — drifter 是「慢累積物質 / earth-tone 質感」/ curator「克制 1 件 / scandinavian 留白」/ farmhand「平衡 multiple kinds 1 each / earth-tone」/ netizen「跨命 retro-digital nostalgia」/ scholar「持續 sustained dedication / dark academia」/ **maximalist「繁飾 layered density / kawaii-decora pastel rainbow」** — 第 6 個 narrative slot 完整 form-less 軸補 form spectrum；pastel rainbow palette 對齊 kawaii-decora 軸 DNA（直接拿軸的視覺 vocabulary 應用到 form）+ 跟 cottagecore TA「不過冷不過男性化」自然對齊（kawaii-decora 軸 narrative 本身就是 TA-friendly）+ accessories 全 callback 既有 kawaii-decora 軸件（decora_clips 5 motifs / plush_bow 3 層 / candy_jar 多色糖果）形成軸內 form / accessory / event 三層 narrative consistency；arms-up celebratory pose 跟既有 form 區隔（fighter 元氣動感 / diva stage performance 都是 active 但本 form 是「私人 collection 喜悅」narrative）。**解鎖條件**：Object.keys(state.achievements).length >= 20（跨命累積成就達 20 派生 — 第 6 種派生條件 source 首例 achievement count，跟前 5 種 stat/dex/streak-based 不重複；典型 ~D14-21 中度遊玩玩家自然達標路徑 — 31 個成就中 20 個 ≈ 65% 解鎖度，確保需「廣泛養成」narrative）。**form-less 軸補 form 全 6/6 milestone form**：跟 boho drifter / minimalist curator / cottagecore farmhand / y2k netizen / dark academia scholar 並列 — 12/12 美學軸全有 form 終極 milestone 達成見證者。
+
+## 8.12 學者雞（chick-adult-scholar.png）  *iter#246 v0.6 第 15 個進化分支 — 待生圖補上，目前 cfg.petArt 暫指 healthy 占位*
+```
+[全域風格]
+Subject: a dark academia "scholar" chicken. Soft yellow body in standard chick-adult
+proportions. Wearing a small wine-red knit scarf wrapped around the neck (callback to
+velvet_bow palette but knit/textured not silk). Round wire-frame glasses (callback to
+round_glasses accessory but smaller, integrated). One wing carefully holds up a small
+stack of 2-3 hardcover books — leather-bound look, deep wine + cream + brown spines,
+a tiny ribbon bookmark dangling from one. Slightly tilted head as if mid-thought,
+eyes calm-thoughtful (─‿─), gentle wisdom-smile. Tiny pink blush dot on cheek (TA
+softening — dark academia 不全冷). Optional: 1 quill_pen-style feather quill behind
+the ear (callback to quill_pen event). Background transparent with hint of warm cream
+parchment haze + subtle floating dust-mote sparkle (library aesthetic). Mood:
+dark-academia-warm / sustained-study / Oxford-library / "the long-haul scholar",
+deep wine + cream + brown palette warmed with hint of soft pink (TA softening per
+CLAUDE.md). Critical: composed-thoughtful expression NOT grim-academic (avoid harsh
+Hogwarts professor vibe — keep cottagecore TA gentleness); books are 2-3 small NOT
+giant tome stack (manageable scholar narrative not overwhelming librarian); scarf
+is knit-cozy NOT formal cravat. Avoid sage overlap (sage uses thin half-moon
+glasses + formula book; scholar uses round glasses + multiple books — different
+era / dedication style); avoid netizen overlap (no chromatic glitch / no digital
+motifs — scholar is analog-paper world); avoid drifter overlap (no shawl drape —
+scarf is fitted snug not bohemian).
+```
+**為什麼這個設計**：呼應 scholar 解鎖路徑（state.daily.loginStreak ≥ 14）— 連續 14 天登入是「持續鑽研 / academic commitment」narrative，本 form 透過「一疊書 + 圓框眼鏡 + knit 圍巾」三個 dark academia 軸 callback motif 視覺化「學術老靈魂」narrative；跟 sage（既有「半月眼鏡 + 公式書」科學家系 form）narrative 區隔關鍵 — sage 是「研究中的學者 / 解題者」/ scholar 是「持續閱讀的長期 commitment 學者」，**形成 dark academia 軸 form 區隔**（如同既有 fairycore 軸有 divine + 元氣軸有 fighter 同軸多 form 設計）；wine-red knit scarf 跟 velvet_bow 配件 narrative 串聯（同色系不同質感）+ round glasses 跟 round_glasses 配件直接 callback；palette 用 dark academia 標準色票但加 cottagecore pink dot 軟化避免「冷冽 Oxford professor」刻板 — 對齊 TA 約束。**解鎖條件**：state.daily.loginStreak >= 14（連續登入 14 天派生 — 第 5 種 派生條件 source 首例 day-based streak，跟前 4 種 stat-based 不重複；典型 ~D14+ 持續玩家自然達標路徑）。
+
+## 8.11 網民雞（chick-adult-netizen.png）  *iter#244 v0.6 第 14 個進化分支 — 待生圖補上，目前 cfg.petArt 暫指 healthy 占位*
+```
+[全域風格]
+Subject: a y2k digital-nostalgia "netizen" chicken. Soft yellow body in standard chick-adult
+proportions. Feather rendering has subtle chromatic glitch / RGB-split highlight (very mild,
+not aggressive — pink-cyan double-edge accent on feather tips). Wearing a small CD pendant
+(like cd_pendant accessory but smaller, integrated to the look) on the neck — iridescent
+pastel rainbow disc reflecting light. One wing holds up a tiny floppy disk (💾 motif) with
+a heart sticker on it. Eyes are bright excited (◕‿◕) — the "I've seen everything" wisdom
+kept friendly. Tiny pink star_clip-style decoration on head (callback to y2k accessories).
+Background transparent with hint of pastel pixel-grid haze (very faint Y2K cyber-pop
+backdrop). Mood: y2k-revival / digital-nostalgia / pastel-cyber / "old web wholesome",
+soft pink-cyan-lavender palette (NOT aggressive neon — keep cottagecore TA softness).
+Critical: chromatic glitch is SUBTLE accent not full-RGB (if too aggressive becomes harsh
+clubbing aesthetic, not cute Y2K); CD + floppy + star_clip together evokes "old computer
+desk's cute trinkets". Avoid drifter overlap (no woven shawl / no fringe — those are
+drifter anchors); avoid diva overlap (no microphone / no spotlight pose); avoid kawaii-
+decora overlap (no 5-clip stack / no rainbow ribbon explosion — netizen is "modest digital
+collector" not "maximalist piling").
+```
+**為什麼這個設計**：呼應 netizen 解鎖路徑（cross-life dex.unlockedForms.size ≥ 5）— 「老玩家見多識廣」narrative 透過 chromatic glitch 質感（暗示「跨多時代見過很多版本」） + retro 像素飾品（CD pendant + floppy + star clip 三種小飾品）視覺化「跨命累積數位 nostalgia」narrative；跟 drifter 「累積收藏家」（boho woven shawl + fringe trinkets 多元材質） / curator「克制收藏家」（minimalism 純白 + single accent） / farmhand「平衡照顧者」（cottagecore straw + wicker basket）三個 form **narrative source 完全區隔**（drifter 物質累積 / curator 物質克制 / farmhand 多面手 / **netizen 跨命知識累積** ✨ 第 4 種源頭首例）；palette 設計 pastel pink-cyan-lavender + 軟 chromatic glitch（不全 neon）對齊 cottagecore TA「avoid 過冷 / 過男性化」+ y2k revival 主流社群 aesthetic（Bratz / Lisa Frank pastel / Gen Z 數位 nostalgia 復興）。**解鎖條件**：window.NourishDex.unlockedFormsSet().size ≥ 5（跨命累積見識 5 種以上 form 後的 meta-progression award；典型 ~D14+ 老玩家路徑 — 14 forms 中 5 forms ≈ 36% 解鎖度）。
+
+## 8.10 農家雞（chick-adult-farmhand.png）  *iter#241 v0.6 第 13 個進化分支 — 待生圖補上，目前 cfg.petArt 暫指 healthy 占位*
+```
+[全域風格]
+Subject: a balanced cottagecore farmhand chicken. Soft yellow body in standard chick-adult
+proportions, slightly weathered / sun-kissed feathers (lived-in not pristine). Wearing a
+small woven straw hat tilted on the head, with a tiny dried daisy or wheat sprig tucked
+in the band. Holding a small wicker basket in one wing, partially filled with mixed tiny
+items: 1 mushroom, 2 berries, 1 petal, 1 seed (representing the catch-all "did a bit of
+everything" narrative). Earth-tone palette — warm cream / oatmeal / dusty rose accents,
+gentle harvest browns. Calm contented eyes (◡‿◡), warm soft smile, hint of pink blush
+from outdoor work. Pose: standing slightly relaxed, basket held casually. Background
+transparent with hint of golden-hour haze. Mood: cottagecore-pastoral / slow living /
+balanced caretaker / "tended-and-content". Soft pastel palette warmed with earth tones,
+never sharp / chic / urban. Critical: balanced narrative — basket has multiple kinds of
+small items (not specialized like explorer's adventure tools or gourmet's pâtissier
+tools); hat is utilitarian straw not decorative bow; expression is contented-not-spiking
+(not high-energy like fighter, not super-cuddly like warmheart). Avoid drifter overlap
+(no fringe shawl / no dangling trinkets — those are drifter anchors); avoid explorer
+overlap (no compass / no map / no backpack — those are explorer anchors); avoid
+gourmet overlap (no chef hat / no pâtissier tools).
+```
+**為什麼這個設計**：呼應 farmhand 解鎖路徑（eventsCaught ≥ 10 AND feedCount ≥ 15 AND petCount ≥ 15 三條件 AND）— wicker basket 裝多元小物（mushroom/berry/petal/seed）直接視覺化「樣樣都做一點 / 全方位 catch」narrative；straw hat 是 cottagecore iconic motif（跟 boho straw_hat 配件區隔 — 配件是裝飾性帽，本件是工作帽 narrative）；earth-tone palette 跟其他 12 form 視覺區隔（cottagecore 田園色 vs minimalist 純白 / dark academia 深酒紅 / kawaii-decora pastel rainbow）；contented-not-spiking 表情跟既有 12 form 區隔（divine 神聖 / fighter 元氣 / warmheart 蜷縮 / curator composed-intentional 等都有強情緒，本 farmhand 是「中性溫和」narrative）。**解鎖條件**：state.pet.traits.eventsCaught >= 10 AND state.pet.traits.feedCount >= 15 AND state.pet.traits.petCount >= 15（D5-7 daily caretaker 自然達成；不會 conflict 既有單一 trait spike form 因為高 spike 玩家在 day-of-evolve 早觸發 sage/fighter/diva 等）。
+
 ## 8.9 精選家雞（chick-adult-curator.png）  *iter#234 v0.6 第 12 個進化分支 — 待生圖補上，目前 cfg.petArt 暫指 healthy 占位*
 ```
 [全域風格]

@@ -150,8 +150,8 @@
     ctx.fillStyle = "#2C2C2C";
     ctx.font = "bold 48px sans-serif";
     const nameLine = isMemorial
-      ? `${past.name || "啾啾"} · ${A.formLabel(past.finalForm)}`
-      : `${state.pet.name || "啾啾"} · ${A.stageLabel(state.pet.stage)}` +
+      ? `${past.name || t("pet.defaultName")} · ${A.formLabel(past.finalForm)}`
+      : `${state.pet.name || t("pet.defaultName")} · ${A.stageLabel(state.pet.stage)}` +
           (state.pet.finalForm ? `(${A.formLabel(state.pet.finalForm)})` : "");
     ctx.fillText(nameLine, W / 2, 680);
 
@@ -280,7 +280,7 @@
       if (isIOSStandalone()) {
         const url = URL.createObjectURL(blob);
         const cleanup = () => setTimeout(() => URL.revokeObjectURL(url), 60 * 1000);
-        window.NourishUI.showImagePreview(url, past ? "✨ 紀念卡" : "📸 分享卡", cleanup);
+        window.NourishUI.showImagePreview(url, past ? t("share.preview.memorial") : t("share.preview.live"), cleanup);
         return;
       }
 
@@ -289,10 +289,10 @@
       const a = document.createElement("a");
       a.href = url; a.download = filename; a.click();
       setTimeout(() => URL.revokeObjectURL(url), 1000);
-      A.toast(past ? "✨ 紀念卡已下載" : "📸 卡片已下載", "good");
+      A.toast(past ? t("toast.share.memorialSaved") : t("toast.share.liveSaved"), "good");
     } catch (e) {
       console.warn("share card failed", e);
-      A.toast("⚠️ 分享卡產生失敗", "bad");
+      A.toast(t("toast.share.fail"), "bad");
     }
   }
 

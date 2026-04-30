@@ -259,24 +259,24 @@
   - 暖心雞（v0.4 新加）：圓潤體型 + 半閉眼睛 + 粉色圍巾 / 披肩 + 🤍 浮動小心 + 略向側傾「靠著主人」姿勢（cottagecore-cuddly 依戀軸）
   - 漂泊者雞（v0.5 新加）：奶油 / 燕麥色編織披肩 + 多件 dangling 飾品（pendant / fringe / feather / pressed flower）+ 細手杖 + 微風塵感 weathered 表情（boho-traveler 收藏家軸）
 
-### 5.5 美學軸地圖（iter#231 sync，含 v0.5 全 ship + v0.6 minimalist + kawaii-decora 雙新軸 ship + form-less seasonal mini-batch 更新）
+### 5.5 美學軸地圖（iter#249 sync，含 v0.6 派生 trait SOP 第 2-6 次成功 — curator + farmhand + netizen + scholar + maximalist + finalForm 擴充至 16 / 12 軸全有 form / form-less 軸補 form 6/6 終極 milestone）
 
-GDD 設計 11 個 finalForm + 46 events（26 regular + 20 seasonal）+ 27 accessories，內部依 **12 個美學軸**組織。每軸至少 form / event / accessory ≥ 3 件對齊 TA「choose your aesthetic axis」承諾。**12/12 美學軸全部 ≥ 3 件成形 ✅**。**aesthetic spectrum 兩端首次完整**：minimalism「不堆 / 留白」端 ↔ kawaii-decora「堆量 / 過度可愛」端。
+GDD 設計 **16 個 finalForm** + 47 events（26 regular + 21 seasonal）+ 27 accessories，內部依 **12 個美學軸**組織。每軸至少 form / event / accessory ≥ 3 件對齊 TA「choose your aesthetic axis」承諾。**12/12 美學軸全部 ≥ 3 件成形 ✅**。**aesthetic spectrum 兩端完整**：minimalism「不堆 / 留白」端 ↔ kawaii-decora「堆量 / 過度可愛」端。**🎉 12/12 美學軸全有 form 終極 milestone（iter#249）**：v0.6 ship 完成 form-less 軸補 form 6/6 — boho drifter / minimalist curator / cottagecore farmhand / y2k netizen / dark academia scholar / kawaii-decora maximalist 全 6 派生 form。**派生 trait form spectrum 完整 6 例 + 6 種 condition source spectrum 完整 ✅**：drifter（累積）/ curator（克制）/ farmhand（平衡）/ netizen（見識）/ scholar（持續）/ maximalist（繁飾） — 跨軸 form identity 六條 narrative path。
 
 | 美學軸 | finalForm | regular event | seasonal event | accessory | 件數 | 飽和度 |
 |-------|----------|---------------|---------------|----------|------|--------|
 | **coquette / 美食家** | gourmet | tea / macaron | carnation（母親節）| chef_hat / strawberry_clip | 6 | ★★★★ |
-| **cottagecore** | （fallback to healthy）| butterfly / mushroom / petal / herb / seed | sakura（春日）| flower / pin_butterfly / lace_collar | 9 | ★★★★ |
+| **cottagecore** | **farmhand**（iter#241-242 派生 form 第 3 例）| butterfly / mushroom / petal / herb / seed | sakura（春日）| flower / pin_butterfly / lace_collar | 9 | ★★★★ |
 | **智慧 / sage** | sage | book / message_bottle | stationery_set（教師節）| glasses_thin | 5 | ★★★ |
 | **balletcore** | diva | rose_bouquet / pointe_shoe | dance_tutu（國際舞蹈節）| ribbon_tie | 5 | ★★★ |
 | **fairycore** | divine | dewdrop / moonlight | winter_starlight（冬至）| wings_fairy | 5 | ★★★ |
 | **cleangirl** | healthy | bubble / towel | spa_salts（Wellness Day）| blush | 5 | ★★★ |
-| **y2k / digital nostalgia** | （fallback to healthy）| pixel_heart | redenvelope（春節）/ retro_console（Web Day）| star_clip / cd_pendant | 5 | ★★★ |
+| **y2k / digital nostalgia** | **netizen**（iter#244-245 派生 form 第 4 例）| pixel_heart | redenvelope（春節）/ retro_console（Web Day）| star_clip / cd_pendant | 5 | ★★★ |
 | **元氣 / 運動感** | fighter | rainbow / confetti_pop | pinwheel（兒童節）/ rainbow_heart（Pride 月）| party_hat | 6 | ★★★★ |
 | **boho** | drifter | dried_herbs | picnic_blanket（夏日）| fringe_ribbon / straw_hat | 5 | ★★★ |
-| **dark academia** | （fallback to healthy）| quill_pen | gothic_candle（萬聖節）| velvet_bow / round_glasses | 4 | ★★★★ |
-| **minimalist** | （fallback to healthy）| morning_coffee | new_year_dawn（新年）| minimal_chain / minimal_pin | 4 | ★★★★ |
-| **kawaii-decora（v0.6 新軸 12）** | （fallback to healthy）| **candy_jar** | — | **decora_clips / plush_bow** | 3 | ★★★ |
+| **dark academia** | **scholar**（iter#246-247 派生 form 第 5 例）| quill_pen | gothic_candle（萬聖節）| velvet_bow / round_glasses | 4 | ★★★★ |
+| **minimalist** | **curator**（iter#234-235 派生 form 第 2 例）| morning_coffee | new_year_dawn（新年）| minimal_chain / minimal_pin | 4 | ★★★★ |
+| **kawaii-decora（v0.6 新軸 12）** | **maximalist**（iter#248-249 派生 form 第 6 例 / form-less 軸補 form 6/6 milestone form）| **candy_jar** | white_day_gifts（白色情人節）| **decora_clips / plush_bow** | 4 | ★★★★ |
 
 **v0.6 主要變動**（iter#222-231）：
 - **+ 跨軸成就系統 axis_mixer / rainbow_collector**（iter#222）— v0.5/v0.6 預留 idea「跨軸 mixing-mode」**正式落地**：appearance ≥ 2 軸 active 觸發 axis_mixer / ownedAccessories ≥ 4 軸覆蓋觸發 rainbow_collector；ACCESSORY_AXIS map 在 src/achievements.js 維護，新 accessory 自動納入計算
@@ -297,14 +297,23 @@ GDD 設計 11 個 finalForm + 46 events（26 regular + 20 seasonal）+ 27 access
 - **pinwheel + rainbow_heart（seasonal）** = 元氣軸節日延伸 — 兒童節童玩 + Pride Month 多元接納
 - **這軸暫不再加 form**（fighter 已是核心代表）— 元氣軸跟 cottagecore 不同：cottagecore 是廣度橫向（事件 + 配件 = 9 件無 form 主代表），元氣軸是深度縱向（form 主導 + 6 件支援）
 
-**form-less 軸的設計選擇**（cottagecore / y2k / dark academia / minimalist / kawaii-decora 五軸 form-less，boho 加 drifter form 後不再 form-less）：
-- form-less 軸刻意設計 — 它們是「環境 / 風格 atmosphere」軸，不該綁特定終態
+**form-less 軸補 form 全完成 milestone**（**iter#249 後 0 軸 form-less，12/12 美學軸全有 form ✅**）：
+- form-less 軸原本刻意設計 — 它們是「環境 / 風格 atmosphere」軸，不該綁特定終態
 - 玩家任何 form 都能透過配件 + 事件感受該軸氛圍 — 軸是「玩法 path」而非「進化結果」
 - 對齊 GDD §5.5 設計哲學：**form = 角色身份（識別感）/ axis = 美學選擇（自由度）**
-- **boho 軸 v0.5 補 form 實驗**（iter#216-217）：drifter form 從 cross-life ownedAccessories ≥ 8 派生 — 是「meta-progression form」首例，跟其他 10 form 都不同（其他 form 用 per-pet trait counter）
-- v0.7+ 候選：dark academia / cottagecore / y2k / minimalist / kawaii-decora 五 form-less 軸是否要補 form — 需累積玩家行為數據後決定（minimalist 軸特別適合「派生 trait」補 form，narrative「少即是多」可對應 ownedAccessories ≤ 某閾值的「克制收藏家」反向 trait — 跟 drifter「累積收藏家」對稱反向）
+- **iter#216-249 期間漸進補 form 6 軸（v0.5-v0.6）**：每個 form-less 軸都補 1 個派生 form 後升級為「+ 角色身份終態」雙重承諾，**12/12 美學軸全有 form 終極 milestone**
+- **派生 trait form 6 大例**（meta-progression form 設計，跟一般 per-pet trait-counter form 不同）：
+  1. **boho → drifter（iter#216-217）**：cross-life ownedAccessories ≥ 8 派生 — 累積收藏家 narrative 首例
+  2. **minimalist → curator（iter#234-236）**：cross-life ownedAccessories ≤ 3 + perfectStreakMinutes ≥ 60 派生 — 克制收藏家 narrative，drifter 對稱反向
+  3. **cottagecore → farmhand（iter#241-242）**：per-pet eventsCaught ≥ 10 + feedCount ≥ 15 + petCount ≥ 15 三條件 AND — 平衡照顧者 narrative
+  4. **y2k → netizen（iter#244-245）**：cross-life dex.unlockedForms ≥ 5 派生 — 跨命知識累積 narrative
+  5. **dark academia → scholar（iter#246-247）**：cross-life day-based loginStreak ≥ 14 派生 — 持續鑽研 narrative
+  6. **kawaii-decora → maximalist（iter#248-249）**：cross-life achievement count ≥ 20 派生 — 繁飾累積 narrative，form-less 軸補完 6/6 milestone form
+- **派生 trait form narrative spectrum 完整 6 例**：累積（drifter）/ 克制（curator）/ 平衡（farmhand）/ 見識（netizen）/ 持續（scholar）/ 繁飾（maximalist） — 六條 cross-form narrative 互補對立完整
+- **派生 trait condition source 6 種完整 spectrum**：物質累積（drifter/curator）/ 多 trait AND（farmhand）/ dex 知識累積（netizen）/ day-based streak（scholar）/ achievement count（maximalist）— **無新 source 探索需求**，後續派生 form 候選都從這 6 種選用
+- v0.7+ 候選：**同軸多 form 設計探索**（既有 12 軸全有 form 後，新方向是同一軸內 trait-based + 派生 form 雙存設計，narrative 區隔關鍵 — sage form vs scholar form 雖屬不同軸但視覺都偏學術，是「跨軸 form similarity 需差異化」設計案例）/ light academia 第 13 軸 / 跨軸 ach 系列補強 / content 池 30/30/30 milestone / i18n 衝 700/800
 
-**12 軸覆蓋演進時序**（per iter logs）：
+**12 軸覆蓋 + 16 forms 演進時序**（per iter logs）：
 - iter#100 起點：5 軸有 form（healthy / fighter / sage / diva / divine）+ fatty / ugly 兩個失衡軸
 - iter#132（下午茶）→ iter#172（pixel_heart）：補完 8 軸 event 全覆蓋
 - iter#156（gourmet）→ iter#183（explorer）→ iter#196（warmheart）→ iter#216（drifter）：v0.2/v0.3/v0.4/v0.5 form 擴充至 11
@@ -316,20 +325,32 @@ GDD 設計 11 個 finalForm + 46 events（26 regular + 20 seasonal）+ 27 access
 - iter#222（跨軸成就系統落地）：axis_mixer / rainbow_collector 觸發
 - iter#223-225（minimalist 軸 ship）：第 11 軸完整成形
 - iter#227-228（form-less 軸 seasonal 補完 mini-batch）：dark academia + minimalist 升 ★★★★
-- **iter#229-231（kawaii-decora 軸 ship）**：第 12 軸完整成形 + aesthetic spectrum 兩端對立完成
+- iter#229-231（kawaii-decora 軸 ship）：第 12 軸完整成形 + aesthetic spectrum 兩端對立完成
+- iter#233（kawaii-decora 首 seasonal white_day_gifts）：5 form-less 軸 seasonal 全補完 mini-batch 完成
+- iter#234-236（curator 派生 form 第 2 例）：minimalist 軸補 form，narrative 對稱 drifter 反向
+- iter#241-242（farmhand 派生 form 第 3 例 + 整合 SOP 首例）：cottagecore 軸補 form / R2 + §image-prompts 整合同 cron 輪 ship 首次
+- iter#244-245（netizen 派生 form 第 4 例 + 整合 SOP 第 2 次 reuse）：y2k 軸補 form / cross-life dex 派生 source 首例
+- iter#246-247（scholar 派生 form 第 5 例 + 整合 SOP 第 3 次 reuse）：dark academia 軸補 form / day-based streak 派生 source 首例
+- **iter#248-249（maximalist 派生 form 第 6 例 + 整合 SOP 第 4 次 reuse）**：kawaii-decora 軸補 form / achievement count 派生 source 首例 / **🎉 form-less 軸補 form 6/6 milestone 達成 + 12/12 美學軸全有 form 終極 milestone**
+- **iter#250 retrospective-250 milestone**：iter#230-249 共 20 cron 輪總結
 
 **ship pipeline SOP 第 N 次成功複製**：
-- form ship pipeline（main 8 處 + 收尾 5 處 / 派生 trait 6 處 + 收尾 5 處）：gourmet（iter#156-157）/ explorer（iter#183-184）/ warmheart（iter#196-197）/ drifter（iter#216-217） — **4 次成功**
-- 軸 ship pipeline（accessory 起手 + event + 第三件達標 ≥ 3）：boho（iter#205-207）/ dark academia（iter#218-220）/ minimalist（iter#223-225）/ **kawaii-decora（iter#229-231）** — **4 次成功，3 cron-輪達軸成形 SOP** ✅✅
+- form ship pipeline（main 8 處 + 收尾 5 處 / 派生 trait 6 處 + 收尾 5 處 / **iter#241+ 整合 SOP 11+1 touchpoints across 2 cron-輪**）：gourmet（iter#156-157）/ explorer（iter#183-184）/ warmheart（iter#196-197）/ drifter（iter#216-217）/ curator（iter#234-235）/ farmhand（iter#241-242）/ netizen（iter#244-245）/ scholar（iter#246-247）/ maximalist（iter#248-249） — **9 次成功，派生 trait SOP 6 次成功** ✅✅✅✅✅✅
+- 軸 ship pipeline（accessory 起手 + event + 第三件達標 ≥ 3）：boho（iter#205-207）/ dark academia（iter#218-220）/ minimalist（iter#223-225）/ kawaii-decora（iter#229-231） — **4 次成功，3 cron-輪達軸成形 SOP** ✅✅
 - axis-second-event batch（5-6 輪每輪 1 軸）：iter#198-203 / iter#211-215 — **2 次成功**
-- **form-less 軸 seasonal 補完 mini-batch（iter#227-228 兩輪驗證）** — 新增 SOP，每輪 1 軸補首 seasonal，軸 3→4 件 ★★★★，TA 軟化 + 日曆缺口填補設計準則
+- form-less 軸 seasonal 補完 mini-batch（iter#227-228 + 233 三輪驗證）— 每輪 1 軸補首 seasonal，軸 3→4 件 ★★★★
+- **派生 trait form ship 整合做法（iter#241-242 首例 → iter#248-249 第 4 次 reuse production-ready 量產做法）✨✨✨✨**：R2 收尾 + §image-prompts 同 cron 輪 ship，11+1 touchpoints / 2 cron-輪 SOP — **連續 4 次 zero deviation = 100% reusable 量產做法**
+- **i18n 衝刺 SOP（iter#235-240 五輪 165 條 + iter#247/249 form i18n 48 條 = 共 +213 條）**：events labelKey + traitsDisplay + 散落 UI strings + form i18n — 漸進式 migration helper 模式（events.js labelOf / settings.js inline / utils.js tr-getter）三處驗證；iter#238 跨破 500 / iter#240 跨破 600 milestone
+- **派生 trait condition source spectrum 6 種完整（iter#216-249）**：物質累積 vs 物質克制（drifter/curator）/ 三 trait AND（farmhand）/ dex 知識（netizen）/ day-based streak（scholar）/ achievement count（maximalist）— 後續派生 form 候選都從 6 種選用，無新 source 探索需求
 
-**v0.7+ 美學軸候選方向**（12 軸完整 + spectrum 兩端對立完成後）：
-- **新軸 candidate**：light academia（白色學院風，跟 dark academia 對立 light/dark 雙軸對稱）/ goblincore（cottagecore 影子軸，蕈菇 + earthy palette）/ regencycore（攝政時代古典，跟 dark academia / balletcore 部分競爭）— **12 軸後新軸 ROI 顯著遞減**，下一個應做嚴謹差異化分析才啟動（建議看玩家 axis_mixer / rainbow_collector 解鎖率數據再決定）
-- **既有軸補強**：5 form-less 軸（cottagecore / y2k / dark academia / minimalist / kawaii-decora）是否補 form — minimalist「克制收藏家」是 candidate first（narrative 對稱 drifter 反向）
-- **kawaii-decora 軸 seasonal 補完**：第 12 軸目前 0 seasonal — 候選「兒童節糖果包」(衝突 pinwheel 已 cover 兒童節 narrative，需差異化) /「Halloween trick-or-treat 糖果袋」(衝突 gothic_candle dark academia 同節日，需軸內爭奪) /「白色情人節 多色禮盒」(03-14 anchor，跟 valentine 02-12 接力，獨立 narrative) — 推薦白色情人節
+**v0.7+ 美學軸候選方向**（12 軸 + 16 forms + form-less 軸補完 6/6 milestone 完成後）：
+- **同軸多 form 設計探索**：12 軸全有 form 後新方向是同一軸內 trait-based form + 派生 form 雙存設計 — sage form vs scholar form 雖屬不同軸但視覺都偏學術，是「**跨軸 form similarity 需差異化**」設計案例（image-prompts §8.12 scholar prompt 已紀錄區隔規則）；同軸多 form candidates：元氣軸 + ? form（fighter spike + cross-life「marathoner」連續活力 commitment）/ 美食家軸 + ? form（gourmet spike + 「pâtissier」cross-life 累積 fed pet count）
+- **新軸 candidate**：light academia（白色學院風，跟 dark academia 對立 light/dark 雙軸對稱）/ goblincore（cottagecore 影子軸，蕈菇 + earthy palette）/ regencycore（攝政時代古典） — **12 軸 + 16 forms 後新軸 ROI 顯著遞減**，下一個應做嚴謹差異化分析才啟動（建議看玩家 axis_mixer / rainbow_collector 解鎖率數據再決定）
+- **跨軸成就 ach 系列補強**：axis_mixer / rainbow_collector 已 ship，可從 2 → 4 個跨軸成就（「混搭 master」/ 「軸 explorer」narrative candidates）
 - **schema migration 候選**：cfg.accessories.axis 顯式 field（目前 ACCESSORY_AXIS map 在 achievements.js 維護 27 條） — 配件數突破 30 後考慮，目前 27 件以 hardcoded map 維護成本仍低
-- **5 form-less 軸首 seasonal 全補完 mega-batch**：5 軸目前 dark academia + minimalist 已補 ✅ / cottagecore + y2k + kawaii-decora 仍 0 seasonal — 後續 3 cron-輪 mega-batch 候選
+- **content 池規模 30/30/30 milestone**：accessories 27 / regular events 26 / seasonal events 21 各破 30 — v0.7+ 中期 milestone
+- **i18n 衝刺第六輪衝 700 milestone**：目前 649 條，剩 51 條（pet 名稱 default / shop description / dex flavor 等零碎 strings）
+- **docs/local-image-gen-setup.md**（user 兩次提問待 cron 啟動）— ComfyUI + Pony Diffusion + 啾啾 9 form prompts batch script + rembg 透明背景，一次完成 placeholder PNG 全替換
 
 ---
 

@@ -36,7 +36,8 @@
     try { localStorage.setItem(KEY, JSON.stringify(dex)); }
     catch (e) {
       if (e && (e.name === "QuotaExceededError" || e.code === 22)) {
-        api().toast("⚠️ 圖鑑空間不足", "bad");
+        const t = window.NourishI18n ? window.NourishI18n.t : (k) => k;
+        api().toast(t("toast.dex.spaceFull"), "bad");
       }
     }
   }

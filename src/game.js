@@ -129,7 +129,7 @@
       // Hatch bonus so D1 players can afford first accessory (headband 50 FC) —
       // onboarding ends with "this chick is mine" feeling.
       const bonus = CFG.economy?.firstHatchBonus || 0;
-      if (bonus > 0) setTimeout(() => grantCoin(bonus, "孵化禮"), 2200);
+      if (bonus > 0) setTimeout(() => grantCoin(bonus, t("toast.coin.hatchGift")), 2200);
       // Onboarding v2: first_hatch is the natural moment to reveal v0.2 / v0.3
       // features the initial 4-bullet modal didn't cover. Once per save.
       if (!state.history) state.history = {};
@@ -165,7 +165,7 @@
       state.pet.stats.mood = clamp(state.pet.stats.mood - 5, 0, 100);
       extra = t("modal.welcomeBack.moodPenalty");
     }
-    if (idx === 4) speak("嗚嗚嗚~");
+    if (idx === 4) speak(t("speak.cry"));
     if (tier.giveCoin) grantCoin(tier.giveCoin, t("toast.coin.compensation"));
     showModal({
       title: t("modal.welcomeBack.title"),
@@ -346,7 +346,7 @@
     $("pet-wrapper").onclick = () => performInteraction("pet_head");
     $("stage-name").onclick  = openNameDialog;
     $("stage-name").style.cursor = "pointer";
-    $("stage-name").title = "點此取名 / 改名";
+    $("stage-name").title = t("tooltip.rename");
   }
 
   // Install banner. Yes triggers captured prompt; either outcome
@@ -387,7 +387,7 @@
           這個分頁會停在唯讀模式。<br><br>
           <small class="muted">點重新整理可接續另一個分頁的進度。</small>
         </p>`,
-        buttons: [{ label: "重新整理", close: false, action: () => location.reload() }],
+        buttons: [{ label: t("btn.refresh"), close: false, action: () => location.reload() }],
       });
     });
   }

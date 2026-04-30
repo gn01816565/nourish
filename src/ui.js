@@ -50,10 +50,10 @@
     overlay.innerHTML = `
       <div style="color:white;font-weight:700;margin-bottom:12px;font-size:16px;">${title}</div>
       <img src="${url}" style="max-width:90%;max-height:70vh;border-radius:18px;
-        border:3px solid #2C2C2C;background:white;" alt="分享卡">
+        border:3px solid #2C2C2C;background:white;" alt="${t("share.cardAlt")}">
       <p style="color:white;margin-top:14px;font-size:13px;line-height:1.6;text-align:center;">
-        💡 <strong>長按上方圖片</strong>選「儲存到照片」<br>
-        <small style="opacity:0.8;">(iOS PWA 限制無法直接下載)</small>
+        ${t("ios.preview.tip")}<br>
+        <small style="opacity:0.8;">${t("ios.preview.note")}</small>
       </p>
       <button id="ios-preview-close" style="margin-top:12px;padding:8px 22px;
         background:#FFD86B;border:2px solid #2C2C2C;border-radius:999px;

@@ -38,7 +38,10 @@
     // Trait rows are data-driven from CFG.traitsDisplay.
     const traitRows = C.traitsDisplay.map(d => {
       const v = d.round ? Math.round(tr[d.key]) : tr[d.key];
-      return `<div class="settings-row"><span>${d.icon} ${d.label}</span><strong>${v}/${d.cap} → ${d.form}</strong></div>`;
+      // iter#239 i18n: t() with literal fallback if key missing (零 regression migration SOP)
+      const lbl = d.labelKey && t(d.labelKey) !== d.labelKey ? t(d.labelKey) : d.label;
+      const frm = d.formKey  && t(d.formKey)  !== d.formKey  ? t(d.formKey)  : d.form;
+      return `<div class="settings-row"><span>${d.icon} ${lbl}</span><strong>${v}/${d.cap} → ${frm}</strong></div>`;
     }).join("");
     // GDD §10.3 elder companion: visible bond counter so the time investment
     // is legible. Pairs with elder_week / elder_month achievements + idle.js
@@ -161,7 +164,7 @@
           const result = await notify().requestPermission();
           if (result === "granted") {
             state.settings.notificationsEnabled = true;
-            await notify().show(t("share.title.live"), t("toast.notify.welcome", { name: state.pet.name || "啾啾" }));
+            await notify().show(t("share.title.live"), t("toast.notify.welcome", { name: state.pet.name || t("pet.defaultName") }));
             A.save(); ui().closeModal(); openMenu();
           } else {
             A.toast(result === "denied" ? t("toast.notify.blocked") : t("toast.notify.notGranted"), "bad");

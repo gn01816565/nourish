@@ -40,15 +40,16 @@
     // counters that update sub-second. Adding a v0.3 evolution branch is a
     // cfg edit only — game.js stays untouched.
     traitsDisplay: [
-      { key:"fatPoints",            icon:"🥯", label:"肥胖點數", cap:10,   form:"胖雞",   round:false },
-      { key:"battlePoints",         icon:"💪", label:"活力點數", cap:30,   form:"元氣雞", round:false },
-      { key:"intelligencePoints",   icon:"🧩", label:"智慧點數", cap:30,   form:"智慧雞", round:false },
-      { key:"singCount",            icon:"🎤", label:"唱歌次數", cap:20,   form:"歌姬雞", round:false },
-      { key:"lowMoodMinutes",       icon:"😢", label:"低落分鐘", cap:720,  form:"醜雞",   round:true  },
-      { key:"perfectStreakMinutes", icon:"✨", label:"幸福連續", cap:1440, form:"神雞",   round:true  },
-      { key:"feedCount",            icon:"🍰", label:"美食點數", cap:60,   form:"美食家雞", round:false },
-      { key:"eventsCaught",         icon:"🗺️", label:"探險點數", cap:25,   form:"探險家雞", round:false },
-      { key:"petCount",             icon:"🤍", label:"依戀點數", cap:50,   form:"暖心雞",   round:false },
+      // iter#239 i18n SOP: labelKey + formKey added for en locale support; literal label + form retained as fallback (settings.js uses t() with fallback)
+      { key:"fatPoints",            icon:"🥯", label:"肥胖點數", labelKey:"trait.fat.label",      cap:10,   form:"胖雞",     formKey:"trait.fat.form",      round:false },
+      { key:"battlePoints",         icon:"💪", label:"活力點數", labelKey:"trait.battle.label",   cap:30,   form:"元氣雞",   formKey:"trait.battle.form",   round:false },
+      { key:"intelligencePoints",   icon:"🧩", label:"智慧點數", labelKey:"trait.intel.label",    cap:30,   form:"智慧雞",   formKey:"trait.intel.form",    round:false },
+      { key:"singCount",            icon:"🎤", label:"唱歌次數", labelKey:"trait.sing.label",     cap:20,   form:"歌姬雞",   formKey:"trait.sing.form",     round:false },
+      { key:"lowMoodMinutes",       icon:"😢", label:"低落分鐘", labelKey:"trait.lowMood.label",  cap:720,  form:"醜雞",     formKey:"trait.lowMood.form",  round:true  },
+      { key:"perfectStreakMinutes", icon:"✨", label:"幸福連續", labelKey:"trait.perfect.label",  cap:1440, form:"神雞",     formKey:"trait.perfect.form",  round:true  },
+      { key:"feedCount",            icon:"🍰", label:"美食點數", labelKey:"trait.feed.label",     cap:60,   form:"美食家雞", formKey:"trait.feed.form",     round:false },
+      { key:"eventsCaught",         icon:"🗺️", label:"探險點數", labelKey:"trait.adventure.label",cap:25,   form:"探險家雞", formKey:"trait.adventure.form",round:false },
+      { key:"petCount",             icon:"🤍", label:"依戀點數", labelKey:"trait.affection.label",cap:50,   form:"暖心雞",   formKey:"trait.affection.form",round:false },
     ],
     interactions: {
       feed_basic:  { hunger:+25, mood:+2,  clean:-3,  energy:0,   cost:0,  cd:30,  unlock:"egg",    labelKey:"interaction.feed_basic", label:"基礎飼料", icon:"🥣", free:true },
@@ -87,7 +88,7 @@
       streak_30:      { icon:"💎", labelKey:"ach.streak_30", label:"鐵粉",       descKey:"achdesc.streak_30", desc:"連續登入 30 天" },
       collect_3:      { icon:"📖", labelKey:"ach.collect_3", label:"圖鑑學徒",   descKey:"achdesc.collect_3", desc:"收集 3 種終態" },
       collect_5:      { icon:"📚", labelKey:"ach.collect_5", label:"圖鑑專家",   descKey:"achdesc.collect_5", desc:"收集 5 種終態" },
-      collect_all:    { icon:"🏆", labelKey:"ach.collect_all", label:"圖鑑大師",   descKey:"achdesc.collect_all", desc:"收集全部 12 種終態" },
+      collect_all:    { icon:"🏆", labelKey:"ach.collect_all", label:"圖鑑大師",   descKey:"achdesc.collect_all", desc:"收集全部 16 種終態" },
       form_divine:    { icon:"✨", labelKey:"ach.form_divine", label:"天使降臨",   descKey:"achdesc.form_divine", desc:"養出天使雞" },
       form_diva:      { icon:"🎤", labelKey:"ach.form_diva", label:"超新星",     descKey:"achdesc.form_diva", desc:"養出歌姬雞" },
       form_fighter:   { icon:"💪", labelKey:"ach.form_fighter", label:"元氣之星",   descKey:"achdesc.form_fighter", desc:"養出元氣雞" },
@@ -98,9 +99,20 @@
       form_drifter:   { icon:"🪢", labelKey:"ach.form_drifter", label:"波西米亞旅人", descKey:"achdesc.form_drifter", desc:"養出漂泊者雞" },
       // iter#234 minimalist 派生 form 第二例 — 跟 drifter「累積收藏家」narrative 對稱反向「克制收藏家」(condition: ownedAccessories ≤ 3 + perfectStreakMinutes ≥ 60)
       form_curator:   { icon:"🪶", labelKey:"ach.form_curator", label:"精選藏家", descKey:"achdesc.form_curator", desc:"養出精選家雞" },
+      // iter#241 cottagecore 派生 form 第三例 — 「全方位平衡照顧者」narrative (condition: eventsCaught ≥ 10 AND feedCount ≥ 15 AND petCount ≥ 15) — 非單一極端 trait 路徑，而是綜合平衡的「田園生活」型玩家
+      form_farmhand:  { icon:"🌾", labelKey:"ach.form_farmhand", label:"田園生活", descKey:"achdesc.form_farmhand", desc:"養出農家雞" },
+      // iter#244 y2k 派生 form 第四例 — 「數位原住民 / 跨命見多識廣」narrative (condition: cross-life dex unlocked ≥ 5 forms) — 老玩家 meta-progression award，跟 drifter / curator / farmhand 三 narrative 互補
+      form_netizen:   { icon:"💾", labelKey:"ach.form_netizen", label:"老網民",   descKey:"achdesc.form_netizen", desc:"養出網民雞" },
+      // iter#246 dark academia 派生 form 第五例 — 「學者持續鑽研 / 持續登入老玩家」narrative (condition: state.daily.loginStreak ≥ 14) — 第 5 種派生條件 source 首例 day-based streak (跟前 4 種 stat-based 不重複)
+      form_scholar:   { icon:"📚", labelKey:"ach.form_scholar", label:"學術老靈魂", descKey:"achdesc.form_scholar", desc:"養出學者雞" },
+      // iter#248 kawaii-decora 派生 form 第六例 — 「繁飾家 / 累積成就家」narrative (condition: cross-life Object.keys(state.achievements).length ≥ 20) — 第 6 種派生條件 source 首例 achievement count；form-less 軸補 form 6/6 全完成 milestone
+      form_maximalist:{ icon:"💎", labelKey:"ach.form_maximalist", label:"繁裝累積家", descKey:"achdesc.form_maximalist", desc:"養出繁飾家雞" },
       // iter#222 跨軸 mixing-mode 成就（per GDD §5.5 / retrospective-210 §3.7 預留 idea）
       axis_mixer:     { icon:"🎨", labelKey:"ach.axis_mixer", label:"跨軸混搭家", descKey:"achdesc.axis_mixer", desc:"當前配戴 ≥ 2 種美學軸的飾品" },
       rainbow_collector: { icon:"🌈", labelKey:"ach.rainbow_collector", label:"彩虹收藏家", descKey:"achdesc.rainbow_collector", desc:"已擁有 ≥ 4 種美學軸的飾品" },
+      // iter#253 跨軸成就升級成就 — 從 axis_mixer (≥ 2 軸) / rainbow_collector (≥ 4 軸) 階梯式進階為 master 級
+      mixing_master:  { icon:"🖼️", labelKey:"ach.mixing_master", label:"跨軸大師", descKey:"achdesc.mixing_master", desc:"當前同時配戴 ≥ 3 種美學軸的飾品（axis_mixer 進階）" },
+      rainbow_master: { icon:"💫", labelKey:"ach.rainbow_master", label:"全色彩大師", descKey:"achdesc.rainbow_master", desc:"已擁有 ≥ 8 種美學軸的飾品（rainbow_collector 進階）" },
       star_caught:    { icon:"⭐", labelKey:"ach.star_caught", label:"幸運星",     descKey:"achdesc.star_caught", desc:"接住流星事件" },
       rich:           { icon:"💰", labelKey:"ach.rich", label:"小富翁",     descKey:"achdesc.rich", desc:"累積飼料幣 500" },
       perfect_day:    { icon:"🌟", labelKey:"ach.perfect_day", label:"完美的一天", descKey:"achdesc.perfect_day", desc:"四項數值同時 >70 持續 30 分" },
@@ -224,7 +236,7 @@
         },
         {
           id:"newyear",
-          art:"assets/svg/event-newyear.svg",
+          art:"assets/images/event-newyear.png",
           weight:30,
           label:"跨年煙火",
           labelKey:"seasonal.label.newyear",
@@ -237,7 +249,7 @@
         },
         {
           id:"zongzi",
-          art:"assets/svg/event-zongzi.svg",
+          art:"assets/images/event-zongzi.png",
           weight:25,
           label:"端午粽子",
           labelKey:"seasonal.label.zongzi",
@@ -251,7 +263,7 @@
         // carnation 是母親節 iconic 花卉，narrow window weight 30 讓它感覺特別
         {
           id:"carnation",
-          art:"assets/svg/event-carnation.svg",
+          art:"assets/images/event-carnation.png",
           weight:30,
           label:"康乃馨",
           labelKey:"seasonal.label.carnation",
@@ -266,7 +278,7 @@
         // 改用 7 色「粉系 rainbow」對齊 CLAUDE.md 設計約束）；既有 regular rainbow event 是 atmospheric，這個是節日 high-tier
         {
           id:"rainbow_heart",
-          art:"assets/svg/event-rainbow-heart.svg",
+          art:"assets/images/event-rainbow-heart.png",
           weight:25,
           label:"驕傲彩虹心",
           labelKey:"seasonal.label.rainbow_heart",
@@ -281,7 +293,7 @@
         // 紅包 = 高 coin 驚喜，是 valentine（02-12~02-15）後接力的春節篇章
         {
           id:"redenvelope",
-          art:"assets/svg/event-redenvelope.svg",
+          art:"assets/images/event-redenvelope.png",
           weight:30,
           label:"紅包",
           labelKey:"seasonal.label.redenvelope",
@@ -296,7 +308,7 @@
         // 風車是台灣兒童節 iconic 童玩，輕快 + 粉藍 palette 對齊 cottagecore TA
         {
           id:"pinwheel",
-          art:"assets/svg/event-pinwheel.svg",
+          art:"assets/images/event-pinwheel.png",
           weight:25,
           label:"兒童節風車",
           labelKey:"seasonal.label.pinwheel",
@@ -401,7 +413,7 @@
         // 哥德燭台 + 攤開古書 + 小南瓜（kawaii-soft 軟化萬聖節，TA「不過冷不過男性化」）— 對齊 velvet_bow / quill_pen / round_glasses dark academia 學院 + gothic 浪漫 narrative
         {
           id:"gothic_candle",
-          art:"assets/svg/event-gothic-candle.svg",
+          art:"assets/images/event-gothic-candle.png",
           weight:25,
           label:"哥德萬聖燭台",
           labelKey:"seasonal.label.gothic_candle",
@@ -417,7 +429,7 @@
         // 跟 winter_starlight (12-19~12-22 fairycore 仙氣冬至) 區隔：本件 = 元旦白日早晨 / 那件 = 冬至夜晚星空
         {
           id:"new_year_dawn",
-          art:"assets/svg/event-new-year-dawn.svg",
+          art:"assets/images/event-new-year-dawn.png",
           weight:25,
           label:"新年初晨",
           labelKey:"seasonal.label.new_year_dawn",
@@ -461,20 +473,20 @@
         { id:"star",      art:"assets/images/event-star.png",      weight:3,  label:"神秘流星",   labelKey:"event.label.star", apply:"star",      applyEffects:{ stats:{hunger:10, mood:10, clean:10, energy:10}, coin:50, coinReason:"流星祝福" }, applyToastKey:"event.star",  applyToast:"⭐ 流星許願！全屬性 +10", applyToastStyle:"gold" },
         { id:"rainbow",   art:"assets/images/event-rainbow.png",     weight:12, label:"彩虹出現",   labelKey:"event.label.rainbow", apply:"rainbow",   applyEffects:{ stats:{mood:12, hunger:5, clean:5, energy:5} },     applyToastKey:"event.rainbow",  applyToast:"🌈 彩虹出現！全身充滿希望" },
         { id:"candy",     art:"assets/images/event-candy.png",       weight:8,  label:"糖果",       labelKey:"event.label.candy", apply:"candy",     applyEffects:{ stats:{mood:18, hunger:8}, coin:5, coinReason:"糖果" },                            applyToastKey:"event.candy",    applyToast:"🍭 甜甜的~ 心情大好" },
-        { id:"bubble",    art:"assets/svg/event-bubble.svg",         weight:9,  label:"肥皂泡",     labelKey:"event.label.bubble", apply:"bubble",    applyEffects:{ stats:{clean:10, mood:8} },                                                          applyToastKey:"event.bubble",   applyToast:"🫧 肥皂泡飄飄~ 清潔 +10 / 心情 +8" },
-        { id:"petal",     art:"assets/svg/event-petal.svg",          weight:8,  label:"花瓣飄落",   labelKey:"event.label.petal", apply:"petal",     applyEffects:{ stats:{mood:14, clean:3} },                                                          applyToastKey:"event.petal",    applyToast:"🌸 粉色花瓣飄到啾啾身上~" },
-        { id:"mushroom",  art:"assets/svg/event-mushroom.svg",       weight:7,  label:"小蘑菇",     labelKey:"event.label.mushroom", apply:"mushroom",  applyEffects:{ stats:{mood:10, energy:5}, coin:8, coinReason:"撿蘑菇" },                                applyToastKey:"event.mushroom", applyToast:"🍄 撿到一朵小蘑菇~" },
-        { id:"tea",       art:"assets/svg/event-tea.svg",            weight:6,  label:"下午茶",     labelKey:"event.label.tea", apply:"tea",       applyEffects:{ stats:{mood:12, energy:8, hunger:5} },                                              applyToastKey:"event.tea",      applyToast:"🫖 一杯熱熱的下午茶~" },
+        { id:"bubble",    art:"assets/images/event-bubble.png",         weight:9,  label:"肥皂泡",     labelKey:"event.label.bubble", apply:"bubble",    applyEffects:{ stats:{clean:10, mood:8} },                                                          applyToastKey:"event.bubble",   applyToast:"🫧 肥皂泡飄飄~ 清潔 +10 / 心情 +8" },
+        { id:"petal",     art:"assets/images/event-petal.png",          weight:8,  label:"花瓣飄落",   labelKey:"event.label.petal", apply:"petal",     applyEffects:{ stats:{mood:14, clean:3} },                                                          applyToastKey:"event.petal",    applyToast:"🌸 粉色花瓣飄到啾啾身上~" },
+        { id:"mushroom",  art:"assets/images/event-mushroom.png",       weight:7,  label:"小蘑菇",     labelKey:"event.label.mushroom", apply:"mushroom",  applyEffects:{ stats:{mood:10, energy:5}, coin:8, coinReason:"撿蘑菇" },                                applyToastKey:"event.mushroom", applyToast:"🍄 撿到一朵小蘑菇~" },
+        { id:"tea",       art:"assets/images/event-tea.png",            weight:6,  label:"下午茶",     labelKey:"event.label.tea", apply:"tea",       applyEffects:{ stats:{mood:12, energy:8, hunger:5} },                                              applyToastKey:"event.tea",      applyToast:"🫖 一杯熱熱的下午茶~" },
         // iter#161 美食家軸 event 層補完（搭 iter#132 tea / iter#156 gourmet form / iter#159 chef_hat）
-        { id:"macaron",   art:"assets/svg/event-macaron.svg",        weight:7,  label:"馬卡龍",     labelKey:"event.label.macaron",       apply:"macaron",   applyEffects:{ stats:{mood:14, hunger:6}, coin:5, coinReason:"路過糕點店" },                       applyToastKey:"event.macaron",  applyToast:"🧁 撿到一個粉色馬卡龍~" },
+        { id:"macaron",   art:"assets/images/event-macaron.png",        weight:7,  label:"馬卡龍",     labelKey:"event.label.macaron",       apply:"macaron",   applyEffects:{ stats:{mood:14, hunger:6}, coin:5, coinReason:"路過糕點店" },                       applyToastKey:"event.macaron",  applyToast:"🧁 撿到一個粉色馬卡龍~" },
         // iter#168 智慧軸 event 層落地（對標 sage 終態 — 是輕量 atmospheric event，不能加 trait 但讓玩家感覺角色「有讀書時刻」）
-        { id:"book",      art:"assets/svg/event-book.svg",           weight:6,  label:"翻書頁",     labelKey:"event.label.book", apply:"book",      applyEffects:{ stats:{mood:8, energy:5} },                                                          applyToastKey:"event.book",     applyToast:"📖 一本好書，心靈被填滿~" },
+        { id:"book",      art:"assets/images/event-book.png",           weight:6,  label:"翻書頁",     labelKey:"event.label.book", apply:"book",      applyEffects:{ stats:{mood:8, energy:5} },                                                          applyToastKey:"event.book",     applyToast:"📖 一本好書，心靈被填滿~" },
         // iter#169 balletcore 軸 event 層落地（對標 diva 終態 + ribbon_tie 配件）— 「舞台後台收花束」氛圍 event
-        { id:"rose_bouquet", art:"assets/svg/event-rose-bouquet.svg", weight:5, label:"舞台花束",   labelKey:"event.label.rose_bouquet", apply:"rose_bouquet", applyEffects:{ stats:{mood:16, clean:3}, coin:8, coinReason:"觀眾打賞" },                       applyToastKey:"event.rose_bouquet", applyToast:"💐 一束玫瑰送上來~" },
+        { id:"rose_bouquet", art:"assets/images/event-rose-bouquet.png", weight:5, label:"舞台花束",   labelKey:"event.label.rose_bouquet", apply:"rose_bouquet", applyEffects:{ stats:{mood:16, clean:3}, coin:8, coinReason:"觀眾打賞" },                       applyToastKey:"event.rose_bouquet", applyToast:"💐 一束玫瑰送上來~" },
         // iter#171 fairycore 軸 event 層落地（對標 divine 終態 + wings_fairy 配件）— 「葉上露珠」清新仙氣 event
-        { id:"dewdrop",   art:"assets/svg/event-dewdrop.svg",        weight:6,  label:"葉上露珠",   labelKey:"event.label.dewdrop", apply:"dewdrop",   applyEffects:{ stats:{mood:10, clean:8} },                                                          applyToastKey:"event.dewdrop",  applyToast:"💧 葉上一顆透亮露珠~" },
+        { id:"dewdrop",   art:"assets/images/event-dewdrop.png",        weight:6,  label:"葉上露珠",   labelKey:"event.label.dewdrop", apply:"dewdrop",   applyEffects:{ stats:{mood:10, clean:8} },                                                          applyToastKey:"event.dewdrop",  applyToast:"💧 葉上一顆透亮露珠~" },
         // iter#172 y2k 軸 event 層落地（對標 star_clip / cd_pendant 既有配件）— 像素愛心 + chromatic glitch，digital nostalgia event；完成 8 美學軸 event 層全覆蓋
-        { id:"pixel_heart",art:"assets/svg/event-pixel-heart.svg",   weight:5,  label:"像素愛心",   labelKey:"event.label.pixel_heart", apply:"pixel_heart", applyEffects:{ stats:{mood:14}, coin:6, coinReason:"老遊戲機掉幣" },                              applyToastKey:"event.pixel_heart", applyToast:"💖 一顆閃亮的像素愛心~" },
+        { id:"pixel_heart",art:"assets/images/event-pixel-heart.png",   weight:5,  label:"像素愛心",   labelKey:"event.label.pixel_heart", apply:"pixel_heart", applyEffects:{ stats:{mood:14}, coin:6, coinReason:"老遊戲機掉幣" },                              applyToastKey:"event.pixel_heart", applyToast:"💖 一顆閃亮的像素愛心~" },
         // iter#198 cottagecore 補充：filler「種子粒」 — 小雞主場景的天然食物，跟 candy / mushroom 同 small-pickup 帶但語意更貼近寵物本體
         { id:"seed",      art:"assets/svg/event-seed.svg",           weight:9,  label:"灑落的種子",  labelKey:"event.label.seed", apply:"seed",       applyEffects:{ stats:{hunger:12, mood:4} },                                                       applyToastKey:"event.seed",        applyToast:"🌾 撿到散落的小米粒~" },
         // iter#199 cleangirl 軸第二 event：軟綿綿毛巾 — 跟既有 bubble 區隔（bubble = 洗澡中泡泡 / towel = 洗完後的暖呼呼）
@@ -490,11 +502,11 @@
         // iter#206 boho 軸第二件（首 event）：曬乾香草束 — 對齊 fringe_ribbon (iter#205) earth-tone + handmade craft narrative；無 coin 純 atmospheric drying-rack 場景
         { id:"dried_herbs",  art:"assets/svg/event-dried-herbs.svg",     weight:7, label:"曬乾香草束", labelKey:"event.label.dried_herbs",   apply:"dried_herbs",   applyEffects:{ stats:{mood:10, clean:6, energy:4} },                                            applyToastKey:"event.dried_herbs",     applyToast:"🌿 風乾的香草束散發著療癒香氣~" },
         // iter#219 dark academia 軸第二件（首 event）：羽毛筆 — 跟 sage 軸 book 區隔（book = 讀的當下 / quill_pen = 寫的當下，scholarly active narrative）
-        { id:"quill_pen",    art:"assets/svg/event-quill-pen.svg",        weight:6, label:"羽毛筆寫字", labelKey:"event.label.quill_pen",     apply:"quill_pen",     applyEffects:{ stats:{mood:10, energy:6, clean:3}, coin:5, coinReason:"完成手稿" },                applyToastKey:"event.quill_pen",       applyToast:"🪶 蘸墨書寫~ 一頁手稿完成" },
+        { id:"quill_pen",    art:"assets/images/event-quill-pen.png",        weight:6, label:"羽毛筆寫字", labelKey:"event.label.quill_pen",     apply:"quill_pen",     applyEffects:{ stats:{mood:10, energy:6, clean:3}, coin:5, coinReason:"完成手稿" },                applyToastKey:"event.quill_pen",       applyToast:"🪶 蘸墨書寫~ 一頁手稿完成" },
         // iter#224 minimalist 軸第二件（首 event）：早晨第一杯咖啡 — 單一純白瓷杯 + 單一蒸氣 + 單一咖啡豆，narrative「少即是多 / morning ritual single moment」；無 coin 純 atmospheric（minimalism 反「acquisition」），weight:5 跟 moonlight/dewdrop 同 mid-range
-        { id:"morning_coffee", art:"assets/svg/event-morning-coffee.svg", weight:5, label:"晨間咖啡",  labelKey:"event.label.morning_coffee", apply:"morning_coffee", applyEffects:{ stats:{mood:10, energy:10, clean:3} },                                              applyToastKey:"event.morning_coffee",  applyToast:"☕ 第一口咖啡~ 一天靜靜開始" },
+        { id:"morning_coffee", art:"assets/images/event-morning-coffee.png", weight:5, label:"晨間咖啡",  labelKey:"event.label.morning_coffee", apply:"morning_coffee", applyEffects:{ stats:{mood:10, energy:10, clean:3} },                                              applyToastKey:"event.morning_coffee",  applyToast:"☕ 第一口咖啡~ 一天靜靜開始" },
         // iter#230 kawaii-decora 軸第二件（首 event）：彩色糖果罐 — 玻璃罐 + 9 顆 pastel rainbow 糖果堆疊 + heart 蓋 + ribbon + 多色 ✦；narrative「堆量」直接對立 minimalism「only 1」（同輪推進兩軸 narrative spectrum 對稱）；coin:5 跟 candy 同段位 pickup-style
-        { id:"candy_jar",      art:"assets/svg/event-candy-jar.svg",      weight:6, label:"彩色糖果罐", labelKey:"event.label.candy_jar",     apply:"candy_jar",      applyEffects:{ stats:{mood:16, hunger:6}, coin:5, coinReason:"打開糖果罐" },                       applyToastKey:"event.candy_jar",       applyToast:"🍬 一罐五彩糖果~ 挑哪顆都甜" },
+        { id:"candy_jar",      art:"assets/images/event-candy-jar.png",      weight:6, label:"彩色糖果罐", labelKey:"event.label.candy_jar",     apply:"candy_jar",      applyEffects:{ stats:{mood:16, hunger:6}, coin:5, coinReason:"打開糖果罐" },                       applyToastKey:"event.candy_jar",       applyToast:"🍬 一罐五彩糖果~ 挑哪顆都甜" },
       ],
     },
     economy: { dailyLogin: 30, evolveReward: 100, streak7: 50, streak30: 200, firstHatchBonus: 60 },
@@ -542,6 +554,14 @@
       form_drifter: ["🪢 又收集到一個小東西~", "聽說遠方還有更多風景", "(把飾品收進披肩)", "✦ 路上的風好自由", "下個目的地是哪裡呢"],
       // iter#235 curator R2 — minimalism 留白美學「克制收藏家」narrative，跟 drifter「累積收藏家」對稱反向；用語靜緩 + 單一細節 + ✦
       form_curator: ["靜靜地~", "不需要太多", "✦ 留白也很美", "(輕輕摸著單一墜飾)", "就喜歡這個"],
+      // iter#242 farmhand R2 — cottagecore 田園生活「平衡照顧者」narrative，跟 drifter (累積) / curator (克制) 形成 3-narrative 完整 spectrum；用語樸實 + 慢活 + 籐籃意象
+      form_farmhand: ["忙了一整天~", "🌾 收成不錯", "(把今天的小事整理好)", "✦ 一點一滴累積", "不貪心 / 樣樣都好"],
+      // iter#245 netizen R2 — y2k 數位原住民「跨命見多識廣」narrative，跨命 dex.unlockedForms ≥ 5 派生；用語老玩家 wink + 像素飾品意象 + 數位 nostalgia
+      form_netizen: ["⌨ 上次見過你~", "💾 老玩家路過", "(整理像素小飾品)", "✦ 在啾啾世界混了好久", "数位 nostalgia 一回首"],
+      // iter#247 scholar R2 — dark academia 學術老靈魂「持續鑽研」narrative，連續登入 14 天派生；用語沉穩 + 學術 / 書頁意象 + 慢思
+      form_scholar: ["📚 又翻了一頁~", "(整理書堆)", "✦ 學海無涯", "老習慣，每天都讀點書", "思考是甜的"],
+      // iter#249 maximalist R2 — kawaii-decora 繁飾家「累積成就家」narrative，跨命成就 ≥ 20 派生；用語雀躍 + 堆量飾品意象 + 多色感 + 「通通都要」kawaii narrative
+      form_maximalist: ["💎 又解鎖一個！", "(滿身的飾品都掛上)", "✦ 通通都要！", "集齊就會發光~", "pastel 堆量是美學"],
       wantNag:     ["主人有看到我的願望嗎？", "拜託啦~", "求求你嘛", "(用期待的眼神看著主人)"],
       rich:        ["錢好像變多了~", "覺得我們可以買點什麼了！"],
       quirk:       ["(發呆)", "(整理羽毛)", "(看天空)", "(踱步)", "♪"],
@@ -600,7 +620,7 @@
       // iter#207 boho 軸第三件 — 草帽 + rust 帽帶 + 小雛菊；達 GDD §5.5 「軸 ≥ 3 件」成形門檻
       straw_hat:       { slot:"hat",  art:"assets/svg/acc-straw-hat.svg",      labelKey:"acc.straw_hat",      label:"波西米亞草帽", icon:"👒", price:220 },
       // iter#218 v0.5 新美學軸 dark academia 起手第一件：天鵝絨蝴蝶結 — 深酒紅 velvet + 金線 + cream lace；軟化版 dark academia palette
-      velvet_bow:      { slot:"neck", art:"assets/svg/acc-velvet-bow.svg",     labelKey:"acc.velvet_bow",     label:"天鵝絨蝴蝶結", icon:"🎀", price:240 },
+      velvet_bow:      { slot:"neck", art:"assets/images/acc-velvet-bow.png",     labelKey:"acc.velvet_bow",     label:"天鵝絨蝴蝶結", icon:"🎀", price:240 },
       // iter#220 dark academia 軸第三件 — 圓框眼鏡 + 內圈酒紅 + 金 rivets；達 GDD §5.5「軸 ≥ 3 件」成形門檻；跟 sage 半月眼鏡 glasses_thin 區隔（圓 vs 半月）
       round_glasses:   { slot:"face", art:"assets/svg/acc-round-glasses.svg",  labelKey:"acc.round_glasses",  label:"圓框眼鏡",     icon:"🤓", price:180 },
       // iter#223 v0.6 新美學軸 minimalist 起手第一件：簡約細鏈 — 單一小墜飾 + 細金鍊 + scandinavian 極簡風；不全冷（粉色 dot accent 軟化）
@@ -630,6 +650,14 @@
       drifter: { labelKey:"form.drifter.label", label: "漂泊者雞", descKey:"form.drifter.desc", desc: "編織披肩 + 八方收集的小飾品 — 跨越多種風格、收藏家般的 boho 旅人。解鎖條件：跨命累積 8 種以上配件。" },
       // iter#234 minimalist 派生 form 第二例（跟 drifter 對稱反向）：克制收藏家 — 跨命少量配件 + 高品質 perfectStreak 照顧 narrative
       curator: { labelKey:"form.curator.label", label: "精選家雞", descKey:"form.curator.desc", desc: "純白羽毛 + 單一精選配件 — 不堆量、選自己愛的，minimalism 留白美學的精選藏家。解鎖條件：跨命配件 ≤ 3 件 + perfectStreak ≥ 60 分鐘。" },
+      // iter#241 cottagecore 派生 form 第三例 — 「不偏科 / 田園生活」narrative，三 trait 同時 moderate 而非單一極端
+      farmhand: { labelKey:"form.farmhand.label", label: "農家雞", descKey:"form.farmhand.desc", desc: "麥稈帽 + 籐籃裝著當日收成 — 餵食 / 互動 / 撿事件全方位都做一點，不衝高任何單一方向，cottagecore 田園慢活的代表。解鎖條件：eventsCaught ≥ 10 AND feedCount ≥ 15 AND petCount ≥ 15。" },
+      // iter#244 y2k 派生 form 第四例 — 「數位原住民 / 跨命見多識廣」narrative，跨命 dex 解鎖數派生
+      netizen: { labelKey:"form.netizen.label", label: "網民雞", descKey:"form.netizen.desc", desc: "粉藍漸層 + chromatic glitch 質感 + 老式像素飾品 — 跨命累積 5 種以上 form 的「老網民」，y2k 數位 nostalgia 的見證者。解鎖條件：dex.unlockedForms.size ≥ 5（跨命累積見識多種 form 後的 meta-progression award）。" },
+      // iter#246 dark academia 派生 form 第五例 — 「學者持續鑽研 / 持續登入老玩家」narrative，day-based streak 派生（第 5 種派生條件 source）
+      scholar: { labelKey:"form.scholar.label", label: "學者雞", descKey:"form.scholar.desc", desc: "酒紅圍巾 + 圓框眼鏡 + 一疊書 + 沉穩眼神 — 連續登入 14 天以上的「學術老靈魂」，dark academia 持續鑽研的見證者。解鎖條件：state.daily.loginStreak ≥ 14（連續登入 14 天派生，跟學術 commitment narrative 對應）。" },
+      // iter#248 kawaii-decora 派生 form 第六例 — 「繁飾家 / 累積成就家」narrative，achievement count 派生（第 6 種派生條件 source）— form-less 軸補 form 6/6 milestone
+      maximalist: { labelKey:"form.maximalist.label", label: "繁飾家雞", descKey:"form.maximalist.desc", desc: "粉/藍/紫多色髮夾 + 多層蝴蝶結 + 五彩糖果項鍊 + 滿身飾品 — 解鎖 20 個成就以上的「繁飾累積家」，kawaii-decora 堆量美學的見證者。解鎖條件：Object.keys(state.achievements).length ≥ 20（跨命累積成就達 20 派生）。" },
     },
     petArt: {
       egg:    "assets/images/egg.png",
@@ -651,6 +679,14 @@
         drifter:"assets/images/chick-adult-healthy.png",
         // PLACEHOLDER: curator 終態暫用 healthy art (iter#234 R1)，待 docs/image-prompts.md §8.9 生圖補上 chick-adult-curator.png — minimalist 純白 + 單一細金墜飾 + 留白構圖
         curator:"assets/images/chick-adult-healthy.png",
+        // PLACEHOLDER: farmhand 終態暫用 healthy art (iter#241 R1)，待 docs/image-prompts.md §8.10 生圖補上 chick-adult-farmhand.png — cottagecore 麥稈帽 + 籐籃 + 樸素 earth tone palette
+        farmhand:"assets/images/chick-adult-healthy.png",
+        // PLACEHOLDER: netizen 終態暫用 healthy art (iter#244 R1)，待 docs/image-prompts.md §8.11 生圖補上 chick-adult-netizen.png — y2k 粉藍 chromatic + CD pendant + pixel motif
+        netizen:"assets/images/chick-adult-healthy.png",
+        // PLACEHOLDER: scholar 終態暫用 healthy art (iter#246 R1)，待 docs/image-prompts.md §8.12 生圖補上 chick-adult-scholar.png — dark academia 酒紅圍巾 + 圓框眼鏡 + 書堆 + 沉穩 palette
+        scholar:"assets/images/chick-adult-healthy.png",
+        // PLACEHOLDER: maximalist 終態暫用 healthy art (iter#248 R1)，待 docs/image-prompts.md §8.13 生圖補上 chick-adult-maximalist.png — kawaii-decora 多色髮夾堆疊 + 多層蝴蝶結 + 糖果項鍊 + pastel rainbow palette
+        maximalist:"assets/images/chick-adult-healthy.png",
       },
     },
     moodArt: {

@@ -61,6 +61,26 @@
     // Triggers when ownedAccessories ≤ 3 (低收藏 narrative「不堆量」) AND perfectStreakMinutes ≥ 60 (高品質照顧).
     // Placed AFTER drifter so high-collectors get drifter, restraint-collectors get curator.
     else if (Object.keys(state.pet.ownedAccessories || {}).length <= 3 && tr.perfectStreakMinutes >= 60) form = "curator";
+    // iter#241 farmhand: cottagecore 派生 form 第三例 — 「全方位平衡照顧者」narrative.
+    // Triggers when eventsCaught ≥ 10 AND feedCount ≥ 15 AND petCount ≥ 15 — 三 trait 同時 moderate
+    // 而非單一極端 (高 single trait 玩家已被前面 sage/diva/fighter/gourmet/explorer/warmheart 抓走).
+    // Placed AFTER curator BEFORE fatty fallback so 平衡 caretakers get farmhand, negligent get fatty/ugly.
+    else if (tr.eventsCaught >= 10 && tr.feedCount >= 15 && tr.petCount >= 15) form = "farmhand";
+    // iter#244 netizen: y2k 派生 form 第四例 — 「數位原住民 / 跨命見多識廣」narrative.
+    // Triggers when cross-life dex unlocked forms ≥ 5 — old-timer meta-progression award.
+    // Reads window.NourishDex.unlockedFormsSet() at evolve time (cross-life storage).
+    // Excludes current pet from count via .size BEFORE current pet's evolve (current pet's form just being decided).
+    // Placed AFTER farmhand so balanced caretakers get farmhand first, veterans get netizen as catch-all.
+    else if (window.NourishDex && window.NourishDex.unlockedFormsSet().size >= 5) form = "netizen";
+    // iter#246 scholar: dark academia 派生 form 第五例 — 「學者持續鑽研 / 持續登入老玩家」narrative.
+    // Triggers when state.daily.loginStreak ≥ 14 — day-based streak meta-progression (5th source type, vs prior 4 stat-based).
+    // Placed AFTER netizen so dex-veterans get netizen first, daily-streak-only get scholar.
+    else if ((state.daily?.loginStreak || 0) >= 14) form = "scholar";
+    // iter#248 maximalist: kawaii-decora 派生 form 第六例 — 「繁飾家 / 累積成就家」narrative.
+    // Triggers when cross-life achievement count ≥ 20 — 6th source type (achievement count, vs prior 5 stat/dex/streak-based).
+    // Placed AFTER scholar so daily-streak-only get scholar first, achievement-grinders get maximalist.
+    // form-less 軸補 form 6/6 milestone — 完成 boho/minimalist/cottagecore/y2k/dark academia/kawaii-decora 全 6 軸 form 補完
+    else if (Object.keys(state.achievements || {}).length >= 20) form = "maximalist";
     else if (tr.fatPoints >= 10) form = "fatty";
     else if (tr.lowMoodMinutes >= 720) form = "ugly";
     state.pet.finalForm = form;
@@ -83,7 +103,7 @@
     const state = A.getState();
     window.NourishUI.showModal({
       title: t("modal.startNew.title"),
-      body: `<p style="text-align:center;line-height:1.7;">${t("modal.startNew.body", { name: state.pet.name || "啾啾" })}</p>`,
+      body: `<p style="text-align:center;line-height:1.7;">${t("modal.startNew.body", { name: state.pet.name || t("pet.defaultName") })}</p>`,
       buttons: [
         { label: t("button.cancel"), close: true },
         { label: t("modal.startNew.btnConfirm"), close: false, action: () => {
